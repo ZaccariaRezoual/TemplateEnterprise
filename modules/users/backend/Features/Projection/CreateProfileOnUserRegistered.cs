@@ -22,14 +22,20 @@ public sealed class CreateProfileOnUserRegistered
     : INotificationHandler<DomainEventNotification<UserRegistered>>
 {
     private readonly UsersDbContext _dbContext;
+    private readonly ITenantContext _tenantContext;
 
     /// <summary>
     /// Initializes the subscriber.
     /// </summary>
     /// <param name="dbContext">Users persistence.</param>
-    public CreateProfileOnUserRegistered(UsersDbContext dbContext)
+    /// <param name="tenantContext">Tenant the new profile belongs to.</param>
+    public CreateProfileOnUserRegistered(
+        UsersDbContext dbContext,
+        ITenantContext tenantContext
+    )
     {
         _dbContext = dbContext;
+        _tenantContext = tenantContext;
     }
 
     /// <summary>
@@ -44,8 +50,12 @@ public sealed class CreateProfileOnUserRegistered
     {
         var @event = notification.DomainEvent;
 
+        // IgnoreQueryFilters: the idempotency check must see the row even if
+        // it belongs to another tenant, or a replay would violate the primary
+        // key instead of returning early.
         var exists = await _dbContext
-            .Profiles.AnyAsync(p => p.Id == @event.UserId, cancellationToken)
+            .Profiles.IgnoreQueryFilters()
+            .AnyAsync(p => p.Id == @event.UserId, cancellationToken)
             .ConfigureAwait(false);
         if (exists)
         {
@@ -53,7 +63,12 @@ public sealed class CreateProfileOnUserRegistered
         }
 
         _dbContext.Profiles.Add(
-            UserProfile.FromRegistration(@event.UserId, @event.Email, @event.DisplayName)
+            UserProfile.FromRegistration(
+                @event.UserId,
+                @event.Email,
+                @event.DisplayName,
+                _tenantContext.TenantId ?? Guid.Empty
+            )
         );
         await _dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }

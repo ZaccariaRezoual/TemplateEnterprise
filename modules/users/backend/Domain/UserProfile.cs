@@ -11,9 +11,20 @@ namespace EnterpriseFramework.Modules.Users.Domain;
 /// it lets Users query, sort and page without reaching into another module's
 /// schema, which is what keeps modules separately deployable and removable.
 /// </summary>
-public sealed class UserProfile : EntityBase<Guid>
+public sealed class UserProfile : EntityBase<Guid>, ITenantOwned
 {
     private UserProfile() { }
+
+    /// <summary>
+    /// Tenant this profile belongs to.
+    ///
+    /// Implementing <see cref="ITenantOwned"/> is this module's entire opt-in
+    /// to multi-tenancy: the shared model configuration adds a global query
+    /// filter, and every query in the module is scoped without a single
+    /// `Where`. In a single-tenant deployment the value stays empty and the
+    /// filter is inert.
+    /// </summary>
+    public Guid TenantId { get; private set; }
 
     /// <summary>Email address, mirrored from the Auth account.</summary>
     public string Email { get; private set; } = string.Empty;
@@ -39,13 +50,22 @@ public sealed class UserProfile : EntityBase<Guid>
     /// <param name="userId">Account identifier from Auth (the projection's key).</param>
     /// <param name="email">Email of the account.</param>
     /// <param name="displayName">Name shown in the UI.</param>
+    /// <param name="tenantId">
+    /// Owning tenant; <see cref="Guid.Empty"/> in single-tenant deployments.
+    /// </param>
     /// <returns>The new profile.</returns>
-    public static UserProfile FromRegistration(Guid userId, string email, string displayName) =>
+    public static UserProfile FromRegistration(
+        Guid userId,
+        string email,
+        string displayName,
+        Guid tenantId
+    ) =>
         new()
         {
             Id = userId,
             Email = email,
             DisplayName = displayName,
+            TenantId = tenantId,
             CreatedAtUtc = DateTime.UtcNow,
         };
 

@@ -1,7 +1,10 @@
 ﻿using System.Globalization;
 using EnterpriseFramework.Api.Extensions;
+using EnterpriseFramework.Api.Features;
+using EnterpriseFramework.Api.Observability;
 using EnterpriseFramework.Api.Middleware;
 using EnterpriseFramework.Api.Security;
+using EnterpriseFramework.Api.Tenancy;
 using EnterpriseFramework.Application;
 using EnterpriseFramework.Infrastructure;
 using EnterpriseFramework.Modules.Abstractions;
@@ -52,6 +55,9 @@ try
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddApiServices(builder.Configuration);
     builder.Services.AddApiSecurity(builder.Configuration);
+    builder.Services.AddTenancy(builder.Configuration);
+    builder.Services.AddFeatureFlags(builder.Configuration);
+    builder.Services.AddObservability(builder.Configuration);
 
     // Module system: list module assemblies here; the loader reads each
     // embedded module.json, honors enabled flags and resolves dependency order.
@@ -85,11 +91,15 @@ try
     app.UseCors(ApiServiceCollectionExtensions.CorsPolicyName);
     app.UseRateLimiter();
     app.UseAuthentication();
+    // After authentication: the claim strategy needs a principal, and a
+    // client-supplied tenant is validated against the caller's own.
+    app.UseTenancy();
     app.UseAuthorization();
 
     // The fallback policy requires authentication everywhere; infrastructure
     // endpoints opt out explicitly.
     app.MapOpenApi().AllowAnonymous();
+    app.MapFeatureEndpoints();
 
     // Liveness = process is up; readiness = external dependencies reachable.
     app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => false })

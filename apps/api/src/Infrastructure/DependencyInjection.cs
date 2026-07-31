@@ -1,4 +1,5 @@
 using EnterpriseFramework.Application.Abstractions;
+using EnterpriseFramework.Infrastructure.Caching;
 using EnterpriseFramework.Infrastructure.Events;
 using EnterpriseFramework.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,37 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
         services.AddScoped<IEventBus, MediatREventBus>();
 
+        AddCaching(services, configuration);
+
         return services;
+    }
+
+    /// <summary>
+    /// Registers the cache: Redis when configured, process memory otherwise.
+    ///
+    /// The in-memory fallback keeps development free of a Redis dependency,
+    /// but it is per-replica — an invalidation on one instance leaves the
+    /// others stale — so a scaled deployment must configure Redis.
+    /// </summary>
+    /// <param name="services">Service collection to register into.</param>
+    /// <param name="configuration">Application configuration.</param>
+    private static void AddCaching(IServiceCollection services, IConfiguration configuration)
+    {
+        var redisConnectionString = configuration.GetConnectionString("Redis");
+
+        if (string.IsNullOrWhiteSpace(redisConnectionString))
+        {
+            services.AddDistributedMemoryCache();
+        }
+        else
+        {
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConnectionString;
+                options.InstanceName = "enterprise:";
+            });
+        }
+
+        services.AddSingleton<ICacheService, DistributedCacheService>();
     }
 }

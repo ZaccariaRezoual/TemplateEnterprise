@@ -40,6 +40,7 @@ Framework enterprise monorepo (Vue 3 + .NET 10) che fa da base a tutti i futuri 
 - **Gli eventi realtime non vengono replayati** alla riconnessione: ciò che deve sopravvivere a una disconnessione va persistito e rifetchato (per questo Notifications salva prima di pubblicare).
 - **Tailwind non vede i workspace package**: ogni nuovo package o module frontend con markup va aggiunto alle direttive `@source` in `apps/web/src/assets/styles/main.css`, altrimenti le sue classi mancano dal bundle senza alcun errore di build.
 - **Sicurezza di default**: JWT + refresh token, CORS configurabile, rate limiting, security headers, RBAC + PBAC, audit log. Ogni nuovo endpoint nasce protetto, non "da proteggere poi".
+- **Enterprise Features opt-in** (`docs/enterprise-features.md`): Multi-Tenant, Feature Flags, Distributed Cache e Observability vivono nel host e in `Application/Abstractions`, disattivate di default. Un modulo diventa multi-tenant implementando `ITenantOwned` e chiamando `ApplyTenantFilters` — mai filtrando a mano, perché una `Where` dimenticata non dà errore. **Un feature flag non è un permesso**: decide cosa esiste in questo deployment, non cosa può fare l'utente.
 - **Errori**: usare la gerarchia condivisa (`ApplicationError`, `ValidationError`, `BusinessError`, `UnauthorizedError`, `ForbiddenError`, `NetworkError`) su entrambi i lati; backend → ProblemDetails.
 
 ## Stack e struttura

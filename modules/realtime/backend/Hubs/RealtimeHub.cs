@@ -24,6 +24,7 @@ public sealed partial class RealtimeHub : Hub
 {
     private readonly IConnectionRegistry _connections;
     private readonly ICurrentUser _currentUser;
+    private readonly ITenantContext _tenantContext;
     private readonly ILogger<RealtimeHub> _logger;
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Realtime connection {ConnectionId} opened for {UserId}")]
@@ -34,15 +35,18 @@ public sealed partial class RealtimeHub : Hub
     /// </summary>
     /// <param name="connections">Registry tracking live connections.</param>
     /// <param name="currentUser">Identity resolved from the connection's JWT.</param>
+    /// <param name="tenantContext">Tenant of the connection, for group scoping.</param>
     /// <param name="logger">Diagnostic logging.</param>
     public RealtimeHub(
         IConnectionRegistry connections,
         ICurrentUser currentUser,
+        ITenantContext tenantContext,
         ILogger<RealtimeHub> logger
     )
     {
         _connections = connections;
         _currentUser = currentUser;
+        _tenantContext = tenantContext;
         _logger = logger;
     }
 
@@ -61,8 +65,17 @@ public sealed partial class RealtimeHub : Hub
             return;
         }
 
+        // Groups are derived from the authenticated principal and the resolved
+        // tenant — never from anything the client sends.
+        var tenantId = _tenantContext.TenantId;
+
         var groups = new List<string> { RealtimeGroups.ForUser(userId.Value) };
-        groups.AddRange(_currentUser.Roles.Select(RealtimeGroups.ForRole));
+        groups.AddRange(_currentUser.Roles.Select(role => RealtimeGroups.ForRole(role, tenantId)));
+
+        if (tenantId is { } tenant)
+        {
+            groups.Add(RealtimeGroups.ForTenant(tenant));
+        }
 
         foreach (var group in groups)
         {
