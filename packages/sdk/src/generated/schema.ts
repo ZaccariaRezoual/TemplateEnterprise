@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/realtime/presence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the accounts currently connected. */
+        get: operations["realtimePresence"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/demo/ping": {
         parameters: {
             query?: never;
@@ -49,6 +66,23 @@ export interface paths {
         put?: never;
         /** Echoes the given text and publishes a domain event. */
         post: operations["demoEcho"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/demo/notify-me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sends the caller a notification, demonstrating the realtime path. */
+        post: operations["demoNotifyMe"];
         delete?: never;
         options?: never;
         head?: never;
@@ -520,6 +554,20 @@ export interface components {
              */
             createdAtUtc: string;
         };
+        /**
+         * @description Sends the caller a notification.
+         *
+         *     Exists so the realtime path is demonstrable and testable end to end: it
+         *     publishes a notification request exactly as any real feature would, and
+         *     everything after that — persistence, the realtime push, the badge and the
+         *     toast — happens without this module knowing any of it exists.
+         */
+        NotifyMeCommand: {
+            /** @description Headline of the notification. */
+            title: string;
+            /** @description Explanatory text. */
+            body: string;
+        };
         /** @description A page of results. */
         PagedResultOfUserProfileDto: {
             /** @description Items of the current page. */
@@ -695,6 +743,26 @@ export interface operations {
             };
         };
     };
+    realtimePresence: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
+    };
     demoPing: {
         parameters: {
             query?: never;
@@ -736,6 +804,37 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["EchoResponse"];
                 };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    demoNotifyMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NotifyMeCommand"];
+            };
+        };
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Bad Request */
             400: {

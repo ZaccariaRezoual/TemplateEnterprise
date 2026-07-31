@@ -27,6 +27,12 @@
     <!-- Persistence -->
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" />
+    <!-- Realtime -->
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.0" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.8.24" />
+    <!-- Direct pin: lifts the vulnerable MessagePack 2.5.x that the SignalR
+         Redis backplane brings in transitively (GHSA-hv8m-jj95-wg3x et al.). -->
+    <PackageVersion Include="MessagePack" Version="3.1.8" />
     <!-- Security -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Identity.Core" Version="10.0.0" />

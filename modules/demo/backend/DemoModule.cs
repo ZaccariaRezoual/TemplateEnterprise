@@ -1,5 +1,6 @@
 using EnterpriseFramework.Modules.Abstractions;
 using EnterpriseFramework.Modules.Demo.Features.Echo;
+using EnterpriseFramework.Modules.Demo.Features.Notify;
 using EnterpriseFramework.Modules.Demo.Features.Ping;
 using FluentValidation;
 using MediatR;
@@ -61,6 +62,22 @@ public sealed class DemoModule : IModule
             )
             .WithName("demoEcho")
             .WithSummary("Echoes the given text and publishes a domain event.")
+            .ProducesValidationProblem();
+
+        // Authenticated, unlike the rest of the group: it notifies the
+        // CALLER, so there has to be one.
+        group
+            .MapPost(
+                "/notify-me",
+                async (NotifyMeCommand command, ISender sender, CancellationToken ct) =>
+                {
+                    await sender.Send(command, ct);
+                    return TypedResults.Accepted((string?)null);
+                }
+            )
+            .WithName("demoNotifyMe")
+            .WithSummary("Sends the caller a notification, demonstrating the realtime path.")
+            .RequireAuthorization()
             .ProducesValidationProblem();
     }
 }

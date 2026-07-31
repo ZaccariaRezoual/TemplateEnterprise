@@ -39,18 +39,21 @@ public sealed class CreateNotificationOnRequest
     : INotificationHandler<DomainEventNotification<NotificationRequested>>
 {
     private readonly NotificationsDbContext _dbContext;
+    private readonly IEventBus _eventBus;
 
     /// <summary>
     /// Initializes the subscriber.
     /// </summary>
     /// <param name="dbContext">Notifications persistence.</param>
-    public CreateNotificationOnRequest(NotificationsDbContext dbContext)
+    /// <param name="eventBus">Announces the stored notification.</param>
+    public CreateNotificationOnRequest(NotificationsDbContext dbContext, IEventBus eventBus)
     {
         _dbContext = dbContext;
+        _eventBus = eventBus;
     }
 
     /// <summary>
-    /// Stores the requested notification.
+    /// Stores the requested notification and announces that it now exists.
     /// </summary>
     /// <param name="notification">The wrapped request.</param>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
@@ -59,8 +62,26 @@ public sealed class CreateNotificationOnRequest
         CancellationToken cancellationToken
     )
     {
-        _dbContext.Notifications.Add(Notification.FromRequest(notification.DomainEvent));
+        var created = Notification.FromRequest(notification.DomainEvent);
+        _dbContext.Notifications.Add(created);
         await _dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        // Announced only AFTER it is persisted: a client that receives the
+        // push and immediately fetches or marks it read must find it there.
+        await _eventBus
+            .PublishAsync(
+                new NotificationCreated(
+                    created.Id,
+                    created.UserId,
+                    created.Title,
+                    created.Body,
+                    created.Level,
+                    created.Link,
+                    created.CreatedAtUtc
+                ),
+                cancellationToken
+            )
+            .ConfigureAwait(false);
     }
 }
 

@@ -5,6 +5,11 @@ import {
   installNotificationsModule,
   useNotificationsStore,
 } from "@enterprise/module-notifications";
+import {
+  connectRealtime,
+  disconnectRealtime,
+  installRealtimeModule,
+} from "@enterprise/module-realtime";
 import { installUsersModule } from "@enterprise/module-users";
 import { VueQueryPlugin } from "@tanstack/vue-query";
 import { installTheme } from "@enterprise/ui";
@@ -37,6 +42,10 @@ app.use(createPinia());
 app.use(router);
 app.use(VueQueryPlugin, { queryClient: createQueryClient() });
 
+// Stores the composition root itself observes (safe after Pinia is installed).
+const session = useSessionStore();
+const notifications = useNotificationsStore();
+
 // Modules (after Pinia: their stores activate at install time).
 // Order matters: Auth installs the authentication guard, Authorization the
 // permission guard, so an anonymous user is asked to sign in rather than told
@@ -46,23 +55,27 @@ installAuthorizationModule({ app, router, api });
 installUsersModule({ api });
 installNotificationsModule({ api });
 installLocalizationModule({ app, api });
+// A function, not the token: SignalR calls it again on every reconnect, so a
+// session that refreshed while offline reconnects with the current token.
+installRealtimeModule({ getAccessToken: () => session.accessToken });
 
 // Translations are fetched, not bundled: the app paints first and gets its
 // strings a moment later.
 void loadLocale();
 
 // Per-user state follows the session: loaded on sign-in, dropped on sign-out,
-// so one user never inherits another's permissions or notifications.
-const session = useSessionStore();
-const notifications = useNotificationsStore();
+// so one user never inherits another's permissions, notifications or — worse
+// — an open socket still receiving their events.
 watch(
   () => session.isAuthenticated,
   (isAuthenticated) => {
     void syncPermissions(isAuthenticated);
     if (isAuthenticated) {
       void notifications.load();
+      void connectRealtime();
     } else {
       notifications.clear();
+      void disconnectRealtime();
     }
   },
   { immediate: true },

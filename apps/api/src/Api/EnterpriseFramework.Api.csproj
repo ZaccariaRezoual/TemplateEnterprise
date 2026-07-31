@@ -36,6 +36,8 @@
       Include="..\..\..\..\modules\notifications\backend\EnterpriseFramework.Modules.Notifications.csproj" />
     <ProjectReference
       Include="..\..\..\..\modules\localization\backend\EnterpriseFramework.Modules.Localization.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\realtime\backend\EnterpriseFramework.Modules.Realtime.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />

@@ -102,5 +102,8 @@ module depends on it, startup fails fast with a clear error.
   contract other modules publish to, ready for realtime push in Fase 6.
 - [`modules/localization`](../modules/localization/README.md) — resources over
   database rows, served to both the API and vue-i18n.
+- [`modules/realtime`](../modules/realtime/README.md) — a module that makes
+  every other module live without any of them referencing it, via a marker
+  interface and an open discovery of its implementations.
 - [`modules/demo`](../modules/demo/README.md) — the minimal skeleton: query,
   validated command, event publish/subscribe.

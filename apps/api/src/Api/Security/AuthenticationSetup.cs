@@ -52,6 +52,29 @@ public static class AuthenticationSetup
                     // extends real lifetime by a third.
                     ClockSkew = TimeSpan.FromSeconds(30),
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        // Browsers cannot set an Authorization header on a
+                        // WebSocket handshake, so SignalR clients pass the
+                        // token as a query parameter. Accepted ONLY for hub
+                        // paths: allowing it everywhere would put tokens in
+                        // server logs, browser history and Referer headers
+                        // for ordinary requests.
+                        var accessToken = context.Request.Query["access_token"];
+                        if (
+                            !string.IsNullOrEmpty(accessToken)
+                            && context.HttpContext.Request.Path.StartsWithSegments("/hubs")
+                        )
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    },
+                };
             });
 
         // SECURE BY DEFAULT: every endpoint requires an authenticated caller

@@ -10,6 +10,9 @@ import { defineConfig } from "vite";
  * same-origin URL: no CORS in development and the production deployment
  * (reverse proxy in front of both) behaves identically.
  */
+/** Where the dev server forwards API and hub traffic. */
+const apiTarget = process.env["VITE_DEV_API_TARGET"] ?? "http://localhost:5080";
+
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
   resolve: {
@@ -21,8 +24,16 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: process.env["VITE_DEV_API_TARGET"] ?? "http://localhost:5080",
+        target: apiTarget,
         changeOrigin: true,
+      },
+      // The SignalR hub. `ws: true` is required: without it the negotiate
+      // request is proxied but the WebSocket upgrade is not, and the client
+      // silently falls back to long polling — or fails outright.
+      "/hubs": {
+        target: apiTarget,
+        changeOrigin: true,
+        ws: true,
       },
     },
   },
