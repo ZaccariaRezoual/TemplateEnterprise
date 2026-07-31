@@ -16,10 +16,10 @@ export const demoApi = {
    *
    * @param signal Abort signal forwarded by TanStack Query on cancellation.
    * @returns The ping response.
-   * @throws {import("@/core/errors/applicationError").ApplicationError} On any API failure.
+   * @throws {import("@enterprise/shared").ApplicationError} On any API failure.
    */
   ping(signal?: AbortSignal): Promise<IPingResponse> {
-    return request(api.GET("/api/demo/ping", signal === undefined ? {} : { signal }));
+    return request(() => api.GET("/api/demo/ping", signal === undefined ? {} : { signal }));
   },
 
   /**
@@ -28,9 +28,9 @@ export const demoApi = {
    *
    * @param text Text to echo; the server enforces 1–500 characters.
    * @returns The echo response.
-   * @throws {import("@/core/errors/applicationError").ValidationError} When the text is rejected.
+   * @throws {import("@enterprise/shared").ValidationError} When the text is rejected.
    */
   echo(text: string): Promise<IEchoResponse> {
-    return request(api.POST("/api/demo/echo", { body: { text } }));
+    return request(() => api.POST("/api/demo/echo", { body: { text } }));
   },
 };

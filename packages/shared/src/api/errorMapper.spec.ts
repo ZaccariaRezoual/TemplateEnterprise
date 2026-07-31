@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   ApplicationError,
   BusinessError,
@@ -8,8 +8,8 @@ import {
   ServerError,
   UnauthorizedError,
   ValidationError,
-} from "@/core/errors/applicationError";
-import { mapResponseToApplicationError, mapTransportFailure } from "@/core/http/errorMapper";
+} from "../errors/applicationError";
+import { mapResponseToApplicationError, mapTransportFailure } from "./errorMapper";
 
 describe("mapResponseToApplicationError", () => {
   it.each([

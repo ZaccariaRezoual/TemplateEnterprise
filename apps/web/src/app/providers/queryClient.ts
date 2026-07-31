@@ -1,5 +1,5 @@
-import { QueryClient } from "@tanstack/vue-query";
-import { ForbiddenError, NotFoundError, UnauthorizedError } from "@/core/errors/applicationError";
+﻿import { QueryClient } from "@tanstack/vue-query";
+import { ForbiddenError, NotFoundError, UnauthorizedError } from "@enterprise/shared";
 
 /**
  * Builds the TanStack Query client that owns ALL server state.

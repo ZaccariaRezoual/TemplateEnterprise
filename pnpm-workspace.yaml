@@ -4,6 +4,7 @@ packages:
   - "apps/*"
   - "packages/*"
   - "tools/*"
+  - "modules/*/frontend"
 
 # Single source of truth for versions shared across packages: a package writes
 # "typescript": "catalog:" instead of a range, so two packages can never drift

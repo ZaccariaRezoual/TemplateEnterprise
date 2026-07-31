@@ -4,17 +4,21 @@
  * DefaultLayout
  * -----------------------------------------------------------------------------
  *
- * Standard application shell: header with product name, primary navigation and
- * theme control, plus the routed page area.
+ * Standard application shell: header with product name, primary navigation,
+ * session controls and theme control, plus the routed page area.
  *
  * Responsibilities:
  * - Provides the page chrome and the skip link required for keyboard users.
- * - Renders navigation entries; features contribute pages, not chrome.
+ * - Reflects the session (account link when signed in, sign-in link when not);
+ *   all session STATE lives in the auth module's store.
  *
  * It holds no business logic and performs no data fetching. Navigation becomes
  * permission-aware in Fase 5, filtered by the permissions composable.
  */
+import { useSessionStore } from "@enterprise/module-auth";
 import ThemeToggle from "@/shared/components/ThemeToggle.vue";
+
+const session = useSessionStore();
 
 const navigation = [{ label: "Demo", to: "/demo" }] as const;
 </script>
@@ -44,7 +48,25 @@ const navigation = [{ label: "Demo", to: "/demo" }] as const;
           </RouterLink>
         </nav>
 
-        <div class="ml-auto">
+        <div class="ml-auto flex items-center gap-3">
+          <RouterLink
+            v-if="session.isAuthenticated"
+            to="/account"
+            class="rounded-md px-3 py-1.5 text-sm text-text-muted transition-colors hover:bg-background hover:text-text"
+            active-class="bg-background text-text"
+            data-testid="nav-account"
+          >
+            {{ session.user?.displayName ?? "Account" }}
+          </RouterLink>
+          <RouterLink
+            v-else
+            to="/login"
+            class="rounded-md px-3 py-1.5 text-sm text-text-muted transition-colors hover:bg-background hover:text-text"
+            data-testid="nav-sign-in"
+          >
+            Sign in
+          </RouterLink>
+
           <ThemeToggle />
         </div>
       </div>

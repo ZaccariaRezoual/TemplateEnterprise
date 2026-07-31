@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
  * -----------------------------------------------------------------------------
  * EchoForm
@@ -18,7 +18,7 @@
  */
 import { Button, Input } from "@enterprise/ui";
 import { computed, ref } from "vue";
-import { ValidationError } from "@/core/errors/applicationError";
+import { ValidationError } from "@enterprise/shared";
 import { useEcho } from "@/features/demo/composables/useDemo";
 import { useDemoPreferencesStore } from "@/features/demo/stores/demoPreferences.store";
 import { echoFormSchema } from "@/features/demo/validators/echo.validator";
