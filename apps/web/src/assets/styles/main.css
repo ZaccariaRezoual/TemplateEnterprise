@@ -2,10 +2,16 @@
  * Application stylesheet entry point.
  *
  * The application owns the Tailwind entry; the design system owns the values.
- * `@source` is required for the design system because Tailwind only scans the
- * directory of this file by default, and never node_modules.
+ *
+ * Every `@source` below is REQUIRED: Tailwind only scans the directory of this
+ * file by default and never looks inside node_modules, so classes used by
+ * workspace packages would silently be missing from the bundle. The symptom is
+ * nasty — components render with their markup intact but no styling, so an
+ * icon-only button collapses to zero size — and no build error is produced.
+ * Add a line here whenever a new package or module frontend ships markup.
  */
 
 @import "tailwindcss";
 @source "../../../../../packages/ui/src";
+@source "../../../../../modules/**/frontend/src/**/*.{vue,ts}";
 @import "@enterprise/ui/tokens.css";

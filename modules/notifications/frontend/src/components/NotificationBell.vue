@@ -20,10 +20,15 @@ import { BellIcon } from "@heroicons/vue/24/outline";
 import { Badge, Button } from "@enterprise/ui";
 import { formatDate } from "@enterprise/shared";
 import { onMounted, ref } from "vue";
+import { useLiveNotifications } from "../composables/useLiveNotifications";
 import { useNotificationsStore } from "../stores/notifications.store";
 
 const notifications = useNotificationsStore();
 const isOpen = ref(false);
+
+// The bell lives for the whole session, so it is the right place to hold the
+// realtime subscription: the badge then updates without anyone refetching.
+useLiveNotifications();
 
 onMounted(() => {
   void notifications.load();

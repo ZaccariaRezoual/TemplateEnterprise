@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using EnterpriseFramework.Api.Extensions;
 using EnterpriseFramework.Api.Middleware;
 using EnterpriseFramework.Api.Security;
@@ -12,6 +12,7 @@ using EnterpriseFramework.Modules.Demo;
 using EnterpriseFramework.Modules.Email;
 using EnterpriseFramework.Modules.Localization;
 using EnterpriseFramework.Modules.Notifications;
+using EnterpriseFramework.Modules.Realtime;
 using EnterpriseFramework.Modules.Settings;
 using EnterpriseFramework.Modules.Storage;
 using EnterpriseFramework.Modules.Users;
@@ -66,6 +67,7 @@ try
             typeof(StorageModule).Assembly,
             typeof(NotificationsModule).Assembly,
             typeof(LocalizationModule).Assembly,
+            typeof(RealtimeModule).Assembly,
         ],
         builder.Configuration
     );

@@ -8,5 +8,9 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\apps\api\src\Domain\EnterpriseFramework.Domain.csproj" />
+    <!-- For IRealtimeEvent: declaring an event as client-facing needs the
+         abstraction, not the Realtime module. -->
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Application\EnterpriseFramework.Application.csproj" />
   </ItemGroup>
 </Project>

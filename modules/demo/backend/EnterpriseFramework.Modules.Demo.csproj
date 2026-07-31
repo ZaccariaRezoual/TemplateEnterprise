@@ -12,6 +12,10 @@
       Include="..\..\..\apps\api\src\Application\EnterpriseFramework.Application.csproj" />
     <ProjectReference
       Include="..\..\..\apps\api\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
+    <!-- Public contracts only: the demo publishes a notification request the
+         same way any real feature would. -->
+    <ProjectReference
+      Include="..\..\notifications\shared\EnterpriseFramework.Modules.Notifications.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" />

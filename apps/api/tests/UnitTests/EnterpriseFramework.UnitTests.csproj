@@ -14,6 +14,8 @@
       Include="..\..\..\..\modules\storage\backend\EnterpriseFramework.Modules.Storage.csproj" />
     <ProjectReference
       Include="..\..\..\..\modules\email\backend\EnterpriseFramework.Modules.Email.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\realtime\backend\EnterpriseFramework.Modules.Realtime.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />

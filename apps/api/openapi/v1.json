@@ -39,6 +39,29 @@
         }
       }
     },
+    "/api/realtime/presence": {
+      "get": {
+        "tags": ["Realtime"],
+        "summary": "Lists the accounts currently connected.",
+        "operationId": "realtimePresence",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/demo/ping": {
       "get": {
         "tags": ["Demo"],
@@ -83,6 +106,38 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo/notify-me": {
+      "post": {
+        "tags": ["Demo"],
+        "summary": "Sends the caller a notification, demonstrating the realtime path.",
+        "operationId": "demoNotifyMe",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotifyMeCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
           },
           "400": {
             "description": "Bad Request",
@@ -926,6 +981,21 @@
         },
         "description": "A notification as exposed to clients."
       },
+      "NotifyMeCommand": {
+        "required": ["title", "body"],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Headline of the notification."
+          },
+          "body": {
+            "type": "string",
+            "description": "Explanatory text."
+          }
+        },
+        "description": "Sends the caller a notification.\r\n\r\nExists so the realtime path is demonstrable and testable end to end: it\r\npublishes a notification request exactly as any real feature would, and\r\neverything after that — persistence, the realtime push, the badge and the\r\ntoast — happens without this module knowing any of it exists."
+      },
       "PagedResultOfUserProfileDto": {
         "required": ["items", "page", "pageSize", "totalCount"],
         "type": "object",
@@ -1178,6 +1248,9 @@
   "tags": [
     {
       "name": "Audit"
+    },
+    {
+      "name": "Realtime"
     },
     {
       "name": "Demo"

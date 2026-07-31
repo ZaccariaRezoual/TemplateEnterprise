@@ -30,6 +30,21 @@ export const demoApi = {
    * @returns The echo response.
    * @throws {import("@enterprise/shared").ValidationError} When the text is rejected.
    */
+  /**
+   * Asks the API to notify the caller.
+   *
+   * The response says nothing about delivery: the notification travels the
+   * event bus, gets persisted and is pushed over the realtime channel, all
+   * after this call returns.
+   *
+   * @param title Headline of the notification.
+   * @param body Explanatory text.
+   * @throws {import("@enterprise/shared").ApplicationError} On any API failure.
+   */
+  async notifyMe(title: string, body: string): Promise<void> {
+    await request(() => api.POST("/api/demo/notify-me", { body: { title, body } }));
+  },
+
   echo(text: string): Promise<IEchoResponse> {
     return request(() => api.POST("/api/demo/echo", { body: { text } }));
   },

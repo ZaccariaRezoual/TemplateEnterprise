@@ -18,12 +18,34 @@
 import { ArrowPathIcon } from "@heroicons/vue/24/outline";
 import { Badge, Button, Card } from "@enterprise/ui";
 import { formatDate } from "@enterprise/shared";
+import { useSessionStore } from "@enterprise/module-auth";
+import { ref } from "vue";
 import EchoForm from "@/features/demo/components/EchoForm.vue";
+import { demoApi } from "@/features/demo/api/demo.api";
 import { usePing } from "@/features/demo/composables/useDemo";
 import { useDemoPreferencesStore } from "@/features/demo/stores/demoPreferences.store";
 
 const ping = usePing();
 const preferences = useDemoPreferencesStore();
+const session = useSessionStore();
+
+const isNotifying = ref(false);
+
+/**
+ * Asks the API to notify the caller.
+ *
+ * Nothing here touches SignalR: the notification travels the event bus, gets
+ * persisted, and comes back over the live connection to update the bell and
+ * raise a toast — all handled by the modules that own those concerns.
+ */
+async function notifyMe(): Promise<void> {
+  isNotifying.value = true;
+  try {
+    await demoApi.notifyMe("Realtime works", "This arrived over the live connection.");
+  } finally {
+    isNotifying.value = false;
+  }
+}
 </script>
 
 <template>
@@ -80,6 +102,17 @@ const preferences = useDemoPreferencesStore();
       heading-level="h2"
     >
       <EchoForm />
+    </Card>
+
+    <Card
+      v-if="session.isAuthenticated"
+      title="Realtime"
+      description="The API publishes a notification on the event bus; it comes back over the live connection and updates the bell without a refresh."
+      heading-level="h2"
+    >
+      <Button :disabled="isNotifying" data-testid="notify-me" @click="notifyMe">
+        {{ isNotifying ? "Sending…" : "Notify me" }}
+      </Button>
     </Card>
 
     <Card title="Client state (Pinia)" heading-level="h2">

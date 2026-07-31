@@ -13,6 +13,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@enterprise/module-realtime": "workspace:*",
     "@enterprise/sdk": "workspace:*",
     "@enterprise/shared": "workspace:*",
     "@enterprise/ui": "workspace:*"

@@ -67,7 +67,19 @@ public static class ApiServiceCollectionExtensions
             // Partitioned per client IP: one abusive client cannot exhaust the
             // budget of everyone behind the same instance.
             limiter.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
-                RateLimitPartition.GetFixedWindowLimiter(
+            {
+                // Realtime connections are exempt. A SignalR client issues a
+                // negotiate plus a request per reconnect attempt, and with
+                // long-polling one per poll — counting those against the API
+                // budget means a flaky network locks the user out of the
+                // application itself. SignalR enforces its own connection
+                // limits.
+                if (context.Request.Path.StartsWithSegments("/hubs"))
+                {
+                    return RateLimitPartition.GetNoLimiter("hubs");
+                }
+
+                return RateLimitPartition.GetFixedWindowLimiter(
                     context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
                     _ => new FixedWindowRateLimiterOptions
                     {
@@ -75,8 +87,8 @@ public static class ApiServiceCollectionExtensions
                         Window = TimeSpan.FromSeconds(options.WindowSeconds),
                         QueueLimit = 0,
                     }
-                )
-            );
+                );
+            });
         });
     }
 
