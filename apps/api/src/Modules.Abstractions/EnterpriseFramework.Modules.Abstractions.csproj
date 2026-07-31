@@ -8,7 +8,12 @@
     <RootNamespace>EnterpriseFramework.Modules.Abstractions</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Application\EnterpriseFramework.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <!-- Needed for IServiceCollection/IConfiguration/IEndpointRouteBuilder in the contract. -->
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <!-- Shared persistence helpers modules apply in OnModelCreating. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
   </ItemGroup>
 </Project>

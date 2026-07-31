@@ -5,6 +5,28 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/features": {
+      "get": {
+        "tags": ["Features"],
+        "summary": "Returns every feature flag evaluated for the caller.",
+        "operationId": "featuresGetAll",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/audit": {
       "get": {
         "tags": ["Audit"],
@@ -1246,6 +1268,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Features"
+    },
     {
       "name": "Audit"
     },

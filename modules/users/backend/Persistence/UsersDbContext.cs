@@ -1,3 +1,5 @@
+using EnterpriseFramework.Application.Abstractions;
+using EnterpriseFramework.Modules.Abstractions.Persistence;
 using EnterpriseFramework.Modules.Users.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,12 +13,22 @@ public sealed class UsersDbContext : DbContext
     /// <summary>PostgreSQL schema holding every table of this module.</summary>
     public const string Schema = "users";
 
+    private readonly ITenantContext _tenantContext;
+
     /// <summary>
     /// Initializes the context with the options configured by the module.
     /// </summary>
     /// <param name="options">EF Core options (provider, connection string).</param>
-    public UsersDbContext(DbContextOptions<UsersDbContext> options)
-        : base(options) { }
+    /// <param name="tenantContext">
+    /// Tenant of the current request, used by the global query filter. Held
+    /// as a field so EF re-evaluates it per query instead of baking one
+    /// tenant into the model at startup.
+    /// </param>
+    public UsersDbContext(DbContextOptions<UsersDbContext> options, ITenantContext tenantContext)
+        : base(options)
+    {
+        _tenantContext = tenantContext;
+    }
 
     /// <summary>Account projections maintained from Auth events.</summary>
     public DbSet<UserProfile> Profiles => Set<UserProfile>();
@@ -42,5 +54,10 @@ public sealed class UsersDbContext : DbContext
             profile.Property(p => p.JobTitle).HasMaxLength(200);
             profile.Ignore(p => p.DomainEvents);
         });
+
+        // The module's entire opt-in to multi-tenancy. Inert when tenancy is
+        // disabled; otherwise every query here is tenant-scoped, with no
+        // `Where` clause for anyone to forget.
+        modelBuilder.ApplyTenantFilters(_tenantContext);
     }
 }

@@ -18,6 +18,7 @@ import { createApp, watch } from "vue";
 import App from "@/app/App.vue";
 import { createQueryClient } from "@/app/providers/queryClient";
 import { api, setAuthTokenProvider, setUnauthorizedHandler } from "@/core/api/apiClient";
+import { installFeatureFlags, useFeatureFlagsStore } from "@/core/features/featureFlags";
 import { logger } from "@/core/logger/logger";
 import { createAppRouter } from "@/router";
 import "@/assets/styles/main.css";
@@ -45,6 +46,11 @@ app.use(VueQueryPlugin, { queryClient: createQueryClient() });
 // Stores the composition root itself observes (safe after Pinia is installed).
 const session = useSessionStore();
 const notifications = useNotificationsStore();
+
+// Feature flags are core, not a module: anything may read them, and they are
+// fetched before sign-in because a flag may govern the sign-in screen itself.
+installFeatureFlags(app);
+void useFeatureFlagsStore().load();
 
 // Modules (after Pinia: their stores activate at install time).
 // Order matters: Auth installs the authentication guard, Authorization the
