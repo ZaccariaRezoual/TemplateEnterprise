@@ -1,0 +1,14 @@
+<!--
+  Overrides for test projects only: tests do not require XML documentation
+  (CS1591) and use the xunit Given_When_Then naming convention (CA1707).
+  GenerateDocumentationFile stays true because the IDE0005 analyzer requires it.
+  All other quality settings are inherited from the repo root.
+-->
+<Project>
+  <Import
+    Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..'))" />
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CS1591;CA1707</NoWarn>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+</Project>

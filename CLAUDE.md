@@ -138,7 +138,7 @@ Il design system è l'unico punto di personalizzazione visiva: un nuovo progetto
 
 ## Comandi (man mano che il repo cresce)
 
-Dalla root: `pnpm install` e `dotnet build` devono sempre funzionare. `docker compose -f docker/docker-compose.yml up` avvia le dipendenze locali (PostgreSQL, Redis, Seq). Se aggiungi script (`scripts/generate-sdk`, `scripts/create-project`, ecc.), documentali qui.
+Dalla root: `pnpm install` e `dotnet build` devono sempre funzionare. `docker compose -f docker/docker-compose.yml up` avvia le dipendenze locali (PostgreSQL, Redis, Seq — Seq UI su http://localhost:5341). `dotnet run --project apps/api/src/Api` avvia l'API su http://localhost:5080 (health: `/health/ready`, OpenAPI: `/openapi/v1.json`). `dotnet test` esegue i test backend. Se aggiungi script (`scripts/generate-sdk`, `scripts/create-project`, ecc.), documentali qui.
 
 ## Cosa NON fare
 
