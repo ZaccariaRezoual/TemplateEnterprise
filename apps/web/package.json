@@ -14,6 +14,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@enterprise/module-auth": "workspace:*",
     "@enterprise/sdk": "workspace:*",
     "@enterprise/shared": "workspace:*",
     "@enterprise/types": "workspace:*",

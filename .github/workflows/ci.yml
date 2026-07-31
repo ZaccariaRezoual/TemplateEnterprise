@@ -136,6 +136,9 @@ jobs:
         run: pnpm --filter @enterprise/web exec playwright install chromium --with-deps
 
       - name: Start API
+        env:
+          # Development supplies the local-only JWT signing key and CORS origins.
+          ASPNETCORE_ENVIRONMENT: Development
         run: |
           dotnet run --project apps/api/src/Api --configuration Release \
             --no-launch-profile --urls http://localhost:5080 &

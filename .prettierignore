@@ -1,4 +1,7 @@
 pnpm-lock.yaml
+# Generated from OpenAPI: formatting is owned by the generator, so the CI
+# drift check compares byte-identical output.
+packages/sdk/src/generated/
 node_modules/
 dist/
 coverage/

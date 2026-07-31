@@ -8,6 +8,8 @@
       Include="..\..\src\Application\EnterpriseFramework.Application.csproj" />
     <ProjectReference
       Include="..\..\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\auth\backend\EnterpriseFramework.Modules.Auth.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />

@@ -36,7 +36,9 @@ public sealed class DemoModule : IModule
     /// <inheritdoc />
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/demo").WithTags("Demo");
+        // Explicit opt-out from the host's authenticated-only fallback policy:
+        // the demo endpoints are a public reference surface.
+        var group = endpoints.MapGroup("/api/demo").WithTags("Demo").AllowAnonymous();
 
         // TypedResults (not Results) is required: it carries the response type
         // into the OpenAPI document, which is what makes the generated SDK

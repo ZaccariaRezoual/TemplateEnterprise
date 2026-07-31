@@ -1,29 +1,72 @@
 import { createApiClient, type ApiClient } from "@enterprise/sdk";
+import {
+  executeSdkCall,
+  UnauthorizedError,
+  type ApplicationError,
+  type SdkResult,
+} from "@enterprise/shared";
 import { env } from "@/core/config/env";
-import type { ApplicationError } from "@/core/errors/applicationError";
-import { mapResponseToApplicationError, mapTransportFailure } from "@/core/http/errorMapper";
 import { logger } from "@/core/logger/logger";
 
 /**
- * The application's single API transport.
+ * The application's single API transport and its integration seams.
  *
  * Responsibilities:
- * - Configures the generated SDK with the base URL and timeout from the
- *   validated environment.
- * - Attaches the correlation id to every request, so one user action can be
- *   traced from the browser console to the server logs (Seq) with one value.
+ * - Configures the generated SDK from the validated environment.
+ * - Attaches the correlation id and, when a provider is registered, the
+ *   Bearer token to every request.
+ * - Recovers expired sessions: on 401 it asks the registered handler to
+ *   refresh, then retries the call exactly once.
  *
- * Fase 4 adds the auth token and refresh handling here — one place, applied to
- * every call in the application by construction.
+ * The seams (`setAuthTokenProvider`, `setUnauthorizedHandler`) exist so the
+ * AUTH MODULE can plug in without core depending on it: with the module
+ * absent, no provider is registered and every call is anonymous. Modules plug
+ * into core; core never imports a module.
  */
 const client: ApiClient = createApiClient({
   baseUrl: env.VITE_API_BASE_URL,
   headers: { Accept: "application/json" },
 });
 
+/** Returns the current access token, or undefined when signed out. */
+type AuthTokenProvider = () => string | undefined;
+
+/** Tries to recover the session; returns true when the call may be retried. */
+type UnauthorizedHandler = () => Promise<boolean>;
+
+let authTokenProvider: AuthTokenProvider | undefined;
+let unauthorizedHandler: UnauthorizedHandler | undefined;
+
+/**
+ * Registers the access-token source (called by the auth module at bootstrap).
+ *
+ * @param provider Returns the in-memory access token, if any.
+ */
+export function setAuthTokenProvider(provider: AuthTokenProvider): void {
+  authTokenProvider = provider;
+}
+
+/**
+ * Registers the session-recovery handler (called by the auth module at
+ * bootstrap). The handler typically exchanges the refresh cookie for a new
+ * access token.
+ *
+ * @param handler Resolves true when the session was recovered.
+ */
+export function setUnauthorizedHandler(handler: UnauthorizedHandler): void {
+  unauthorizedHandler = handler;
+}
+
 client.use({
   onRequest({ request }) {
+    // Correlation id first: a user action is traceable from the browser to
+    // the server logs (Seq) with one value.
     request.headers.set("X-Correlation-ID", crypto.randomUUID());
+
+    const token = authTokenProvider?.();
+    if (token !== undefined) {
+      request.headers.set("Authorization", `Bearer ${token}`);
+    }
     return request;
   },
 });
@@ -34,44 +77,33 @@ client.use({
  */
 export const api = client;
 
-/** Shape returned by every openapi-fetch call. */
-interface SdkResult<TData> {
-  data?: TData;
-  error?: unknown;
-  response: Response;
-}
-
 /**
- * Converts an SDK result into a value or a typed error.
- *
- * The SDK reports failures as a value (`{ error }`) rather than by throwing.
- * TanStack Query — and idiomatic `try`/`catch` — expect a rejection, so this
- * is the one place that bridges the two conventions, and the only place that
- * classifies API failures.
+ * Executes an SDK call, mapping failures to the shared error hierarchy and
+ * transparently retrying ONCE after a successful session refresh.
  *
  * @typeParam TData Expected payload.
- * @param call The pending SDK call.
+ * @param execute Factory performing the SDK call. A factory — not a promise —
+ * because a consumed request cannot be re-sent on retry.
  * @returns The response payload.
- * @throws {ApplicationError} A typed error: {@link ValidationError},
- * {@link UnauthorizedError}, {@link NetworkError} and friends.
+ * @throws {ApplicationError} A typed error when the call (and any retry) fails.
  */
-export async function request<TData>(call: Promise<SdkResult<TData>>): Promise<TData> {
-  let result: SdkResult<TData>;
-
+export async function request<TData>(execute: () => Promise<SdkResult<TData>>): Promise<TData> {
   try {
-    result = await call;
-  } catch (cause) {
-    // No response at all: offline, DNS, CORS or an aborted request.
-    throw logAndReturn(mapTransportFailure(cause));
-  }
+    return await executeSdkCall(execute);
+  } catch (error) {
+    // Local capture: the module-level variable is mutable, so TypeScript
+    // cannot keep it narrowed across the await below.
+    const handler = unauthorizedHandler;
 
-  if (result.error !== undefined || !result.response.ok) {
-    throw logAndReturn(
-      mapResponseToApplicationError(result.response.status, result.error, result.error),
-    );
-  }
+    if (error instanceof UnauthorizedError && handler !== undefined && (await handler())) {
+      // Session refreshed: the retried call carries the new token.
+      return await executeSdkCall(execute).catch((retryError: unknown) => {
+        throw logAndReturn(retryError as ApplicationError);
+      });
+    }
 
-  return result.data as TData;
+    throw logAndReturn(error as ApplicationError);
+  }
 }
 
 function logAndReturn(error: ApplicationError): ApplicationError {

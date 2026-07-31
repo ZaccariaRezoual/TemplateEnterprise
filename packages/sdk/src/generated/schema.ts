@@ -4,146 +4,406 @@
  */
 
 export interface paths {
-  "/api/demo/ping": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/demo/ping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns a static pong payload with the server UTC time. */
+        get: operations["demoPing"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Returns a static pong payload with the server UTC time. */
-    get: operations["demoPing"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/demo/echo": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/demo/echo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Echoes the given text and publishes a domain event. */
+        post: operations["demoEcho"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Echoes the given text and publishes a domain event. */
-    post: operations["demoEcho"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/api/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Creates an account and signs it in. */
+        post: operations["authRegister"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Authenticates with email and password. */
+        post: operations["authLogin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rotates the refresh token and returns a new access token. */
+        post: operations["authRefresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revokes the current session's refresh token. */
+        post: operations["authLogout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the authenticated caller's profile. */
+        get: operations["authMe"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /**
-     * @description Sample command proving validation and event publishing end-to-end.
-     *     Echoes the given text back and publishes DemoEchoedEvent.
-     */
-    EchoCommand: {
-      /** @description Text to echo. Required, max 500 characters (see validator). */
-      text: string;
+    schemas: {
+        /**
+         * @description Body returned by register, login and refresh.
+         *
+         *     Deliberately does NOT contain the refresh token: that travels only in an
+         *     httpOnly cookie, out of reach of any script (XSS containment). The access
+         *     token is meant to be held in memory by the client, never persisted.
+         */
+        AuthResponse: {
+            /** @description Signed JWT to send as a Bearer header. */
+            accessToken: string;
+            /**
+             * Format: date-time
+             * @description Expiry of the access token.
+             */
+            accessTokenExpiresAtUtc: string;
+            /** @description The authenticated account. */
+            user: components["schemas"]["UserDto"];
+        };
+        /**
+         * @description Sample command proving validation and event publishing end-to-end.
+         *     Echoes the given text back and publishes DemoEchoedEvent.
+         */
+        EchoCommand: {
+            /** @description Text to echo. Required, max 500 characters (see validator). */
+            text: string;
+        };
+        /** @description Response contract of EchoCommand. */
+        EchoResponse: {
+            /** @description The echoed text. */
+            text: string;
+            /**
+             * Format: int32
+             * @description Length of the echoed text, in characters.
+             */
+            length: number | string;
+        };
+        HttpValidationProblemDetails: {
+            type?: null | string;
+            title?: null | string;
+            /** Format: int32 */
+            status?: null | number | string;
+            detail?: null | string;
+            instance?: null | string;
+            errors?: {
+                [key: string]: string[];
+            };
+        };
+        /** @description Authenticates an account with email and password. */
+        LoginCommand: {
+            /** @description Email address of the account. */
+            email: string;
+            /** @description Raw password to verify. */
+            password: string;
+        };
+        /**
+         * @description Response contract of PingQuery (exposed by the API and,
+         *     through OpenAPI, by the generated SDK).
+         */
+        PingResponse: {
+            /** @description Static confirmation message. */
+            message: string;
+            /**
+             * Format: date-time
+             * @description Server UTC time at which the query was handled.
+             */
+            timestampUtc: string;
+        };
+        /** @description Creates a new account and signs it in. */
+        RegisterCommand: {
+            /** @description Email address; must be unique. */
+            email: string;
+            /** @description Name shown in the UI. */
+            displayName: string;
+            /** @description Raw password; hashed before persistence, never stored. */
+            password: string;
+        };
+        /**
+         * @description Account information exposed to clients. Entities never cross the API
+         *     boundary; this DTO is what OpenAPI (and therefore the SDK) sees.
+         */
+        UserDto: {
+            /**
+             * Format: uuid
+             * @description Account identifier.
+             */
+            id: string;
+            /** @description Email address. */
+            email: string;
+            /** @description Name shown in the UI. */
+            displayName: string;
+            /** @description Role names granted to the account. */
+            roles: string[];
+        };
     };
-    /** @description Response contract of EchoCommand. */
-    EchoResponse: {
-      /** @description The echoed text. */
-      text: string;
-      /**
-       * Format: int32
-       * @description Length of the echoed text, in characters.
-       */
-      length: number | string;
-    };
-    HttpValidationProblemDetails: {
-      type?: null | string;
-      title?: null | string;
-      /** Format: int32 */
-      status?: null | number | string;
-      detail?: null | string;
-      instance?: null | string;
-      errors?: {
-        [key: string]: string[];
-      };
-    };
-    /**
-     * @description Response contract of PingQuery (exposed by the API and,
-     *     through OpenAPI, by the generated SDK).
-     */
-    PingResponse: {
-      /** @description Static confirmation message. */
-      message: string;
-      /**
-       * Format: date-time
-       * @description Server UTC time at which the query was handled.
-       */
-      timestampUtc: string;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  demoPing: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    demoPing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PingResponse"];
+                };
+            };
+        };
     };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    demoEcho: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "application/json": components["schemas"]["PingResponse"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EchoCommand"];
+            };
         };
-      };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EchoResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
     };
-  };
-  demoEcho: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    authRegister: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterCommand"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
     };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["EchoCommand"];
-      };
+    authLogin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginCommand"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
     };
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    authRefresh: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "application/json": components["schemas"]["EchoResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthResponse"];
+                };
+            };
         };
-      };
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
-        };
-      };
     };
-  };
+    authLogout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    authMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
+            };
+        };
+    };
 }

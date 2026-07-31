@@ -1,3 +1,4 @@
+import { authRoutes } from "@enterprise/module-auth";
 import { createRouter, createWebHistory, type Router, type RouteRecordRaw } from "vue-router";
 import { logger } from "@/core/logger/logger";
 import { demoRoutes } from "@/features/demo/routes";
@@ -6,12 +7,13 @@ import { demoRoutes } from "@/features/demo/routes";
  * Route registry.
  *
  * Features own their routes and export them from `features/<name>/routes.ts`;
- * this file only composes them. Adding a feature therefore means adding one
- * import here, never editing a central route table.
+ * module frontends export theirs from their package. This file only composes
+ * them: adding a feature or module means adding one import here.
  */
 const routes: RouteRecordRaw[] = [
   { path: "/", redirect: "/demo" },
   ...demoRoutes,
+  ...authRoutes,
   {
     path: "/:pathMatch(.*)*",
     name: "not-found",

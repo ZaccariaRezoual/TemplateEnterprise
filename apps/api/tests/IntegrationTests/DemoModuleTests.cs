@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Shouldly;
 using Xunit;
 
@@ -12,11 +11,11 @@ namespace EnterpriseFramework.IntegrationTests;
 /// the MediatR pipeline, validation → ProblemDetails mapping and the
 /// correlation id middleware, without external dependencies.
 /// </summary>
-public sealed class DemoModuleTests : IClassFixture<WebApplicationFactory<Program>>
+public sealed class DemoModuleTests : IClassFixture<Fixtures.LightweightApiFactory>
 {
     private readonly HttpClient _client;
 
-    public DemoModuleTests(WebApplicationFactory<Program> factory)
+    public DemoModuleTests(Fixtures.LightweightApiFactory factory)
     {
         _client = factory.CreateClient();
     }

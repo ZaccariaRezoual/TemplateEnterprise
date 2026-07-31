@@ -1,0 +1,33 @@
+<!--
+  Auth module backend: registration, login, JWT issuance and refresh-token
+  rotation. The CANONICAL module template — copy this project's structure when
+  creating a new module.
+
+  The module OWNS its persistence (AuthDbContext, PostgreSQL schema "auth",
+  its own migrations): uninstalling the module removes its schema with it.
+  It references Application and Modules.Abstractions — never Infrastructure,
+  never another module.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Modules.Auth</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Application\EnterpriseFramework.Application.csproj" />
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <!-- PasswordHasher and JsonWebTokens ship inside the AspNetCore.App framework. -->
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\module.json" LogicalName="module.json" />
+  </ItemGroup>
+</Project>

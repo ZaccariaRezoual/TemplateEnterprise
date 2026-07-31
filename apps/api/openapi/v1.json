@@ -62,10 +62,158 @@
           }
         }
       }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Creates an account and signs it in.",
+        "operationId": "authRegister",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Authenticates with email and password.",
+        "operationId": "authLogin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Rotates the refresh token and returns a new access token.",
+        "operationId": "authRefresh",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Revokes the current session's refresh token.",
+        "operationId": "authLogout",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Returns the authenticated caller's profile.",
+        "operationId": "authMe",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AuthResponse": {
+        "required": ["accessToken", "accessTokenExpiresAtUtc", "user"],
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Signed JWT to send as a Bearer header."
+          },
+          "accessTokenExpiresAtUtc": {
+            "type": "string",
+            "description": "Expiry of the access token.",
+            "format": "date-time"
+          },
+          "user": {
+            "description": "The authenticated account.",
+            "$ref": "#/components/schemas/UserDto"
+          }
+        },
+        "description": "Body returned by register, login and refresh.\r\n\r\nDeliberately does NOT contain the refresh token: that travels only in an\r\nhttpOnly cookie, out of reach of any script (XSS containment). The access\r\ntoken is meant to be held in memory by the client, never persisted."
+      },
       "EchoCommand": {
         "required": ["text"],
         "type": "object",
@@ -125,6 +273,21 @@
           }
         }
       },
+      "LoginCommand": {
+        "required": ["email", "password"],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email address of the account."
+          },
+          "password": {
+            "type": "string",
+            "description": "Raw password to verify."
+          }
+        },
+        "description": "Authenticates an account with email and password."
+      },
       "PingResponse": {
         "required": ["message", "timestampUtc"],
         "type": "object",
@@ -140,12 +303,61 @@
           }
         },
         "description": "Response contract of PingQuery (exposed by the API and,\r\nthrough OpenAPI, by the generated SDK)."
+      },
+      "RegisterCommand": {
+        "required": ["email", "displayName", "password"],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email address; must be unique."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Name shown in the UI."
+          },
+          "password": {
+            "type": "string",
+            "description": "Raw password; hashed before persistence, never stored."
+          }
+        },
+        "description": "Creates a new account and signs it in."
+      },
+      "UserDto": {
+        "required": ["id", "email", "displayName", "roles"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Account identifier.",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Name shown in the UI."
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Role names granted to the account."
+          }
+        },
+        "description": "Account information exposed to clients. Entities never cross the API\r\nboundary; this DTO is what OpenAPI (and therefore the SDK) sees."
       }
     }
   },
   "tags": [
     {
       "name": "Demo"
+    },
+    {
+      "name": "Auth"
     }
   ]
 }

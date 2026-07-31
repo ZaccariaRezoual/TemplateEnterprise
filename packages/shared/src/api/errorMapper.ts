@@ -1,4 +1,4 @@
-import {
+﻿import {
   ApplicationError,
   BusinessError,
   ForbiddenError,
@@ -7,8 +7,8 @@ import {
   ServerError,
   UnauthorizedError,
   ValidationError,
-} from "@/core/errors/applicationError";
-import { parseProblemDetails } from "@/core/http/problemDetails";
+} from "../errors/applicationError";
+import { parseProblemDetails } from "./problemDetails";
 
 /**
  * Single translation point from transport failures to the application error
