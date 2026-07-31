@@ -135,7 +135,9 @@ public sealed class AuthFlowTests : IClassFixture<PostgresApiFactory>
         me.StatusCode.ShouldBe(HttpStatusCode.OK);
         using var profile = await ReadJson(me);
         profile.RootElement.GetProperty("email").GetString().ShouldBe(email);
-        profile.RootElement.GetProperty("roles")[0].GetString().ShouldBe("User");
+        // Roles are NOT part of the auth profile: they belong to the
+        // Authorization module and are served by its own endpoint.
+        profile.RootElement.TryGetProperty("roles", out _).ShouldBeFalse();
     }
 
     [Fact]

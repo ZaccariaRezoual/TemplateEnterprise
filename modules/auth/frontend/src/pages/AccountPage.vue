@@ -11,7 +11,7 @@
  * of only trusting the session store, proving the token-attach flow
  * end-to-end on every visit.
  */
-import { Avatar, Badge, Button, Card } from "@enterprise/ui";
+import { Avatar, Button, Card } from "@enterprise/ui";
 import { ApplicationError } from "@enterprise/shared";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -51,6 +51,9 @@ async function signOut(): Promise<void> {
 
       <p v-if="error" role="alert" class="text-sm text-danger">{{ error }}</p>
 
+      <!-- Roles are intentionally absent: they belong to the Authorization
+           module, and mirroring them here would create a second copy that
+           silently goes stale. -->
       <div v-else-if="profile" class="flex items-center gap-4">
         <Avatar :name="profile.displayName" size="lg" decorative />
         <div class="min-w-0">
@@ -58,9 +61,6 @@ async function signOut(): Promise<void> {
           <p class="truncate text-sm text-text-muted" data-testid="account-email">
             {{ profile.email }}
           </p>
-          <div class="mt-1.5 flex gap-1.5">
-            <Badge v-for="role in profile.roles" :key="role" variant="info">{{ role }}</Badge>
-          </div>
         </div>
       </div>
     </Card>

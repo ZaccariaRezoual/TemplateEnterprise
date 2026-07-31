@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   Auth module backend: registration, login, JWT issuance and refresh-token
   rotation. The CANONICAL module template — copy this project's structure when
   creating a new module.
@@ -17,6 +17,7 @@
       Include="..\..\..\apps\api\src\Application\EnterpriseFramework.Application.csproj" />
     <ProjectReference
       Include="..\..\..\apps\api\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\shared\EnterpriseFramework.Modules.Auth.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" />

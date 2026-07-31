@@ -1,4 +1,4 @@
-using EnterpriseFramework.Application.Exceptions;
+﻿using EnterpriseFramework.Application.Exceptions;
 using EnterpriseFramework.Modules.Auth.Contracts;
 using EnterpriseFramework.Modules.Auth.Persistence;
 using EnterpriseFramework.Modules.Auth.Services;
@@ -90,7 +90,7 @@ public sealed partial class RefreshCommandHandler : IRequestHandler<RefreshComma
             .Users.SingleAsync(u => u.Id == stored.UserId, cancellationToken)
             .ConfigureAwait(false);
 
-        var session = _sessionFactory.Create(user);
+        var session = await _sessionFactory.CreateAsync(user, cancellationToken).ConfigureAwait(false);
         stored.Revoke(TokenService.HashRefreshToken(session.RawRefreshToken));
         await _dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

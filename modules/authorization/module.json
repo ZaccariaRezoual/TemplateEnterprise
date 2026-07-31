@@ -1,0 +1,6 @@
+{
+  "name": "Authorization",
+  "version": "1.0.0",
+  "dependencies": ["Auth"],
+  "enabled": true
+}

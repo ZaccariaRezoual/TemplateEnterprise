@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reads the audit trail, newest first. */
+        get: operations["auditList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/demo/ping": {
         parameters: {
             query?: never;
@@ -123,10 +140,138 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/authorization/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the caller's effective roles and permissions. */
+        get: operations["authorizationMe"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/authorization/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists every role with its permissions. */
+        get: operations["authorizationListRoles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/authorization/users/{userId}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Replaces the roles assigned to an account. */
+        put: operations["authorizationSetUserRoles"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/authorization/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the permission catalogue known to the framework. */
+        get: operations["authorizationListPermissions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists user profiles, paged and searchable. */
+        get: operations["usersList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/users/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Updates a user profile. */
+        put: operations["usersUpdate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Audit entry as exposed to clients. */
+        AuditEntryDto: {
+            /**
+             * Format: uuid
+             * @description Entry identifier.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Account that acted, or null when anonymous.
+             */
+            userId: null | string;
+            /** @description Stable action name. */
+            action: string;
+            /** @description How the entry was produced. */
+            source: string;
+            /** @description Whether the operation succeeded. */
+            succeeded: boolean;
+            /** @description Correlation id, to join with the logs. */
+            correlationId: null | string;
+            /**
+             * Format: date-time
+             * @description When the action occurred.
+             */
+            occurredAtUtc: string;
+        };
         /**
          * @description Body returned by register, login and refresh.
          *
@@ -181,6 +326,26 @@ export interface components {
             /** @description Raw password to verify. */
             password: string;
         };
+        /** @description A page of results. */
+        PagedResultOfUserProfileDto: {
+            /** @description Items of the current page. */
+            items: components["schemas"]["UserProfileDto"][];
+            /**
+             * Format: int32
+             * @description 1-based page index.
+             */
+            page: number | string;
+            /**
+             * Format: int32
+             * @description Maximum items per page.
+             */
+            pageSize: number | string;
+            /**
+             * Format: int32
+             * @description Total items across all pages.
+             */
+            totalCount: number | string;
+        };
         /**
          * @description Response contract of PingQuery (exposed by the API and,
          *     through OpenAPI, by the generated SDK).
@@ -203,9 +368,55 @@ export interface components {
             /** @description Raw password; hashed before persistence, never stored. */
             password: string;
         };
+        /** @description Role as exposed to clients. */
+        RoleDto: {
+            /**
+             * Format: uuid
+             * @description Role identifier.
+             */
+            id: string;
+            /** @description Unique role name. */
+            name: string;
+            /** @description What the role is for. */
+            description: string;
+            /** @description Whether the framework owns the role (not deletable). */
+            isBuiltIn: boolean;
+            /** @description Permissions granted by the role. */
+            permissions: string[];
+        };
+        /** @description Body of the "set user roles" endpoint. */
+        SetUserRolesRequest: {
+            /** @description The complete new set of role names. */
+            roleNames: string[];
+        };
+        /** @description Body of the "update user" endpoint. */
+        UpdateUserRequest: {
+            /** @description New display name. */
+            displayName: string;
+            /** @description New job title, or null to clear it. */
+            jobTitle: null | string;
+            /** @description Whether the account is active. */
+            isActive: boolean;
+        };
         /**
-         * @description Account information exposed to clients. Entities never cross the API
+         * @description Effective authorization of an account: its roles and the union of their
+         *     permissions. Returned by the "my permissions" endpoint the frontend uses
+         *     to drive the UI.
+         */
+        UserAuthorizationDto: {
+            /** @description Role names granted to the account. */
+            roles: string[];
+            /** @description Every permission the account effectively holds. */
+            permissions: string[];
+        };
+        /**
+         * @description Account identity exposed to clients. Entities never cross the API
          *     boundary; this DTO is what OpenAPI (and therefore the SDK) sees.
+         *
+         *     It carries no roles or permissions on purpose: those belong to the
+         *     Authorization module and are served by `GET /api/authorization/me`.
+         *     Returning them here would create a second source of truth that silently
+         *     goes stale.
          */
         UserDto: {
             /**
@@ -217,8 +428,27 @@ export interface components {
             email: string;
             /** @description Name shown in the UI. */
             displayName: string;
-            /** @description Role names granted to the account. */
-            roles: string[];
+        };
+        /** @description User profile as exposed to clients. */
+        UserProfileDto: {
+            /**
+             * Format: uuid
+             * @description Account identifier.
+             */
+            id: string;
+            /** @description Email address. */
+            email: string;
+            /** @description Name shown in the UI. */
+            displayName: string;
+            /** @description Optional job title. */
+            jobTitle: null | string;
+            /** @description Whether the account is active. */
+            isActive: boolean;
+            /**
+             * Format: date-time
+             * @description When the account was created.
+             */
+            createdAtUtc: string;
         };
     };
     responses: never;
@@ -229,6 +459,28 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    auditList: {
+        parameters: {
+            query?: {
+                take?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEntryDto"][];
+                };
+            };
+        };
+    };
     demoPing: {
         parameters: {
             query?: never;
@@ -402,6 +654,167 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserDto"];
+                };
+            };
+        };
+    };
+    authorizationMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAuthorizationDto"];
+                };
+            };
+        };
+    };
+    authorizationListRoles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleDto"][];
+                };
+            };
+        };
+    };
+    authorizationSetUserRoles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetUserRolesRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    authorizationListPermissions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
+    };
+    usersList: {
+        parameters: {
+            query?: {
+                page?: number | string;
+                pageSize?: number | string;
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResultOfUserProfileDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    usersUpdate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUserRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
                 };
             };
         };

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using EnterpriseFramework.Application.Abstractions;
 using EnterpriseFramework.Modules.Auth.Domain;
 using EnterpriseFramework.Modules.Auth.Options;
 using Microsoft.Extensions.Options;
@@ -14,30 +15,38 @@ namespace EnterpriseFramework.Modules.Auth.Services;
 ///
 /// Responsibilities:
 /// - Signs short-lived JWT access tokens carrying identity claims
-///   (sub, email, name, roles) with the shared "Jwt" configuration, so the
-///   host's bearer validation always accepts them.
+///   (sub, email, name) with the shared "Jwt" configuration, so the host's
+///   bearer validation always accepts them.
+/// - Invokes every registered <see cref="IUserClaimsEnricher"/> so other
+///   modules can contribute claims (the Authorization module adds roles and
+///   permissions) without this module referencing them.
 /// - Generates cryptographically random refresh tokens and their SHA-256
 ///   hashes; only hashes are ever persisted.
-///
-/// Claims are prepared for Fase 5/7: roles are emitted per-role, and the
-/// tenant claim is added here once Multi-Tenant lands.
 /// </summary>
 public sealed class TokenService
 {
     private readonly JwtOptions _options;
     private readonly SigningCredentials _credentials;
+    private readonly IEnumerable<IUserClaimsEnricher> _claimsEnrichers;
 
     /// <summary>
     /// Initializes the service from the "Jwt" configuration.
     /// </summary>
     /// <param name="options">JWT options; the signing key must be configured.</param>
+    /// <param name="claimsEnrichers">
+    /// Claim contributors discovered via DI; empty when no module registers one.
+    /// </param>
     /// <exception cref="InvalidOperationException">
     /// Thrown at startup when the signing key is missing or shorter than 32
     /// bytes — an unsigned or weakly-signed token must never be issuable.
     /// </exception>
-    public TokenService(IOptions<JwtOptions> options)
+    public TokenService(
+        IOptions<JwtOptions> options,
+        IEnumerable<IUserClaimsEnricher> claimsEnrichers
+    )
     {
         _options = options.Value;
+        _claimsEnrichers = claimsEnrichers;
 
         if (Encoding.UTF8.GetByteCount(_options.SigningKey) < 32)
         {
@@ -60,11 +69,16 @@ public sealed class TokenService
     public TimeSpan RefreshTokenLifetime => TimeSpan.FromDays(_options.RefreshTokenDays);
 
     /// <summary>
-    /// Creates a signed access token for an account.
+    /// Creates a signed access token for an account, including any claims
+    /// contributed by other modules.
     /// </summary>
     /// <param name="user">The authenticated account.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
     /// <returns>The compact JWT and its expiry instant.</returns>
-    public (string Token, DateTime ExpiresAtUtc) CreateAccessToken(User user)
+    public async Task<(string Token, DateTime ExpiresAtUtc)> CreateAccessTokenAsync(
+        User user,
+        CancellationToken cancellationToken = default
+    )
     {
         var expires = DateTime.UtcNow.Add(AccessTokenLifetime);
         var claims = new List<Claim>
@@ -74,7 +88,13 @@ public sealed class TokenService
             new(JwtRegisteredClaimNames.Name, user.DisplayName),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
         };
-        claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+        foreach (var enricher in _claimsEnrichers)
+        {
+            claims.AddRange(
+                await enricher.GetClaimsAsync(user.Id, cancellationToken).ConfigureAwait(false)
+            );
+        }
 
         var descriptor = new SecurityTokenDescriptor
         {

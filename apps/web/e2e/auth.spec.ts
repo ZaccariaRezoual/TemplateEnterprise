@@ -8,7 +8,9 @@
  */
 test.describe("Auth module", () => {
   test("guards, registers, survives a reload and signs out", async ({ page }) => {
-    const email = `e2e-${Date.now()}@example.com`;
+    // Random, not just a timestamp: parallel workers can land on the same
+    // millisecond and collide on the unique email constraint.
+    const email = `e2e-${crypto.randomUUID()}@example.com`;
 
     // Anonymous visit to a protected route → guard redirects to login,
     // remembering the destination.

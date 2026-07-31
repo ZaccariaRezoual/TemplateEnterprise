@@ -18,6 +18,16 @@ dotnet_diagnostic.IDE0005.severity = warning
 csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_var_when_type_is_apparent = true:suggestion
 
+# EF Core migrations are GENERATED code: exempt from the repository's style
+# and analyzer rules (the tooling rewrites them, never a human). Declared here
+# so every module inherits it without remembering to opt out.
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none
+dotnet_diagnostic.IDE0005.severity = none
+dotnet_diagnostic.IDE0161.severity = none
+csharp_style_namespace_declarations = block_scoped:silent
+
 [*.md]
 trim_trailing_whitespace = false
 

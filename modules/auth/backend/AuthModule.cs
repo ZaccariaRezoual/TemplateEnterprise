@@ -35,8 +35,22 @@ public sealed class AuthModule : IModule
     /// <summary>Name of the refresh-token cookie.</summary>
     public const string RefreshCookieName = "ef_refresh";
 
-    /// <summary>Rate-limiting policy applied to credential endpoints.</summary>
-    public const string SensitiveRateLimitPolicy = "auth-sensitive";
+    /// <summary>
+    /// Rate-limiting policy for credential-guessing endpoints (login, register).
+    /// Deliberately tight: these are the brute-force surface.
+    /// </summary>
+    public const string CredentialsRateLimitPolicy = "auth-credentials";
+
+    /// <summary>
+    /// Rate-limiting policy for token refresh.
+    ///
+    /// Separate from credentials on purpose: refresh is a legitimate
+    /// high-frequency call (every page load, every open tab, every expiring
+    /// token). Sharing the credential budget would lock out a normal user
+    /// working with several tabs while doing nothing against an attacker,
+    /// who needs a valid refresh cookie to reach it at all.
+    /// </summary>
+    public const string RefreshRateLimitPolicy = "auth-refresh";
 
     private const string CookiePath = "/api/auth";
 
@@ -64,37 +78,34 @@ public sealed class AuthModule : IModule
         );
 
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
-        services.AddSingleton<TokenService>();
+        services.AddScoped<TokenService>();
         services.AddScoped<SessionFactory>();
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AuthModule).Assembly));
         services.AddValidatorsFromAssembly(typeof(AuthModule).Assembly);
 
-        // Brute-force containment: credential endpoints get a much smaller
-        // budget than the global limiter, still partitioned per client IP.
-        // Configurable under "Modules:Auth" (tests raise it; production tunes it).
-        var permitLimit = configuration.GetValue("Modules:Auth:SensitivePermitLimit", 10);
-        var windowSeconds = configuration.GetValue("Modules:Auth:SensitiveWindowSeconds", 60);
+        // Brute-force containment, partitioned per client IP and configurable
+        // under "Modules:Auth" (development loosens it; production tunes it).
+        var credentialsLimit = configuration.GetValue("Modules:Auth:CredentialsPermitLimit", 10);
+        var refreshLimit = configuration.GetValue("Modules:Auth:RefreshPermitLimit", 60);
+        var windowSeconds = configuration.GetValue("Modules:Auth:RateLimitWindowSeconds", 60);
+
         services.Configure<RateLimiterOptions>(options =>
+        {
             options.AddPolicy(
-                SensitiveRateLimitPolicy,
-                context =>
-                    RateLimitPartition.GetFixedWindowLimiter(
-                        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-                        _ => new FixedWindowRateLimiterOptions
-                        {
-                            PermitLimit = permitLimit,
-                            Window = TimeSpan.FromSeconds(windowSeconds),
-                            QueueLimit = 0,
-                        }
-                    )
-            )
-        );
+                CredentialsRateLimitPolicy,
+                context => PerClientIpWindow(context, credentialsLimit, windowSeconds)
+            );
+            options.AddPolicy(
+                RefreshRateLimitPolicy,
+                context => PerClientIpWindow(context, refreshLimit, windowSeconds)
+            );
+        });
 
         // Dev/test convenience: apply this module's migrations at startup.
         // Production deployments run migrations as an explicit release step
         // and set Modules:Auth:AutoMigrate to false.
-        if (configuration.GetValue("Modules:Auth:AutoMigrate", defaultValue: true))
+        if (configuration.ShouldAutoMigrate(Name))
         {
             services.AddHostedService<AuthDbMigrator>();
         }
@@ -121,7 +132,7 @@ public sealed class AuthModule : IModule
             .WithName("authRegister")
             .WithSummary("Creates an account and signs it in.")
             .AllowAnonymous()
-            .RequireRateLimiting(SensitiveRateLimitPolicy)
+            .RequireRateLimiting(CredentialsRateLimitPolicy)
             .ProducesValidationProblem();
 
         group
@@ -137,7 +148,7 @@ public sealed class AuthModule : IModule
             .WithName("authLogin")
             .WithSummary("Authenticates with email and password.")
             .AllowAnonymous()
-            .RequireRateLimiting(SensitiveRateLimitPolicy)
+            .RequireRateLimiting(CredentialsRateLimitPolicy)
             .ProducesValidationProblem();
 
         group
@@ -158,7 +169,7 @@ public sealed class AuthModule : IModule
             .WithName("authRefresh")
             .WithSummary("Rotates the refresh token and returns a new access token.")
             .AllowAnonymous()
-            .RequireRateLimiting(SensitiveRateLimitPolicy)
+            .RequireRateLimiting(RefreshRateLimitPolicy)
             .Produces<AuthResponse>();
 
         group
@@ -198,6 +209,25 @@ public sealed class AuthModule : IModule
         options.Expires = DateTimeOffset.UtcNow.Add(tokenService.RefreshTokenLifetime);
         http.Response.Cookies.Append(RefreshCookieName, session.RawRefreshToken, options);
     }
+
+    /// <summary>
+    /// Builds a fixed-window limiter partitioned by client IP, so one abusive
+    /// client cannot consume everyone else's budget.
+    /// </summary>
+    private static RateLimitPartition<string> PerClientIpWindow(
+        HttpContext context,
+        int permitLimit,
+        int windowSeconds
+    ) =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = permitLimit,
+                Window = TimeSpan.FromSeconds(windowSeconds),
+                QueueLimit = 0,
+            }
+        );
 
     private static CookieOptions BuildCookieOptions(HttpContext http) =>
         new()

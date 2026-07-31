@@ -30,15 +30,28 @@ modules/<name>/
    validates dependencies and initializes modules in topological order.
 5. Cross-module communication happens ONLY through domain events published on
    `IEventBus` — a module never calls another module's services directly.
+   Events crossing a boundary are **public contracts** and live in the
+   publisher's `shared/` project (e.g. `EnterpriseFramework.Modules.Auth.Contracts`),
+   so a subscriber references the event shapes, never the implementation.
+   Changing one is a breaking change: add fields, never remove or repurpose.
+   When a module needs behavior rather than notification, the HOST defines an
+   extension point in `Application/Abstractions` and both sides depend on that
+   (see `IUserClaimsEnricher`: Authorization contributes claims to the tokens
+   Auth issues, with neither module referencing the other).
 6. **Persistence is module-owned**: a module with entities defines its own
-   `DbContext` in its own PostgreSQL schema, with its own migration history
-   (`.editorconfig` in the Migrations folder marks them as generated code).
-   Installing/removing the module never touches other modules' data.
+   `DbContext` in its own PostgreSQL schema, with its own migration history.
+   Installing/removing the module never touches other modules' data. A module
+   needing another's data keeps a **projection** built from that module's
+   events (see `modules/users`), and references foreign entities by id — never
+   by a foreign key into another schema.
    Migrations: `dotnet ef migrations add <Name> --project modules/<name>/backend
---startup-project apps/api/src/Api`.
+--startup-project apps/api/src/Api`. Startup migration and seeding are gated
+   by `Modules:AutoMigrate` (on in development only); production runs them as
+   an explicit release step, so no instance boot mutates a live database.
 7. **Endpoints are authenticated by default**: the host's fallback policy
    requires a signed-in caller. Anonymous endpoints opt out explicitly with
-   `AllowAnonymous()` — and should say why in a comment.
+   `AllowAnonymous()` — and should say why in a comment. Endpoints needing
+   more than authentication declare `RequirePermission("resource.action")`.
 8. Module settings live under `Modules:<Name>:*` in configuration.
 
 ## Frontend rules
@@ -69,8 +82,15 @@ module depends on it, startup fails fast with a clear error.
 ## Reference implementations
 
 - [`modules/auth`](../modules/auth/README.md) — **the canonical template**:
-  module-owned persistence with migrations, typed options, domain events,
-  module-scoped rate limiting, frontend package with store/guard/pages, and
-  tests at every level.
+  module-owned persistence with migrations, typed options, public event
+  contracts, module-scoped rate limiting, frontend package with
+  store/guard/pages, and tests at every level.
+- [`modules/authorization`](../modules/authorization/README.md) — plugging
+  into a host extension point (`IUserClaimsEnricher`), permission-based
+  endpoint policies, a frontend directive and guard.
+- [`modules/users`](../modules/users/README.md) — an event-driven projection
+  of another module's data, and declared module dependencies.
+- [`modules/audit`](../modules/audit/README.md) — observing the whole system
+  from the outside, via a pipeline behavior and event subscribers.
 - [`modules/demo`](../modules/demo/README.md) — the minimal skeleton: query,
   validated command, event publish/subscribe.

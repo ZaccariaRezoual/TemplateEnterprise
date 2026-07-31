@@ -1,4 +1,6 @@
 import { authRoutes } from "@enterprise/module-auth";
+import { authorizationRoutes } from "@enterprise/module-authorization";
+import { usersRoutes } from "@enterprise/module-users";
 import { createRouter, createWebHistory, type Router, type RouteRecordRaw } from "vue-router";
 import { logger } from "@/core/logger/logger";
 import { demoRoutes } from "@/features/demo/routes";
@@ -14,6 +16,8 @@ const routes: RouteRecordRaw[] = [
   { path: "/", redirect: "/demo" },
   ...demoRoutes,
   ...authRoutes,
+  ...authorizationRoutes,
+  ...usersRoutes,
   {
     path: "/:pathMatch(.*)*",
     name: "not-found",

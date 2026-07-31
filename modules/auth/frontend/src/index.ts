@@ -1,3 +1,6 @@
+// Ships this module's RouteMeta augmentation (`requiresAuth`) to consumers.
+import "./types/router";
+
 /**
  * Public surface of `@enterprise/module-auth`.
  *

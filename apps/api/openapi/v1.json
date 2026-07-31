@@ -5,6 +5,40 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/audit": {
+      "get": {
+        "tags": ["Audit"],
+        "summary": "Reads the audit trail, newest first.",
+        "operationId": "auditList",
+        "parameters": [
+          {
+            "name": "take",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": ["integer", "string"],
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditEntryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/demo/ping": {
       "get": {
         "tags": ["Demo"],
@@ -190,10 +224,270 @@
           }
         }
       }
+    },
+    "/api/authorization/me": {
+      "get": {
+        "tags": ["Authorization"],
+        "summary": "Returns the caller's effective roles and permissions.",
+        "operationId": "authorizationMe",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAuthorizationDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/authorization/roles": {
+      "get": {
+        "tags": ["Authorization"],
+        "summary": "Lists every role with its permissions.",
+        "operationId": "authorizationListRoles",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/authorization/users/{userId}/roles": {
+      "put": {
+        "tags": ["Authorization"],
+        "summary": "Replaces the roles assigned to an account.",
+        "operationId": "authorizationSetUserRoles",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetUserRolesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/authorization/permissions": {
+      "get": {
+        "tags": ["Authorization"],
+        "summary": "Lists the permission catalogue known to the framework.",
+        "operationId": "authorizationListPermissions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Lists user profiles, paged and searchable.",
+        "operationId": "usersList",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": ["integer", "string"],
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": ["integer", "string"],
+              "format": "int32",
+              "default": 25
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfUserProfileDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{userId}": {
+      "put": {
+        "tags": ["Users"],
+        "summary": "Updates a user profile.",
+        "operationId": "usersUpdate",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AuditEntryDto": {
+        "required": [
+          "id",
+          "userId",
+          "action",
+          "source",
+          "succeeded",
+          "correlationId",
+          "occurredAtUtc"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Entry identifier.",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": ["null", "string"],
+            "description": "Account that acted, or null when anonymous.",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string",
+            "description": "Stable action name."
+          },
+          "source": {
+            "type": "string",
+            "description": "How the entry was produced."
+          },
+          "succeeded": {
+            "type": "boolean",
+            "description": "Whether the operation succeeded."
+          },
+          "correlationId": {
+            "type": ["null", "string"],
+            "description": "Correlation id, to join with the logs."
+          },
+          "occurredAtUtc": {
+            "type": "string",
+            "description": "When the action occurred.",
+            "format": "date-time"
+          }
+        },
+        "description": "Audit entry as exposed to clients."
+      },
       "AuthResponse": {
         "required": ["accessToken", "accessTokenExpiresAtUtc", "user"],
         "type": "object",
@@ -288,6 +582,38 @@
         },
         "description": "Authenticates an account with email and password."
       },
+      "PagedResultOfUserProfileDto": {
+        "required": ["items", "page", "pageSize", "totalCount"],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserProfileDto"
+            },
+            "description": "Items of the current page."
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "description": "1-based page index.",
+            "format": "int32"
+          },
+          "pageSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "description": "Maximum items per page.",
+            "format": "int32"
+          },
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "description": "Total items across all pages.",
+            "format": "int32"
+          }
+        },
+        "description": "A page of results."
+      },
       "PingResponse": {
         "required": ["message", "timestampUtc"],
         "type": "object",
@@ -323,8 +649,113 @@
         },
         "description": "Creates a new account and signs it in."
       },
+      "RoleDto": {
+        "required": ["id", "name", "description", "isBuiltIn", "permissions"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Role identifier.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Unique role name."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the role is for."
+          },
+          "isBuiltIn": {
+            "type": "boolean",
+            "description": "Whether the framework owns the role (not deletable)."
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Permissions granted by the role."
+          }
+        },
+        "description": "Role as exposed to clients."
+      },
+      "SetUserRolesRequest": {
+        "required": ["roleNames"],
+        "type": "object",
+        "properties": {
+          "roleNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The complete new set of role names."
+          }
+        },
+        "description": "Body of the \"set user roles\" endpoint."
+      },
+      "UpdateUserRequest": {
+        "required": ["displayName", "jobTitle", "isActive"],
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "description": "New display name."
+          },
+          "jobTitle": {
+            "type": ["null", "string"],
+            "description": "New job title, or null to clear it."
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the account is active."
+          }
+        },
+        "description": "Body of the \"update user\" endpoint."
+      },
+      "UserAuthorizationDto": {
+        "required": ["roles", "permissions"],
+        "type": "object",
+        "properties": {
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Role names granted to the account."
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Every permission the account effectively holds."
+          }
+        },
+        "description": "Effective authorization of an account: its roles and the union of their\r\npermissions. Returned by the \"my permissions\" endpoint the frontend uses\r\nto drive the UI."
+      },
       "UserDto": {
-        "required": ["id", "email", "displayName", "roles"],
+        "required": ["id", "email", "displayName"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Account identifier.",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Name shown in the UI."
+          }
+        },
+        "description": "Account identity exposed to clients. Entities never cross the API\r\nboundary; this DTO is what OpenAPI (and therefore the SDK) sees.\r\n\r\nIt carries no roles or permissions on purpose: those belong to the\r\nAuthorization module and are served by `GET /api/authorization/me`.\r\nReturning them here would create a second source of truth that silently\r\ngoes stale."
+      },
+      "UserProfileDto": {
+        "required": ["id", "email", "displayName", "jobTitle", "isActive", "createdAtUtc"],
         "type": "object",
         "properties": {
           "id": {
@@ -340,24 +771,39 @@
             "type": "string",
             "description": "Name shown in the UI."
           },
-          "roles": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Role names granted to the account."
+          "jobTitle": {
+            "type": ["null", "string"],
+            "description": "Optional job title."
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the account is active."
+          },
+          "createdAtUtc": {
+            "type": "string",
+            "description": "When the account was created.",
+            "format": "date-time"
           }
         },
-        "description": "Account information exposed to clients. Entities never cross the API\r\nboundary; this DTO is what OpenAPI (and therefore the SDK) sees."
+        "description": "User profile as exposed to clients."
       }
     }
   },
   "tags": [
     {
+      "name": "Audit"
+    },
+    {
       "name": "Demo"
     },
     {
       "name": "Auth"
+    },
+    {
+      "name": "Authorization"
+    },
+    {
+      "name": "Users"
     }
   ]
 }

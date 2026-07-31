@@ -20,6 +20,12 @@
       Include="..\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\..\modules\demo\backend\EnterpriseFramework.Modules.Demo.csproj" />
     <ProjectReference Include="..\..\..\..\modules\auth\backend\EnterpriseFramework.Modules.Auth.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\authorization\backend\EnterpriseFramework.Modules.Authorization.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\users\backend\EnterpriseFramework.Modules.Users.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\audit\backend\EnterpriseFramework.Modules.Audit.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
