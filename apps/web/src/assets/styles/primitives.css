@@ -1,0 +1,45 @@
+/**
+ * PRIMITIVE TOKENS — raw values, layer 1 of 3.
+ *
+ * Nothing outside this design-token layer may reference a primitive:
+ * components consume SEMANTIC tokens only (see semantic.css). Primitives exist
+ * so a rebrand changes the primitive → semantic mapping in one place.
+ *
+ * Moves to packages/ui in Fase 3; the contract stays identical.
+ */
+
+@theme {
+  /* Brand scale */
+  --color-brand-50: oklch(0.97 0.02 255);
+  --color-brand-100: oklch(0.93 0.04 255);
+  --color-brand-200: oklch(0.87 0.07 255);
+  --color-brand-300: oklch(0.78 0.11 255);
+  --color-brand-400: oklch(0.68 0.15 255);
+  --color-brand-500: oklch(0.6 0.18 255);
+  --color-brand-600: oklch(0.53 0.19 255);
+  --color-brand-700: oklch(0.45 0.17 255);
+  --color-brand-800: oklch(0.38 0.14 255);
+  --color-brand-900: oklch(0.31 0.1 255);
+
+  /* Neutral scale */
+  --color-neutral-0: oklch(1 0 0);
+  --color-neutral-50: oklch(0.98 0.002 255);
+  --color-neutral-100: oklch(0.96 0.003 255);
+  --color-neutral-200: oklch(0.92 0.004 255);
+  --color-neutral-300: oklch(0.86 0.005 255);
+  --color-neutral-400: oklch(0.71 0.006 255);
+  --color-neutral-500: oklch(0.58 0.007 255);
+  --color-neutral-600: oklch(0.47 0.007 255);
+  --color-neutral-700: oklch(0.38 0.006 255);
+  --color-neutral-800: oklch(0.26 0.005 255);
+  --color-neutral-900: oklch(0.19 0.004 255);
+  --color-neutral-950: oklch(0.14 0.004 255);
+
+  /* Status scales */
+  --color-success-500: oklch(0.65 0.16 150);
+  --color-success-600: oklch(0.56 0.15 150);
+  --color-warning-500: oklch(0.78 0.15 75);
+  --color-warning-600: oklch(0.68 0.15 75);
+  --color-danger-500: oklch(0.63 0.21 25);
+  --color-danger-600: oklch(0.55 0.21 25);
+}

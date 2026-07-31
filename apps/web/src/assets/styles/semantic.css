@@ -1,0 +1,70 @@
+/**
+ * SEMANTIC TOKENS — meaning, not value. Layer 2 of 3.
+ *
+ * This is the ONLY layer a theme redefines: `:root` holds the light theme,
+ * `[data-theme="dark"]` the dark one, and a project rebrands by shipping its
+ * own override file. Components never see a primitive or a literal value.
+ *
+ * `@theme inline` maps Tailwind utilities (bg-surface, text-danger, ...) onto
+ * these variables *by reference*, so a runtime theme switch repaints the whole
+ * UI without rebuilding or touching a single component.
+ */
+
+@theme inline {
+  --color-primary: var(--semantic-primary);
+  --color-primary-hover: var(--semantic-primary-hover);
+  --color-on-primary: var(--semantic-on-primary);
+
+  --color-background: var(--semantic-background);
+  --color-surface: var(--semantic-surface);
+  --color-surface-raised: var(--semantic-surface-raised);
+  --color-border: var(--semantic-border);
+
+  --color-text: var(--semantic-text);
+  --color-text-muted: var(--semantic-text-muted);
+
+  --color-success: var(--semantic-success);
+  --color-warning: var(--semantic-warning);
+  --color-danger: var(--semantic-danger);
+  --color-on-status: var(--semantic-on-status);
+}
+
+/* Light theme (default) */
+:root {
+  --semantic-primary: var(--color-brand-600);
+  --semantic-primary-hover: var(--color-brand-700);
+  --semantic-on-primary: var(--color-neutral-0);
+
+  --semantic-background: var(--color-neutral-50);
+  --semantic-surface: var(--color-neutral-0);
+  --semantic-surface-raised: var(--color-neutral-0);
+  --semantic-border: var(--color-neutral-200);
+
+  --semantic-text: var(--color-neutral-900);
+  --semantic-text-muted: var(--color-neutral-600);
+
+  --semantic-success: var(--color-success-600);
+  --semantic-warning: var(--color-warning-600);
+  --semantic-danger: var(--color-danger-600);
+  --semantic-on-status: var(--color-neutral-0);
+}
+
+/* Dark theme: applied by the theme engine via data-theme on <html>. */
+[data-theme="dark"] {
+  --semantic-primary: var(--color-brand-400);
+  --semantic-primary-hover: var(--color-brand-300);
+  --semantic-on-primary: var(--color-neutral-950);
+
+  --semantic-background: var(--color-neutral-950);
+  --semantic-surface: var(--color-neutral-900);
+  --semantic-surface-raised: var(--color-neutral-800);
+  --semantic-border: var(--color-neutral-800);
+
+  --semantic-text: var(--color-neutral-100);
+  --semantic-text-muted: var(--color-neutral-400);
+
+  --semantic-success: var(--color-success-500);
+  --semantic-warning: var(--color-warning-500);
+  --semantic-danger: var(--color-danger-500);
+  --semantic-on-status: var(--color-neutral-950);
+}

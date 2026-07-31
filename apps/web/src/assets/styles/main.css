@@ -1,0 +1,34 @@
+/**
+ * Application stylesheet entry point.
+ *
+ * Import order matters: Tailwind first, then the token layers
+ * (primitives → semantic), then global base styles.
+ */
+
+@import "tailwindcss";
+@import "./primitives.css";
+@import "./semantic.css";
+
+/* Global base: everything resolves through semantic tokens. */
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Visible focus for keyboard users on every interactive element. */
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}

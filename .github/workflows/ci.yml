@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: package.json # honors the engines range
           cache: pnpm
 
       - name: Install dependencies
@@ -63,3 +63,65 @@ jobs:
 
       - name: Test
         run: dotnet test --no-build --configuration Release
+
+  e2e:
+    name: End-to-end (Playwright)
+    runs-on: ubuntu-latest
+    # Exercises the real stack — browser through Vite to the API and its
+    # dependencies — so it runs against services, never mocks.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: dev_password
+          POSTGRES_DB: enterprise
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U app -d enterprise"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: pnpm
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm --filter @enterprise/web exec playwright install chromium --with-deps
+
+      - name: Start API
+        run: |
+          dotnet run --project apps/api/src/Api --configuration Release \
+            --no-launch-profile --urls http://localhost:5080 &
+          for i in {1..60}; do
+            curl -fsS http://localhost:5080/health/ready > /dev/null && exit 0
+            sleep 2
+          done
+          echo "API did not become ready" && exit 1
+
+      - name: Run end-to-end tests
+        run: pnpm --filter @enterprise/web run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report/
+          retention-days: 7
