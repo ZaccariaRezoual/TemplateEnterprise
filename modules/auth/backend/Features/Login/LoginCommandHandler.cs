@@ -1,7 +1,7 @@
-using EnterpriseFramework.Application.Abstractions;
+﻿using EnterpriseFramework.Application.Abstractions;
 using EnterpriseFramework.Application.Exceptions;
 using EnterpriseFramework.Modules.Auth.Contracts;
-using EnterpriseFramework.Modules.Auth.Domain.Events;
+using EnterpriseFramework.Modules.Auth.Contracts.Events;
 using EnterpriseFramework.Modules.Auth.Persistence;
 using EnterpriseFramework.Modules.Auth.Services;
 using MediatR;
@@ -75,7 +75,7 @@ public sealed partial class LoginCommandHandler : IRequestHandler<LoginCommand, 
             throw new UnauthorizedException("Invalid email or password.");
         }
 
-        var session = _sessionFactory.Create(user);
+        var session = await _sessionFactory.CreateAsync(user, cancellationToken).ConfigureAwait(false);
         await _dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         await _eventBus
             .PublishAsync(new UserLoggedIn(user.Id), cancellationToken)

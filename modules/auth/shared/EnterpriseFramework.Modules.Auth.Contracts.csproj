@@ -1,0 +1,18 @@
+<!--
+  Public contracts of the Auth module: the integration events other modules
+  subscribe to.
+
+  Kept in its own tiny assembly so a subscriber references ONLY the event
+  shapes, never the Auth implementation. This is what lets Authorization,
+  Users and Audit react to registrations while staying independently
+  removable — and it is the reason the `shared/` folder exists in the module
+  layout.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Modules.Auth.Contracts</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\apps\api\src\Domain\EnterpriseFramework.Domain.csproj" />
+  </ItemGroup>
+</Project>

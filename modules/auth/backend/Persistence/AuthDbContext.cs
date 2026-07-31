@@ -48,7 +48,6 @@ public sealed class AuthDbContext : DbContext
             user.Property(u => u.NormalizedEmail).HasMaxLength(320);
             user.Property(u => u.DisplayName).HasMaxLength(200);
             user.Property(u => u.PasswordHash).HasMaxLength(500);
-            user.Property(u => u.Roles).HasColumnType("text[]");
             user.Ignore(u => u.DomainEvents);
         });
 

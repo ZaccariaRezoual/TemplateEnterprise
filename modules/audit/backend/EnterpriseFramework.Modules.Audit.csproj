@@ -1,0 +1,29 @@
+<!--
+  Audit module: who did what, when.
+
+  Records entries two ways: automatically for every command that passes
+  through the MediatR pipeline, and by subscribing to other modules' public
+  events. Neither requires the audited module to know auditing exists.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Modules.Audit</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Application\EnterpriseFramework.Application.csproj" />
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\auth\shared\EnterpriseFramework.Modules.Auth.Contracts.csproj" />
+    <ProjectReference
+      Include="..\..\authorization\backend\EnterpriseFramework.Modules.Authorization.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\module.json" LogicalName="module.json" />
+  </ItemGroup>
+</Project>

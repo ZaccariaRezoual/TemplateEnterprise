@@ -89,10 +89,6 @@ namespace EnterpriseFramework.Modules.Auth.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.PrimitiveCollection<string[]>("Roles")
-                        .IsRequired()
-                        .HasColumnType("text[]");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")

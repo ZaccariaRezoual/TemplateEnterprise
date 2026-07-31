@@ -1,8 +1,0 @@
-# EF Core migrations are GENERATED code: exempt from the repository's style
-# and analyzer rules (they are rewritten by the tooling, never by hand).
-# Copy this file into the Migrations folder of every module.
-[*.cs]
-generated_code = true
-dotnet_analyzer_diagnostic.severity = none
-dotnet_diagnostic.IDE0005.severity = none
-csharp_style_namespace_declarations = block_scoped:silent

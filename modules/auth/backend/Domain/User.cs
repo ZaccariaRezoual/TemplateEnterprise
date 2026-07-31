@@ -1,4 +1,5 @@
-using EnterpriseFramework.Domain.Common;
+﻿using EnterpriseFramework.Domain.Common;
+using EnterpriseFramework.Modules.Auth.Contracts.Events;
 
 namespace EnterpriseFramework.Modules.Auth.Domain;
 
@@ -6,7 +7,7 @@ namespace EnterpriseFramework.Modules.Auth.Domain;
 /// Account able to authenticate against the platform.
 ///
 /// Owned by the Auth module: other modules never reference this entity — they
-/// react to auth domain events (e.g. <see cref="Events.UserRegistered"/>) or,
+/// react to the public events in Auth.Contracts (e.g. <see cref="UserRegistered"/>) or,
 /// from Fase 5, consume the Users module's contracts.
 /// </summary>
 public sealed class User : EntityBase<Guid>
@@ -28,22 +29,20 @@ public sealed class User : EntityBase<Guid>
     /// <summary>Password hash (PBKDF2 via the framework hasher). Never the raw password.</summary>
     public string PasswordHash { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Role names granted to the user, embedded in the access token as claims.
-    /// Managed by the Roles module from Fase 5; every account starts as "User".
-    /// </summary>
-    public IReadOnlyList<string> Roles { get; private set; } = ["User"];
-
     /// <summary>UTC instant the account was created.</summary>
     public DateTime CreatedAtUtc { get; private set; }
 
     /// <summary>
-    /// Creates a new account and raises <see cref="Events.UserRegistered"/>.
+    /// Creates a new account and raises <see cref="UserRegistered"/>.
+    ///
+    /// Roles are deliberately NOT set here: the Authorization module grants
+    /// them by subscribing to that event, so this module never holds a second
+    /// copy of who may do what.
     /// </summary>
     /// <param name="email">Email address (already validated).</param>
     /// <param name="displayName">Name shown in the UI.</param>
     /// <param name="passwordHash">Hash produced by the password hasher.</param>
-    /// <returns>The new account with the default "User" role.</returns>
+    /// <returns>The new account.</returns>
     public static User Register(string email, string displayName, string passwordHash)
     {
         var user = new User
@@ -55,7 +54,7 @@ public sealed class User : EntityBase<Guid>
             PasswordHash = passwordHash,
             CreatedAtUtc = DateTime.UtcNow,
         };
-        user.RaiseDomainEvent(new Events.UserRegistered(user.Id, user.Email));
+        user.RaiseDomainEvent(new UserRegistered(user.Id, user.Email, user.DisplayName));
         return user;
     }
 

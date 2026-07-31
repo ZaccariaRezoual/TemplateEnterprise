@@ -1,6 +1,7 @@
 using System.Text;
 using EnterpriseFramework.Application.Abstractions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EnterpriseFramework.Api.Security;
@@ -56,9 +57,11 @@ public static class AuthenticationSetup
         // SECURE BY DEFAULT: every endpoint requires an authenticated caller
         // unless it explicitly opts out with AllowAnonymous. Forgetting to
         // protect a new endpoint therefore fails closed, not open.
-        services.AddAuthorization(options =>
-            options.FallbackPolicy = options.DefaultPolicy
-        );
+        services.AddAuthorization(options => options.FallbackPolicy = options.DefaultPolicy);
+
+        // Materializes "permission:*" policies on demand so modules can
+        // require permissions the host has never heard of.
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, HttpContextCurrentUser>();

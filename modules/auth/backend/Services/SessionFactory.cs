@@ -32,10 +32,16 @@ public sealed class SessionFactory
     /// Creates a session for the given account and stages the refresh token.
     /// </summary>
     /// <param name="user">The authenticated account.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
     /// <returns>The session, including the raw refresh token for the cookie.</returns>
-    public AuthSession Create(User user)
+    public async Task<AuthSession> CreateAsync(
+        User user,
+        CancellationToken cancellationToken = default
+    )
     {
-        var (accessToken, expiresAtUtc) = _tokenService.CreateAccessToken(user);
+        var (accessToken, expiresAtUtc) = await _tokenService
+            .CreateAccessTokenAsync(user, cancellationToken)
+            .ConfigureAwait(false);
         var (rawRefreshToken, refreshTokenHash) = TokenService.CreateRefreshToken();
 
         _dbContext.RefreshTokens.Add(

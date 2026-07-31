@@ -8,12 +8,7 @@ function sessionOf(email: string, token = "jwt-1"): AuthResponse {
   return {
     accessToken: token,
     accessTokenExpiresAtUtc: new Date(Date.now() + 900_000).toISOString(),
-    user: {
-      id: "00000000-0000-4000-8000-000000000001",
-      email,
-      displayName: "Ada",
-      roles: ["User"],
-    },
+    user: { id: "00000000-0000-4000-8000-000000000001", email, displayName: "Ada" },
   };
 }
 

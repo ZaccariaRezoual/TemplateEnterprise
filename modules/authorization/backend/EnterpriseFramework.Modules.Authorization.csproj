@@ -1,0 +1,31 @@
+<!--
+  Authorization module: roles, permissions and their enforcement (RBAC + PBAC).
+
+  Declares a dependency on Auth in module.json (it enriches the tokens Auth
+  issues), but does NOT reference the Auth project: it plugs into the
+  IUserClaimsEnricher extension point defined in Application. Module
+  dependencies are about load order and lifecycle, not compile-time coupling.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Modules.Authorization</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Application\EnterpriseFramework.Application.csproj" />
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
+    <!-- Auth's public event contracts only — never its implementation. -->
+    <ProjectReference Include="..\..\auth\shared\EnterpriseFramework.Modules.Auth.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\module.json" LogicalName="module.json" />
+  </ItemGroup>
+</Project>

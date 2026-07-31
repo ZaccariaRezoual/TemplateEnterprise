@@ -5,8 +5,11 @@ using EnterpriseFramework.Api.Security;
 using EnterpriseFramework.Application;
 using EnterpriseFramework.Infrastructure;
 using EnterpriseFramework.Modules.Abstractions;
+using EnterpriseFramework.Modules.Audit;
 using EnterpriseFramework.Modules.Auth;
+using EnterpriseFramework.Modules.Authorization;
 using EnterpriseFramework.Modules.Demo;
+using EnterpriseFramework.Modules.Users;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 
@@ -30,6 +33,15 @@ try
         preserveStaticLogger: true
     );
 
+    // Global default for module auto-migration: ON in development, OFF
+    // everywhere else. Production applies migrations as an explicit release
+    // step, and this also keeps `dotnet build` (which boots the host to emit
+    // the OpenAPI document) from requiring a reachable database.
+    // A module may still override it with "Modules:<Name>:AutoMigrate".
+    builder.Configuration["Modules:AutoMigrate"] ??= builder
+        .Environment.IsDevelopment()
+        .ToString();
+
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddApiServices(builder.Configuration);
@@ -38,7 +50,13 @@ try
     // Module system: list module assemblies here; the loader reads each
     // embedded module.json, honors enabled flags and resolves dependency order.
     var modules = ModuleLoader.Load(
-        [typeof(DemoModule).Assembly, typeof(AuthModule).Assembly],
+        [
+            typeof(DemoModule).Assembly,
+            typeof(AuthModule).Assembly,
+            typeof(AuthorizationModule).Assembly,
+            typeof(UsersModule).Assembly,
+            typeof(AuditModule).Assembly,
+        ],
         builder.Configuration
     );
     foreach (var module in modules)

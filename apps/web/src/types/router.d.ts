@@ -2,20 +2,16 @@ import "vue-router";
 
 declare module "vue-router" {
   /**
-   * Typed route metadata shared by every feature.
+   * Route metadata owned by the APPLICATION.
    *
-   * `requiresAuth` and `permissions` are declared now and enforced by the
-   * guards the Auth module installs in Fase 4, so features can already
-   * annotate their routes correctly.
+   * Module-specific fields are declared by the modules themselves
+   * (`requiresAuth` by Auth, `permissions` by Authorization), so a route's
+   * requirements always live with the code that enforces them.
    */
   interface RouteMeta {
     /** Document title shown for this route. */
     title?: string;
     /** Layout wrapping the page; defaults to "default". Use "blank" for login/error screens. */
     layout?: "default" | "blank";
-    /** Whether an authenticated session is required. */
-    requiresAuth?: boolean;
-    /** Permissions the user must hold to enter the route (PBAC). */
-    permissions?: readonly string[];
   }
 }

@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Text;
 using System.Text.Json;
 using EnterpriseFramework.IntegrationTests.Fixtures;
@@ -26,7 +26,7 @@ public sealed class AuthRateLimitTests : IClassFixture<LightweightApiFactory>
     {
         var client = _factory
             .WithWebHostBuilder(builder =>
-                builder.UseSetting("Modules:Auth:SensitivePermitLimit", "2")
+                builder.UseSetting("Modules:Auth:CredentialsPermitLimit", "2")
             )
             .CreateClient();
 

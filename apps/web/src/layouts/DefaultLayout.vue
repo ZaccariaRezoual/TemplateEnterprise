@@ -16,11 +16,21 @@
  * permission-aware in Fase 5, filtered by the permissions composable.
  */
 import { useSessionStore } from "@enterprise/module-auth";
+import { usePermissions } from "@enterprise/module-authorization";
+import { computed } from "vue";
 import ThemeToggle from "@/shared/components/ThemeToggle.vue";
 
 const session = useSessionStore();
+const { can } = usePermissions();
 
-const navigation = [{ label: "Demo", to: "/demo" }] as const;
+// Navigation is permission-aware: entries the user cannot open are not
+// rendered at all, so the menu never leads to a forbidden page.
+const navigation = computed(() =>
+  [
+    { label: "Demo", to: "/demo", permission: undefined },
+    { label: "Users", to: "/users", permission: "users.read" },
+  ].filter((item) => item.permission === undefined || can(item.permission)),
+);
 </script>
 
 <template>

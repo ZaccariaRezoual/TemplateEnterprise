@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Testcontainers.PostgreSql;
 using Xunit;
@@ -31,9 +31,12 @@ public sealed class PostgresApiFactory : WebApplicationFactory<Program>, IAsyncL
     {
         builder.UseSetting("ConnectionStrings:Postgres", _postgres.GetConnectionString());
         builder.UseSetting("Jwt:SigningKey", new string('t', 48));
+        // Tests own a throwaway database, so they opt into the startup
+        // migration and seeding that production performs as a release step.
+        builder.UseSetting("Modules:AutoMigrate", "true");
         // Generous budgets: rate limiting is asserted by its own test, not by
         // accident in unrelated flows (all tests share one client "IP" here).
         builder.UseSetting("RateLimiting:PermitLimit", "1000");
-        builder.UseSetting("Modules:Auth:SensitivePermitLimit", "1000");
+        builder.UseSetting("Modules:Auth:CredentialsPermitLimit", "1000");
     }
 }

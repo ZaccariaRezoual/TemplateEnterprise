@@ -1,4 +1,4 @@
-using EnterpriseFramework.Application.Abstractions;
+﻿using EnterpriseFramework.Application.Abstractions;
 using EnterpriseFramework.Application.Exceptions;
 using EnterpriseFramework.Modules.Auth.Contracts;
 using EnterpriseFramework.Modules.Auth.Domain;
@@ -68,7 +68,7 @@ public sealed class RegisterCommandHandler : IRequestHandler<RegisterCommand, Au
             _passwordHasher.Hash(request.Password)
         );
         _dbContext.Users.Add(user);
-        var session = _sessionFactory.Create(user);
+        var session = await _sessionFactory.CreateAsync(user, cancellationToken).ConfigureAwait(false);
 
         try
         {
