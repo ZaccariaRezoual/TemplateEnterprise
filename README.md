@@ -44,14 +44,24 @@ docker compose -f docker/docker-compose.yml up -d
 # Run the API (http://localhost:5080)
 dotnet run --project apps/api/src/Api
 
-# Run backend tests
-dotnet test
+# Run the web app (http://localhost:5173, proxies /api to the API)
+pnpm --filter @enterprise/web dev
+
+# Run tests
+dotnet test                              # backend
+pnpm test                                # frontend unit + component
+pnpm --filter @enterprise/web test:e2e   # end-to-end (API must be running)
 ```
 
 Seq (structured log viewer) is available at http://localhost:5341 once compose
 is up (login `admin` / `dev_password`). API health: `/health/ready`. OpenAPI
-document: `/openapi/v1.json`. See [docs/backend.md](docs/backend.md) and
-[docs/modules.md](docs/modules.md) for the architecture and the Module Contract.
+document: `/openapi/v1.json`.
+
+## Documentation
+
+- [docs/backend.md](docs/backend.md) — Clean Architecture layers, pipeline, events
+- [docs/frontend.md](docs/frontend.md) — feature-first structure, state rules, theming
+- [docs/modules.md](docs/modules.md) — the Module Contract
 
 ## Development workflow
 

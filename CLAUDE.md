@@ -138,7 +138,9 @@ Il design system è l'unico punto di personalizzazione visiva: un nuovo progetto
 
 ## Comandi (man mano che il repo cresce)
 
-Dalla root: `pnpm install` e `dotnet build` devono sempre funzionare. `docker compose -f docker/docker-compose.yml up` avvia le dipendenze locali (PostgreSQL, Redis, Seq — Seq UI su http://localhost:5341). `dotnet run --project apps/api/src/Api` avvia l'API su http://localhost:5080 (health: `/health/ready`, OpenAPI: `/openapi/v1.json`). `dotnet test` esegue i test backend. Se aggiungi script (`scripts/generate-sdk`, `scripts/create-project`, ecc.), documentali qui.
+Dalla root: `pnpm install` e `dotnet build` devono sempre funzionare. `docker compose -f docker/docker-compose.yml up` avvia le dipendenze locali (PostgreSQL, Redis, Seq — Seq UI su http://localhost:5341). `dotnet run --project apps/api/src/Api` avvia l'API su http://localhost:5080 (health: `/health/ready`, OpenAPI: `/openapi/v1.json`). `pnpm --filter @enterprise/web dev` avvia il frontend su http://localhost:5173 con proxy `/api` verso l'API. Test: `dotnet test` (backend), `pnpm test` (frontend unit), `pnpm --filter @enterprise/web test:e2e` (Playwright, richiede l'API attiva). Se aggiungi script (`scripts/generate-sdk`, `scripts/create-project`, ecc.), documentali qui.
+
+Requisito ambiente: Node `^22.18.0 || >=24.11.0` (vincolo reale delle dipendenze, dichiarato in `engines`).
 
 ## Cosa NON fare
 
