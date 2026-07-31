@@ -10,6 +10,9 @@
   <ItemGroup>
     <!-- API / hosting -->
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+    <!-- Emits the OpenAPI document at build time so the SDK can be generated
+         without starting the API (deterministic, CI-friendly). -->
+    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.0" />
     <!-- Direct pin: lifts the vulnerable 2.0.0 transitive of AspNetCore.OpenApi (GHSA-v5pm-xwqc-g5wc). -->
     <PackageVersion Include="Microsoft.OpenApi" Version="2.11.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />

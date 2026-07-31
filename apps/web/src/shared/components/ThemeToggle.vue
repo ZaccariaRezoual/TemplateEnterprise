@@ -8,13 +8,14 @@
  *
  * Responsibilities:
  * - Renders the three options with the active one marked.
- * - Delegates every state change to the `useTheme` composable.
+ * - Delegates every state change to the design system's `useTheme`.
  *
- * It contains no theming logic: it only calls the theme engine, which repaints
- * the UI through the semantic design tokens.
+ * It contains no theming logic: the theme engine repaints the UI through the
+ * semantic tokens. It lives in the app (not in `@enterprise/ui`) because the
+ * placement of a theme control is a product decision, not a design-system one.
  */
 import { ComputerDesktopIcon, MoonIcon, SunIcon } from "@heroicons/vue/24/outline";
-import { useTheme, type ThemePreference } from "@/shared/composables/useTheme";
+import { useTheme, type ThemePreference } from "@enterprise/ui";
 
 const { preference, setTheme } = useTheme();
 

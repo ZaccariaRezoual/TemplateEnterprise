@@ -14,7 +14,7 @@ describe("ThemeToggle", () => {
     expect(wrapper.findAll("[role='radio']")).toHaveLength(3);
   });
 
-  it("marks the selected option and applies it to the document", async () => {
+  it("marks the selected option", async () => {
     const wrapper = mount(ThemeToggle);
 
     await wrapper.findAll("[role='radio']")[1]?.trigger("click");
@@ -24,11 +24,11 @@ describe("ThemeToggle", () => {
     expect(light?.attributes("aria-checked")).toBe("false");
   });
 
-  it("persists the choice so it survives a reload", async () => {
+  it("persists the choice through the design system's theme engine", async () => {
     const wrapper = mount(ThemeToggle);
 
     await wrapper.findAll("[role='radio']")[0]?.trigger("click");
 
-    expect(globalThis.localStorage.getItem("ef:theme")).toBe('"light"');
+    expect(globalThis.localStorage.getItem("enterprise-ui:theme")).toBe("light");
   });
 });

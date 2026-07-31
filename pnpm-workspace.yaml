@@ -4,3 +4,20 @@ packages:
   - "apps/*"
   - "packages/*"
   - "tools/*"
+
+# Single source of truth for versions shared across packages: a package writes
+# "typescript": "catalog:" instead of a range, so two packages can never drift
+# onto different majors of the same tool — the failure mode that makes monorepo
+# type errors depend on which folder you are in.
+catalog:
+  "@tailwindcss/vite": ^4.3.3
+  "@vitejs/plugin-vue": ^6.0.8
+  "@vue/test-utils": ^2.4.11
+  jsdom: ^30.0.1
+  tailwindcss: ^4.3.3
+  typescript: ^5.9.3
+  vite: ^8.2.0
+  vitest: ^4.1.10
+  vue: ^3.5.40
+  vue-tsc: ^3.3.9
+  zod: ^4.4.3

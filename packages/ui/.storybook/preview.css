@@ -1,0 +1,11 @@
+/**
+ * Stylesheet for the Storybook preview iframe.
+ *
+ * Storybook owns the Tailwind entry here exactly as an application would;
+ * `@source` is required because Tailwind does not scan outside the directory
+ * of the CSS entry point, and the components live one level up.
+ */
+
+@import "tailwindcss";
+@source "../src";
+@import "../src/styles/tokens.css";

@@ -45,6 +45,35 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Build Storybook
+        run: pnpm --filter @enterprise/ui build-storybook
+
+  sdk:
+    name: SDK matches the API contract
+    runs-on: ubuntu-latest
+    # The OpenAPI document and the generated client are committed. This job
+    # fails when they drift from the code, which is the only way the "the
+    # frontend only talks to the API through the SDK" rule stays true.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: pnpm
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify the committed SDK is current
+        run: node scripts/generate-sdk.mjs --check
+
   api:
     name: Build & test (.NET)
     runs-on: ubuntu-latest

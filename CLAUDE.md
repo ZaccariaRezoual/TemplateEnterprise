@@ -25,8 +25,7 @@ Framework enterprise monorepo (Vue 3 + .NET 10) che fa da base a tutti i futuri 
 - **Feature-first**: il codice si organizza per funzionalità (`features/users/`), mai per tipologia (`components/`, `services/` globali).
 - **Dependency Rule**: i livelli interni non conoscono quelli esterni. Domain non referenzia EF Core; Application non conosce PostgreSQL; la UI non conosce Axios.
 - **Le Entity EF non escono mai dall'API**: verso il frontend viaggiano solo DTO/Contracts.
-- **Mai Axios diretto** nelle feature frontend: sempre Feature Service → Api Client → Http Client (wrapper in `core/http`).
-- **Il frontend consuma solo l'SDK** (`packages/sdk`) generato da OpenAPI, mai endpoint scritti a mano.
+- **Il frontend consuma solo l'SDK** (`packages/sdk`) generato da OpenAPI, mai endpoint scritti a mano: la catena è componente → composable → feature service (`features/*/api/`) → SDK. Nessuna feature costruisce URL né tocca il trasporto; le preoccupazioni trasversali (correlation id, token, mappatura errori) vivono solo in `core/api/apiClient.ts`. L'SDK va rigenerato con `node scripts/generate-sdk.mjs` quando cambia un contratto: la CI fallisce se il generato committato è disallineato.
 - **Stato**: Pinia solo per client state; TanStack Query per tutto ciò che viene dalle API. Mai dati server dentro Pinia.
 - **Design tokens sempre**: mai colori/spacing hardcoded; il theming (light/dark/custom) passa dai token, non da modifiche ai componenti (vedi sezione "Design System — gestione").
 - **Moduli indipendenti**: ogni modulo in `modules/<nome>/` ha `README.md`, `module.json` (name, version, dependencies, enabled), `frontend/`, `backend/`, `shared/`, `tests/`. Deve poter essere installato/disabilitato senza toccare altri moduli. Il modulo Auth (Fase 4) è il template di riferimento.
@@ -48,6 +47,7 @@ Struttura frontend dentro `apps/web/src`: `app/` (bootstrap, DI), `core/` (http,
 
 - **Naming**: componenti PascalCase; funzioni camelCase; cartelle kebab-case; costanti SCREAMING_SNAKE_CASE; interfacce con prefisso `I` (`IUser`); enum PascalCase (`UserRole`).
 - **Componenti UI** (`packages/ui`): ogni componente ha `Component.vue`, `Component.types.ts`, `Component.test.ts`, `Component.stories.ts`, `index.ts`.
+- **Versioni delle dipendenze condivise**: dichiarate una sola volta nel `catalog:` di `pnpm-workspace.yaml`; i package scrivono `"typescript": "catalog:"`, mai un range proprio, così due package non possono divergere su major diverse dello stesso strumento.
 - **Commit**: Conventional Commits (enforced da Commitlint). Lingua del codice e dei commit: inglese; conversazione con l'utente: italiano.
 - **Branch**: `main` (produzione), `develop` (sviluppo), `feature/*`, `fix/*`, `release/*`, `hotfix/*`. Non committare mai direttamente su `main`.
 - **CI su ogni PR**: install → lint → type-check → unit test → build → docker build → security scan → coverage. Una modifica che rompe la CI non è finita.

@@ -19,7 +19,11 @@ Enterprise-grade monorepo template used as the foundation for all company projec
 
 ```
 apps/          Deployable applications (api, web)
-packages/      Shared libraries (ui, sdk, shared, types)
+packages/      Shared libraries
+  ui/            Design system: tokens, theme engine, components (+ Storybook)
+  sdk/           Typed API client, generated from the OpenAPI document
+  shared/        Framework-agnostic utilities and validation schemas
+  types/         Types and enums shared across the monorepo
 modules/       Independent feature modules (auth, users, ...)
 docs/          Architecture and process documentation
 docker/        Local infrastructure (PostgreSQL, Redis, Seq)
@@ -47,10 +51,16 @@ dotnet run --project apps/api/src/Api
 # Run the web app (http://localhost:5173, proxies /api to the API)
 pnpm --filter @enterprise/web dev
 
+# Browse the design system
+pnpm --filter @enterprise/ui storybook
+
 # Run tests
 dotnet test                              # backend
 pnpm test                                # frontend unit + component
 pnpm --filter @enterprise/web test:e2e   # end-to-end (API must be running)
+
+# Regenerate the typed SDK after changing an API contract
+node scripts/generate-sdk.mjs
 ```
 
 Seq (structured log viewer) is available at http://localhost:5341 once compose
@@ -61,7 +71,9 @@ document: `/openapi/v1.json`.
 
 - [docs/backend.md](docs/backend.md) — Clean Architecture layers, pipeline, events
 - [docs/frontend.md](docs/frontend.md) — feature-first structure, state rules, theming
+- [docs/design-system.md](docs/design-system.md) — tokens, theming, component conventions
 - [docs/modules.md](docs/modules.md) — the Module Contract
+- [packages/sdk/README.md](packages/sdk/README.md) — how the SDK is generated and kept in sync
 
 ## Development workflow
 

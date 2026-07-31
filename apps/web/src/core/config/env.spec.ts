@@ -5,7 +5,9 @@ describe("parseEnv", () => {
   it("applies defaults when optional variables are absent", () => {
     const parsed = parseEnv({});
 
-    expect(parsed.VITE_API_BASE_URL).toBe("/api");
+    // Empty by default: the SDK paths already carry the /api prefix, so a
+    // non-empty default would produce /api/api/... on every call.
+    expect(parsed.VITE_API_BASE_URL).toBe("");
     expect(parsed.VITE_API_TIMEOUT_MS).toBe(15_000);
     expect(parsed.VITE_LOG_LEVEL).toBe("info");
   });

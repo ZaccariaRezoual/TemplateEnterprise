@@ -1,16 +1,14 @@
-import { httpClient } from "@/core/http/httpClient";
+import { api, request } from "@/core/api/apiClient";
 import type { IEchoResponse, IPingResponse } from "@/features/demo/types/demo.types";
 
 /**
  * Feature service of the Demo module: the only place in the feature that knows
- * the API routes.
+ * which API operations it uses.
  *
- * Layering: component → composable → THIS service → HttpClient → Axios.
- * Components and composables never build URLs and never touch the transport.
- *
- * In Fase 3 the bodies of these functions become calls to the generated SDK;
- * because the feature only depends on this module's signatures, nothing else
- * in the feature changes.
+ * Layering: component → composable → THIS service → SDK → API.
+ * Components and composables never call the SDK and never build URLs. The
+ * paths below are checked against the OpenAPI document at compile time, so a
+ * renamed endpoint breaks the build instead of production.
  */
 export const demoApi = {
   /**
@@ -21,7 +19,7 @@ export const demoApi = {
    * @throws {import("@/core/errors/applicationError").ApplicationError} On any API failure.
    */
   ping(signal?: AbortSignal): Promise<IPingResponse> {
-    return httpClient.get<IPingResponse>("/demo/ping", signal === undefined ? {} : { signal });
+    return request(api.GET("/api/demo/ping", signal === undefined ? {} : { signal }));
   },
 
   /**
@@ -33,6 +31,6 @@ export const demoApi = {
    * @throws {import("@/core/errors/applicationError").ValidationError} When the text is rejected.
    */
   echo(text: string): Promise<IEchoResponse> {
-    return httpClient.post<IEchoResponse>("/demo/echo", { text });
+    return request(api.POST("/api/demo/echo", { body: { text } }));
   },
 };

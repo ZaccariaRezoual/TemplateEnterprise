@@ -14,23 +14,31 @@ src/
               validators/ routes.ts
   layouts/    Page shells (default, blank) selected via route meta
   router/     Route registry composing the features' routes
-  assets/     Styles and design tokens (move to packages/ui in Fase 3)
+  assets/     Stylesheet entry importing the design system's tokens
   types/      Ambient declarations (route meta, Vite env)
 ```
 
 ## The request path
 
 ```
-Component → Composable (TanStack Query) → Feature service (api/) → HttpClient → Axios
+Component → Composable (TanStack Query) → Feature service (api/) → SDK → API
 ```
 
 Each arrow is a rule:
 
 - Components never fetch. They call a composable.
-- Composables never know URLs. They call the feature service.
-- Feature services never know the transport. They call `httpClient`.
-- **Nothing outside `core/http` imports Axios.** From Fase 3, feature services
-  delegate to the generated SDK, and only those files change.
+- Composables never know operations. They call the feature service.
+- Feature services call the generated SDK — **never a hand-written URL**. Paths
+  are checked against the OpenAPI document, so a renamed endpoint is a compile
+  error, not a production incident.
+- Cross-cutting concerns (correlation id, auth token from Fase 4, error
+  mapping) live only in `core/api/apiClient.ts`, applied to every call by
+  construction.
+
+`request()` in `core/api/apiClient.ts` bridges the two error conventions: the
+SDK reports failures as a value (`{ error }`), while TanStack Query and
+`try`/`catch` expect a rejection. It is the single place that classifies API
+failures.
 
 ## State: two homes, no overlap
 
@@ -55,12 +63,11 @@ ready to display next to inputs.
 
 ## Styling and theming
 
-Three token layers — primitives → semantic → component — defined in
-`assets/styles`. Components use **semantic tokens only** (`bg-surface`,
-`text-danger`); a literal color anywhere outside the token files is a bug. The
-theme engine (`useTheme`) switches themes by setting `data-theme` on `<html>`;
-no component is theme-aware. Full rules in the CLAUDE.md "Design System"
-section; the token catalog moves to `packages/ui` in Fase 3.
+Both come from the design system, `@enterprise/ui`: the app imports
+`@enterprise/ui/tokens.css` and uses **semantic tokens only** (`bg-surface`,
+`text-danger`). A literal color in application code is a bug. `installTheme()`
+is called once in `main.ts`; no component is theme-aware. See
+[design-system.md](design-system.md).
 
 ## Configuration
 
@@ -69,11 +76,16 @@ Every environment variable is declared and validated with Zod in
 surfacing as `undefined` inside a feature. Import `env`, never
 `import.meta.env`.
 
-| Variable              | Default | Purpose                        |
-| --------------------- | ------- | ------------------------------ |
-| `VITE_API_BASE_URL`   | `/api`  | API base URL (proxied)         |
-| `VITE_API_TIMEOUT_MS` | `15000` | Request timeout                |
-| `VITE_LOG_LEVEL`      | `info`  | Minimum level the logger emits |
+| Variable              | Default | Purpose                                           |
+| --------------------- | ------- | ------------------------------------------------- |
+| `VITE_API_BASE_URL`   | `""`    | API **origin**, empty for same-origin (see below) |
+| `VITE_API_TIMEOUT_MS` | `15000` | Request timeout                                   |
+| `VITE_LOG_LEVEL`      | `info`  | Minimum level the logger emits                    |
+
+`VITE_API_BASE_URL` is an origin, not a path prefix: the SDK's paths already
+contain the full route (`/api/demo/ping`). Setting it to `/api` would produce
+`/api/api/…` on every call. Use an absolute origin only when the API is served
+from another host.
 
 ## Running and testing
 

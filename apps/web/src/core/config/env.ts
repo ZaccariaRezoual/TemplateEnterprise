@@ -8,8 +8,14 @@ import { z } from "zod";
  * undefined deep inside a feature at runtime.
  */
 const envSchema = z.object({
-  /** Base URL of the API. Defaults to "/api" (same-origin, proxied in dev). */
-  VITE_API_BASE_URL: z.string().min(1).default("/api"),
+  /**
+   * ORIGIN of the API — not a path prefix. The generated SDK's paths already
+   * contain the full route (`/api/demo/ping`), so this must stay empty for a
+   * same-origin deployment (the dev server proxies `/api` to the backend).
+   * Set it to an absolute origin like "https://api.example.com" only when the
+   * API is served from another host.
+   */
+  VITE_API_BASE_URL: z.string().default(""),
   /** Request timeout in milliseconds. */
   VITE_API_TIMEOUT_MS: z.coerce.number().int().positive().default(15_000),
   /** Minimum level the logger emits. */
