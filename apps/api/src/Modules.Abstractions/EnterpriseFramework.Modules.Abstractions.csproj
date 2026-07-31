@@ -1,0 +1,14 @@
+<!--
+  Module Contract: IModule, module.json manifest model and the loader.
+  Referenced by BOTH the host (Api) and every module backend, so neither
+  depends on the other (no circular references).
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Modules.Abstractions</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Needed for IServiceCollection/IConfiguration/IEndpointRouteBuilder in the contract. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+</Project>

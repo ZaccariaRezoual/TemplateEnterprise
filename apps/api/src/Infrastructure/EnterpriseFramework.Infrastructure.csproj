@@ -1,0 +1,18 @@
+<!--
+  Infrastructure layer: implementations of Application abstractions
+  (persistence via EF Core/PostgreSQL, event bus via MediatR).
+  DEPENDENCY RULE: references Application and Domain; nothing references it
+  except the Api composition root.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Infrastructure</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Application\EnterpriseFramework.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="MediatR" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,21 @@
+<!--
+  Integration tests: boot the real API host in-memory (WebApplicationFactory)
+  and exercise HTTP endpoints end-to-end (routing, middleware, MediatR
+  pipeline, ProblemDetails mapping).
+  Tests that require live PostgreSQL/Redis will use Testcontainers from Fase 4.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.IntegrationTests</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Api\EnterpriseFramework.Api.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Shouldly" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+<!--
+  Domain layer: entities, value objects and domain events.
+  DEPENDENCY RULE: this project must reference NOTHING (no EF Core, no MediatR,
+  no ASP.NET). It is the innermost layer of the Clean Architecture.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Domain</RootNamespace>
+  </PropertyGroup>
+</Project>

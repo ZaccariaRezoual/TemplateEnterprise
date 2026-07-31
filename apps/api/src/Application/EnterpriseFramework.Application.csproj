@@ -1,0 +1,19 @@
+<!--
+  Application layer: use cases (MediatR), validation, cross-cutting behaviors
+  and abstractions implemented by Infrastructure.
+  DEPENDENCY RULE: references Domain only. No EF Core, no PostgreSQL, no ASP.NET.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Application</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\EnterpriseFramework.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+</Project>

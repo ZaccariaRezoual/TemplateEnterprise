@@ -40,9 +40,18 @@ dotnet build
 
 # Start local infrastructure (PostgreSQL, Redis, Seq)
 docker compose -f docker/docker-compose.yml up -d
+
+# Run the API (http://localhost:5080)
+dotnet run --project apps/api/src/Api
+
+# Run backend tests
+dotnet test
 ```
 
-Seq (structured log viewer) is available at http://localhost:5341 once compose is up.
+Seq (structured log viewer) is available at http://localhost:5341 once compose
+is up (login `admin` / `dev_password`). API health: `/health/ready`. OpenAPI
+document: `/openapi/v1.json`. See [docs/backend.md](docs/backend.md) and
+[docs/modules.md](docs/modules.md) for the architecture and the Module Contract.
 
 ## Development workflow
 
