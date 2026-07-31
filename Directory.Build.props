@@ -1,0 +1,23 @@
+<!--
+  Shared MSBuild properties for every .NET project in the monorepo.
+
+  Responsibilities:
+  - Enforce the quality bar centrally (nullable, warnings as errors, analyzers).
+  - Enforce the documentation standard: GenerateDocumentationFile makes missing
+    XML docs on public members a build warning (CS1591), which is then an error.
+
+  Individual projects must not weaken these settings; project-specific
+  exceptions require an explicit, commented override.
+-->
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+</Project>

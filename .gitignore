@@ -1,0 +1,37 @@
+# Node
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.eslintcache
+
+# .NET
+bin/
+obj/
+artifacts/
+*.user
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE / OS
+.vs/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Tooling state
+.impeccable/
+.turbo/
+.cache/
+
+# Test output
+playwright-report/
+test-results/
+TestResults/

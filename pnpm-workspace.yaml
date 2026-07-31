@@ -1,0 +1,6 @@
+# pnpm workspace definition for the monorepo.
+# Module frontends (modules/*/frontend) will be added when the first module lands (Fase 4).
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tools/*"
