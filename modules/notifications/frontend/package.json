@@ -1,0 +1,37 @@
+{
+  "name": "@enterprise/module-notifications",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Frontend of the Notifications module: the store and the notification bell. Realtime push is layered on in Fase 6 without changing this package's surface.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@enterprise/sdk": "workspace:*",
+    "@enterprise/shared": "workspace:*",
+    "@enterprise/ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "@heroicons/vue": "^2.0.0",
+    "pinia": "^4.0.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@heroicons/vue": "^2.2.0",
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "jsdom": "catalog:",
+    "pinia": "^4.0.2",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-tsc": "catalog:"
+  }
+}

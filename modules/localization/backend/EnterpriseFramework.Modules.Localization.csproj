@@ -1,0 +1,22 @@
+<!--
+  Localization module: the supported-locale catalogue and the server-side
+  translations clients fetch at startup. No database: translations are
+  resources shipped with the build, so a deployment is reproducible and a
+  missing key is caught in review rather than in production.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Modules.Localization</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\module.json" LogicalName="module.json" />
+    <EmbeddedResource Include="Resources\*.json" />
+  </ItemGroup>
+</Project>

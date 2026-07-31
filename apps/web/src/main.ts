@@ -1,5 +1,10 @@
 import { installAuthModule, useSessionStore } from "@enterprise/module-auth";
 import { installAuthorizationModule, syncPermissions } from "@enterprise/module-authorization";
+import { installLocalizationModule, loadLocale } from "@enterprise/module-localization";
+import {
+  installNotificationsModule,
+  useNotificationsStore,
+} from "@enterprise/module-notifications";
 import { installUsersModule } from "@enterprise/module-users";
 import { VueQueryPlugin } from "@tanstack/vue-query";
 import { installTheme } from "@enterprise/ui";
@@ -39,14 +44,26 @@ app.use(VueQueryPlugin, { queryClient: createQueryClient() });
 installAuthModule({ api, router, setAuthTokenProvider, setUnauthorizedHandler });
 installAuthorizationModule({ app, router, api });
 installUsersModule({ api });
+installNotificationsModule({ api });
+installLocalizationModule({ app, api });
 
-// Permissions follow the session: fetched on sign-in, dropped on sign-out, so
-// one user never inherits another's actions in the same tab.
+// Translations are fetched, not bundled: the app paints first and gets its
+// strings a moment later.
+void loadLocale();
+
+// Per-user state follows the session: loaded on sign-in, dropped on sign-out,
+// so one user never inherits another's permissions or notifications.
 const session = useSessionStore();
+const notifications = useNotificationsStore();
 watch(
   () => session.isAuthenticated,
   (isAuthenticated) => {
     void syncPermissions(isAuthenticated);
+    if (isAuthenticated) {
+      void notifications.load();
+    } else {
+      notifications.clear();
+    }
   },
   { immediate: true },
 );

@@ -26,6 +26,16 @@
       Include="..\..\..\..\modules\users\backend\EnterpriseFramework.Modules.Users.csproj" />
     <ProjectReference
       Include="..\..\..\..\modules\audit\backend\EnterpriseFramework.Modules.Audit.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\settings\backend\EnterpriseFramework.Modules.Settings.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\email\backend\EnterpriseFramework.Modules.Email.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\storage\backend\EnterpriseFramework.Modules.Storage.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\notifications\backend\EnterpriseFramework.Modules.Notifications.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\localization\backend\EnterpriseFramework.Modules.Localization.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />

@@ -43,7 +43,34 @@ public static class Permissions
         public const string Read = "audit.read";
     }
 
+    /// <summary>Permissions over installation-wide settings.</summary>
+    public static class Settings
+    {
+        /// <summary>Change settings that affect every user.</summary>
+        public const string Write = "settings.write";
+    }
+
+    /// <summary>Permissions over stored files.</summary>
+    public static class Files
+    {
+        /// <summary>Upload files.</summary>
+        public const string Write = "files.write";
+
+        /// <summary>Delete files uploaded by anyone.</summary>
+        public const string Delete = "files.delete";
+    }
+
     /// <summary>Every permission the framework ships with, used for seeding.</summary>
     public static IReadOnlyList<string> All { get; } =
-        [Users.Read, Users.Write, Users.Delete, Roles.Read, Roles.Write, Audit.Read];
+        [
+            Users.Read,
+            Users.Write,
+            Users.Delete,
+            Roles.Read,
+            Roles.Write,
+            Audit.Read,
+            Settings.Write,
+            Files.Write,
+            Files.Delete,
+        ];
 }

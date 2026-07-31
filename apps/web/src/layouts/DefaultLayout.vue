@@ -17,6 +17,7 @@
  */
 import { useSessionStore } from "@enterprise/module-auth";
 import { usePermissions } from "@enterprise/module-authorization";
+import { NotificationBell } from "@enterprise/module-notifications";
 import { computed } from "vue";
 import ThemeToggle from "@/shared/components/ThemeToggle.vue";
 
@@ -59,6 +60,8 @@ const navigation = computed(() =>
         </nav>
 
         <div class="ml-auto flex items-center gap-3">
+          <NotificationBell v-if="session.isAuthenticated" />
+
           <RouterLink
             v-if="session.isAuthenticated"
             to="/account"

@@ -438,6 +438,282 @@
           }
         }
       }
+    },
+    "/api/settings": {
+      "get": {
+        "tags": ["Settings"],
+        "summary": "Returns every setting with its effective value for the caller.",
+        "operationId": "settingsGetEffective",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SettingDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/settings/me/{key}": {
+      "put": {
+        "tags": ["Settings"],
+        "summary": "Sets the caller's own value for a setting.",
+        "operationId": "settingsSetMine",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetSettingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/settings/{key}": {
+      "put": {
+        "tags": ["Settings"],
+        "summary": "Sets the installation-wide value for a setting.",
+        "operationId": "settingsSetGlobal",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetSettingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/files": {
+      "post": {
+        "tags": ["Files"],
+        "summary": "Uploads a file and returns its metadata.",
+        "operationId": "filesUpload",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": ["file"],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/files/{id}": {
+      "get": {
+        "tags": ["Files"],
+        "summary": "Downloads a stored file.",
+        "operationId": "filesDownload",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Files"],
+        "summary": "Deletes a stored file and its bytes.",
+        "operationId": "filesDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Lists the caller's notifications, newest first.",
+        "operationId": "notificationsList",
+        "parameters": [
+          {
+            "name": "unreadOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "take",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": ["integer", "string"],
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/read": {
+      "post": {
+        "tags": ["Notifications"],
+        "summary": "Marks one notification, or all of them, as read.",
+        "operationId": "notificationsMarkRead",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarkReadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/localization/locales": {
+      "get": {
+        "tags": ["Localization"],
+        "summary": "Lists the supported locales.",
+        "operationId": "localizationLocales",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LocaleDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/localization/translations/{locale}": {
+      "get": {
+        "tags": ["Localization"],
+        "summary": "Returns the translation catalogue for a locale.",
+        "operationId": "localizationTranslations",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -567,6 +843,25 @@
           }
         }
       },
+      "IFormFile": {
+        "type": "string",
+        "format": "binary"
+      },
+      "LocaleDto": {
+        "required": ["code", "name"],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "BCP 47 tag, e.g. \"en\" or \"it\"."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name shown in a language picker, in that language."
+          }
+        },
+        "description": "A locale the application supports."
+      },
       "LoginCommand": {
         "required": ["email", "password"],
         "type": "object",
@@ -581,6 +876,55 @@
           }
         },
         "description": "Authenticates an account with email and password."
+      },
+      "MarkReadRequest": {
+        "required": ["notificationId"],
+        "type": "object",
+        "properties": {
+          "notificationId": {
+            "type": ["null", "string"],
+            "description": "The notification to mark, or null for all.",
+            "format": "uuid"
+          }
+        },
+        "description": "Body of the \"mark read\" endpoint."
+      },
+      "NotificationDto": {
+        "required": ["id", "title", "body", "level", "link", "isUnread", "createdAtUtc"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Notification identifier.",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "description": "Short headline."
+          },
+          "body": {
+            "type": "string",
+            "description": "Explanatory text."
+          },
+          "level": {
+            "type": "string",
+            "description": "Severity used for styling."
+          },
+          "link": {
+            "type": ["null", "string"],
+            "description": "Optional in-app link."
+          },
+          "isUnread": {
+            "type": "boolean",
+            "description": "Whether the user has not read it yet."
+          },
+          "createdAtUtc": {
+            "type": "string",
+            "description": "When it was created.",
+            "format": "date-time"
+          }
+        },
+        "description": "A notification as exposed to clients."
       },
       "PagedResultOfUserProfileDto": {
         "required": ["items", "page", "pageSize", "totalCount"],
@@ -679,6 +1023,48 @@
           }
         },
         "description": "Role as exposed to clients."
+      },
+      "SetSettingRequest": {
+        "required": ["value"],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Raw value; must parse as the setting's declared type."
+          }
+        },
+        "description": "Body of the \"set setting\" endpoints."
+      },
+      "SettingDto": {
+        "required": ["key", "value", "description", "scope", "valueType", "isOverriddenByUser"],
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Setting key."
+          },
+          "value": {
+            "type": "string",
+            "description": "Effective value after layering."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the setting controls."
+          },
+          "scope": {
+            "type": "string",
+            "description": "Where it may be overridden."
+          },
+          "valueType": {
+            "type": "string",
+            "description": "Declared type of the value."
+          },
+          "isOverriddenByUser": {
+            "type": "boolean",
+            "description": "Whether the caller has their own value."
+          }
+        },
+        "description": "One effective setting as seen by the caller."
       },
       "SetUserRolesRequest": {
         "required": ["roleNames"],
@@ -804,6 +1190,18 @@
     },
     {
       "name": "Users"
+    },
+    {
+      "name": "Settings"
+    },
+    {
+      "name": "Files"
+    },
+    {
+      "name": "Notifications"
+    },
+    {
+      "name": "Localization"
     }
   ]
 }

@@ -1,0 +1,33 @@
+{
+  "name": "@enterprise/module-localization",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Frontend of the Localization module: vue-i18n wired to the catalogues the API serves, plus the locale preference and picker.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@enterprise/sdk": "workspace:*",
+    "@enterprise/shared": "workspace:*",
+    "vue-i18n": "^11.1.0"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "jsdom": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-tsc": "catalog:"
+  }
+}

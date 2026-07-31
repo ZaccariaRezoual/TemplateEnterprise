@@ -10,6 +10,10 @@
       Include="..\..\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
     <ProjectReference
       Include="..\..\..\..\modules\auth\backend\EnterpriseFramework.Modules.Auth.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\storage\backend\EnterpriseFramework.Modules.Storage.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\email\backend\EnterpriseFramework.Modules.Email.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />

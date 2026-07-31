@@ -9,6 +9,11 @@ using EnterpriseFramework.Modules.Audit;
 using EnterpriseFramework.Modules.Auth;
 using EnterpriseFramework.Modules.Authorization;
 using EnterpriseFramework.Modules.Demo;
+using EnterpriseFramework.Modules.Email;
+using EnterpriseFramework.Modules.Localization;
+using EnterpriseFramework.Modules.Notifications;
+using EnterpriseFramework.Modules.Settings;
+using EnterpriseFramework.Modules.Storage;
 using EnterpriseFramework.Modules.Users;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
@@ -56,6 +61,11 @@ try
             typeof(AuthorizationModule).Assembly,
             typeof(UsersModule).Assembly,
             typeof(AuditModule).Assembly,
+            typeof(SettingsModule).Assembly,
+            typeof(EmailModule).Assembly,
+            typeof(StorageModule).Assembly,
+            typeof(NotificationsModule).Assembly,
+            typeof(LocalizationModule).Assembly,
         ],
         builder.Configuration
     );
