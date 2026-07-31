@@ -242,6 +242,160 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns every setting with its effective value for the caller. */
+        get: operations["settingsGetEffective"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/settings/me/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Sets the caller's own value for a setting. */
+        put: operations["settingsSetMine"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/settings/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Sets the installation-wide value for a setting. */
+        put: operations["settingsSetGlobal"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Uploads a file and returns its metadata. */
+        post: operations["filesUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/files/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Downloads a stored file. */
+        get: operations["filesDownload"];
+        put?: never;
+        post?: never;
+        /** Deletes a stored file and its bytes. */
+        delete: operations["filesDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the caller's notifications, newest first. */
+        get: operations["notificationsList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notifications/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marks one notification, or all of them, as read. */
+        post: operations["notificationsMarkRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/localization/locales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the supported locales. */
+        get: operations["localizationLocales"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/localization/translations/{locale}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the translation catalogue for a locale. */
+        get: operations["localizationTranslations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -319,12 +473,52 @@ export interface components {
                 [key: string]: string[];
             };
         };
+        /** Format: binary */
+        IFormFile: string;
+        /** @description A locale the application supports. */
+        LocaleDto: {
+            /** @description BCP 47 tag, e.g. "en" or "it". */
+            code: string;
+            /** @description Name shown in a language picker, in that language. */
+            name: string;
+        };
         /** @description Authenticates an account with email and password. */
         LoginCommand: {
             /** @description Email address of the account. */
             email: string;
             /** @description Raw password to verify. */
             password: string;
+        };
+        /** @description Body of the "mark read" endpoint. */
+        MarkReadRequest: {
+            /**
+             * Format: uuid
+             * @description The notification to mark, or null for all.
+             */
+            notificationId: null | string;
+        };
+        /** @description A notification as exposed to clients. */
+        NotificationDto: {
+            /**
+             * Format: uuid
+             * @description Notification identifier.
+             */
+            id: string;
+            /** @description Short headline. */
+            title: string;
+            /** @description Explanatory text. */
+            body: string;
+            /** @description Severity used for styling. */
+            level: string;
+            /** @description Optional in-app link. */
+            link: null | string;
+            /** @description Whether the user has not read it yet. */
+            isUnread: boolean;
+            /**
+             * Format: date-time
+             * @description When it was created.
+             */
+            createdAtUtc: string;
         };
         /** @description A page of results. */
         PagedResultOfUserProfileDto: {
@@ -383,6 +577,26 @@ export interface components {
             isBuiltIn: boolean;
             /** @description Permissions granted by the role. */
             permissions: string[];
+        };
+        /** @description Body of the "set setting" endpoints. */
+        SetSettingRequest: {
+            /** @description Raw value; must parse as the setting's declared type. */
+            value: string;
+        };
+        /** @description One effective setting as seen by the caller. */
+        SettingDto: {
+            /** @description Setting key. */
+            key: string;
+            /** @description Effective value after layering. */
+            value: string;
+            /** @description What the setting controls. */
+            description: string;
+            /** @description Where it may be overridden. */
+            scope: string;
+            /** @description Declared type of the value. */
+            valueType: string;
+            /** @description Whether the caller has their own value. */
+            isOverriddenByUser: boolean;
         };
         /** @description Body of the "set user roles" endpoint. */
         SetUserRolesRequest: {
@@ -815,6 +1029,227 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    settingsGetEffective: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingDto"][];
+                };
+            };
+        };
+    };
+    settingsSetMine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetSettingRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    settingsSetGlobal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetSettingRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    filesUpload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    file: components["schemas"]["IFormFile"];
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    filesDownload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    filesDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    notificationsList: {
+        parameters: {
+            query?: {
+                unreadOnly?: boolean;
+                take?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationDto"][];
+                };
+            };
+        };
+    };
+    notificationsMarkRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MarkReadRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    localizationLocales: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocaleDto"][];
+                };
+            };
+        };
+    };
+    localizationTranslations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                locale: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
                 };
             };
         };

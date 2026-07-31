@@ -1,0 +1,14 @@
+{
+  "common.save": "Salva",
+  "common.cancel": "Annulla",
+  "common.delete": "Elimina",
+  "common.search": "Cerca",
+  "common.loading": "Caricamento…",
+  "common.retry": "Riprova",
+  "auth.signIn": "Accedi",
+  "auth.signOut": "Esci",
+  "auth.createAccount": "Crea account",
+  "errors.network": "Impossibile raggiungere il server. Controlla la connessione.",
+  "errors.forbidden": "Non hai i permessi per farlo.",
+  "errors.unexpected": "Qualcosa è andato storto. Riprova."
+}

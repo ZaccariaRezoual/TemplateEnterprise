@@ -92,5 +92,15 @@ module depends on it, startup fails fast with a clear error.
   of another module's data, and declared module dependencies.
 - [`modules/audit`](../modules/audit/README.md) — observing the whole system
   from the outside, via a pipeline behavior and event subscribers.
+- [`modules/settings`](../modules/settings/README.md) — typed, layered
+  configuration other modules read through one service.
+- [`modules/email`](../modules/email/README.md) — a swappable transport, an
+  outbox instead of inline sending, and a module with no endpoints at all.
+- [`modules/storage`](../modules/storage/README.md) — a provider abstraction
+  that deliberately hides paths, and the security rules around uploads.
+- [`modules/notifications`](../modules/notifications/README.md) — a public
+  contract other modules publish to, ready for realtime push in Fase 6.
+- [`modules/localization`](../modules/localization/README.md) — resources over
+  database rows, served to both the API and vue-i18n.
 - [`modules/demo`](../modules/demo/README.md) — the minimal skeleton: query,
   validated command, event publish/subscribe.

@@ -1,0 +1,12 @@
+<!--
+  Public contract of the Notifications module: the request other modules
+  publish to notify a user, without referencing this module's implementation.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Modules.Notifications.Contracts</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\apps\api\src\Domain\EnterpriseFramework.Domain.csproj" />
+  </ItemGroup>
+</Project>
