@@ -13,8 +13,10 @@
  * - Recording echoed texts in the feature's client-state store.
  *
  * It contains no business logic and no API knowledge: the request lives in the
- * composable, the route in the feature service.
+ * composable, the operation in the feature service. Field markup, labelling
+ * and error wiring come from the design system.
  */
+import { Button, Input } from "@enterprise/ui";
 import { computed, ref } from "vue";
 import { ValidationError } from "@/core/errors/applicationError";
 import { useEcho } from "@/features/demo/composables/useDemo";
@@ -58,31 +60,17 @@ async function submit(): Promise<void> {
 
 <template>
   <form class="space-y-3" novalidate @submit.prevent="submit">
-    <div>
-      <label for="echo-text" class="block text-sm font-medium">Text to echo</label>
-      <div class="mt-1.5 flex gap-2">
-        <input
-          id="echo-text"
-          v-model="text"
-          type="text"
-          autocomplete="off"
-          :aria-invalid="fieldError !== undefined"
-          :aria-describedby="fieldError === undefined ? undefined : 'echo-text-error'"
-          class="min-w-0 flex-1 rounded-md border border-border bg-surface px-3 py-2 text-sm"
-          placeholder="Say something…"
-        />
-        <button
-          type="submit"
-          :disabled="echo.isPending.value"
-          class="cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {{ echo.isPending.value ? "Sending…" : "Send" }}
-        </button>
-      </div>
-
-      <p v-if="fieldError" id="echo-text-error" class="mt-1.5 text-sm text-danger">
-        {{ fieldError }}
-      </p>
+    <div class="flex items-end gap-2">
+      <Input
+        v-model="text"
+        label="Text to echo"
+        placeholder="Say something…"
+        autocomplete="off"
+        :error="fieldError"
+      />
+      <Button type="submit" :loading="echo.isPending.value" class="shrink-0">
+        {{ echo.isPending.value ? "Sending…" : "Send" }}
+      </Button>
     </div>
 
     <p v-if="echo.data.value" aria-live="polite" class="text-sm text-text-muted">

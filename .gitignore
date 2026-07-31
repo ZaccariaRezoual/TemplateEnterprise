@@ -35,3 +35,4 @@ logs/
 playwright-report/
 test-results/
 TestResults/
+storybook-static/

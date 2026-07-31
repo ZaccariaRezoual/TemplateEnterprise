@@ -1,0 +1,18 @@
+{
+  "name": "@enterprise/types",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Types and enums shared across the monorepo. Contains no runtime logic beyond constant objects, so any package can depend on it without pulling behavior.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"no tests in @enterprise/types\" && exit 0"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

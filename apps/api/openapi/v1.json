@@ -1,0 +1,151 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "EnterpriseFramework.Api | v1",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/demo/ping": {
+      "get": {
+        "tags": ["Demo"],
+        "summary": "Returns a static pong payload with the server UTC time.",
+        "operationId": "demoPing",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo/echo": {
+      "post": {
+        "tags": ["Demo"],
+        "summary": "Echoes the given text and publishes a domain event.",
+        "operationId": "demoEcho",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EchoCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EchoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EchoCommand": {
+        "required": ["text"],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Text to echo. Required, max 500 characters (see validator)."
+          }
+        },
+        "description": "Sample command proving validation and event publishing end-to-end.\r\nEchoes the given text back and publishes DemoEchoedEvent."
+      },
+      "EchoResponse": {
+        "required": ["text", "length"],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The echoed text."
+          },
+          "length": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "description": "Length of the echoed text, in characters.",
+            "format": "int32"
+          }
+        },
+        "description": "Response contract of EchoCommand."
+      },
+      "HttpValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": ["null", "string"]
+          },
+          "title": {
+            "type": ["null", "string"]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["null", "integer", "string"],
+            "format": "int32"
+          },
+          "detail": {
+            "type": ["null", "string"]
+          },
+          "instance": {
+            "type": ["null", "string"]
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "PingResponse": {
+        "required": ["message", "timestampUtc"],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Static confirmation message."
+          },
+          "timestampUtc": {
+            "type": "string",
+            "description": "Server UTC time at which the query was handled.",
+            "format": "date-time"
+          }
+        },
+        "description": "Response contract of PingQuery (exposed by the API and,\r\nthrough OpenAPI, by the generated SDK)."
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Demo"
+    }
+  ]
+}

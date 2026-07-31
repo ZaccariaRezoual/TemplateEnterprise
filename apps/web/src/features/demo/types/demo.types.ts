@@ -1,21 +1,15 @@
+import type { components } from "@enterprise/sdk";
+
 /**
- * Contracts of the Demo feature, mirroring the backend module's response
- * records. From Fase 3 these types come from the generated SDK
- * (`packages/sdk`) instead of being hand-written here.
+ * Contracts of the Demo feature.
+ *
+ * They are ALIASES of the generated SDK schemas, never hand-written copies:
+ * if the backend changes a contract, regenerating the SDK turns the mismatch
+ * into a compile error here instead of a runtime surprise in a component.
  */
 
 /** Response of `GET /api/demo/ping`. */
-export interface IPingResponse {
-  /** Static confirmation message returned by the API. */
-  message: string;
-  /** Server UTC time at which the query was handled (ISO 8601). */
-  timestampUtc: string;
-}
+export type IPingResponse = components["schemas"]["PingResponse"];
 
 /** Response of `POST /api/demo/echo`. */
-export interface IEchoResponse {
-  /** The text echoed back by the API. */
-  text: string;
-  /** Length of the echoed text, in characters. */
-  length: number;
-}
+export type IEchoResponse = components["schemas"]["EchoResponse"];

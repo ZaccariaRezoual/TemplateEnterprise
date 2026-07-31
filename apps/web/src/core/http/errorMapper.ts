@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import {
   ApplicationError,
   BusinessError,
@@ -15,36 +14,24 @@ import { parseProblemDetails } from "@/core/http/problemDetails";
  * Single translation point from transport failures to the application error
  * hierarchy — the exact inverse of the backend's `GlobalExceptionHandler`.
  *
- * This is what allows features to `catch (e) { if (e instanceof ForbiddenError) ... }`
- * without ever importing Axios or knowing about status codes.
+ * It is deliberately transport-agnostic (it takes a status and a body, not a
+ * library-specific error object), so replacing the HTTP layer never changes
+ * how errors are classified, and features can `catch (e) { if (e instanceof
+ * ForbiddenError) … }` without knowing what performs the request.
  *
- * @param error The error thrown by the transport layer.
- * @returns The matching {@link ApplicationError} subclass. Non-Axios errors are
- * wrapped in a generic {@link ApplicationError} so callers always get one type.
+ * @param status HTTP status code of the response.
+ * @param body Parsed response body; expected to be ProblemDetails.
+ * @param cause Underlying error, preserved for logging.
+ * @returns The matching {@link ApplicationError} subclass.
  */
-export function mapToApplicationError(error: unknown): ApplicationError {
-  if (error instanceof ApplicationError) {
-    return error;
-  }
-
-  if (!(error instanceof AxiosError)) {
-    return new ApplicationError("An unexpected error occurred.", { cause: error });
-  }
-
-  // No response at all: offline, timeout, DNS or CORS failure.
-  if (error.response === undefined) {
-    const message =
-      error.code === "ECONNABORTED"
-        ? "The request timed out. Please try again."
-        : "Could not reach the server. Check your connection.";
-    return new NetworkError(message, { cause: error });
-  }
-
-  const { status, data } = error.response;
-  const problem = parseProblemDetails(data);
-  const correlationId = problem?.correlationId;
-  const message = problem?.detail ?? problem?.title ?? error.message;
-  const options = { cause: error, correlationId };
+export function mapResponseToApplicationError(
+  status: number,
+  body: unknown,
+  cause?: unknown,
+): ApplicationError {
+  const problem = parseProblemDetails(body);
+  const message = problem?.detail ?? problem?.title ?? `Request failed with status ${status}.`;
+  const options = { cause, correlationId: problem?.correlationId };
 
   switch (status) {
     case 400:
@@ -62,4 +49,28 @@ export function mapToApplicationError(error: unknown): ApplicationError {
         ? new ServerError(message, options)
         : new ApplicationError(message, options);
   }
+}
+
+/**
+ * Maps a failure that produced no response at all — offline, DNS failure,
+ * timeout, or a request aborted by the browser.
+ *
+ * Kept separate from status mapping because these are usually retryable and
+ * deserve a different message than a server rejection.
+ *
+ * @param cause The thrown error.
+ * @returns A {@link NetworkError}, or the original error when it is already an
+ * {@link ApplicationError}.
+ */
+export function mapTransportFailure(cause: unknown): ApplicationError {
+  if (cause instanceof ApplicationError) {
+    return cause;
+  }
+
+  const isTimeout = cause instanceof DOMException && cause.name === "TimeoutError";
+  const message = isTimeout
+    ? "The request timed out. Please try again."
+    : "Could not reach the server. Check your connection.";
+
+  return new NetworkError(message, { cause });
 }

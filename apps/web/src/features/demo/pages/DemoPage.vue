@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
  * -----------------------------------------------------------------------------
  * DemoPage
@@ -12,12 +12,14 @@
  * - Hosts the echo form.
  * - Renders the client-only echo history from the feature's Pinia store.
  *
- * Copy this structure when building a real feature; it holds no business logic
- * itself. Removed once real features exist.
+ * Every visual element comes from the design system; the page adds layout, not
+ * styling primitives. Copy this structure when building a real feature.
  */
 import { ArrowPathIcon } from "@heroicons/vue/24/outline";
-import { usePing } from "@/features/demo/composables/useDemo";
+import { Badge, Button, Card } from "@enterprise/ui";
+import { formatDate } from "@enterprise/shared";
 import EchoForm from "@/features/demo/components/EchoForm.vue";
+import { usePing } from "@/features/demo/composables/useDemo";
 import { useDemoPreferencesStore } from "@/features/demo/stores/demoPreferences.store";
 
 const ping = usePing();
@@ -29,68 +31,71 @@ const preferences = useDemoPreferencesStore();
     <header>
       <h1 class="text-2xl font-semibold tracking-tight">Demo feature</h1>
       <p class="mt-1 text-text-muted">
-        Vertical slice through the stack: page → composable → feature service → HTTP client → API.
+        Vertical slice through the stack: page → composable → feature service → SDK → API.
       </p>
     </header>
 
-    <section class="rounded-xl border border-border bg-surface p-5" aria-labelledby="ping-heading">
-      <div class="flex items-center justify-between gap-4">
-        <h2 id="ping-heading" class="font-medium">Server state (TanStack Query)</h2>
-        <button
-          type="button"
-          class="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-sm text-text-muted transition-colors hover:text-text"
+    <Card title="Server state (TanStack Query)" heading-level="h2">
+      <template #actions>
+        <Button
+          variant="secondary"
+          size="sm"
           :disabled="ping.isFetching.value"
           @click="ping.refetch()"
         >
-          <ArrowPathIcon class="size-4" :class="{ 'animate-spin': ping.isFetching.value }" />
+          <template #icon>
+            <ArrowPathIcon class="size-4" :class="{ 'animate-spin': ping.isFetching.value }" />
+          </template>
           Refetch
-        </button>
-      </div>
+        </Button>
+      </template>
 
-      <p v-if="ping.isPending.value" class="mt-3 text-sm text-text-muted">Loading…</p>
+      <p v-if="ping.isPending.value" class="text-sm text-text-muted">Loading…</p>
 
-      <p v-else-if="ping.isError.value" class="mt-3 text-sm text-danger">
+      <p v-else-if="ping.isError.value" class="text-sm text-danger">
         {{ ping.error.value?.message }}
       </p>
 
-      <dl v-else-if="ping.data.value" class="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+      <dl v-else-if="ping.data.value" class="grid gap-3 text-sm sm:grid-cols-2">
         <div>
           <dt class="text-text-muted">Message</dt>
-          <dd class="font-medium">{{ ping.data.value.message }}</dd>
+          <dd class="mt-0.5">
+            <Badge variant="success">{{ ping.data.value.message }}</Badge>
+          </dd>
         </div>
         <div>
-          <dt class="text-text-muted">Server time (UTC)</dt>
-          <dd class="font-medium tabular-nums">{{ ping.data.value.timestampUtc }}</dd>
+          <dt class="text-text-muted">Server time</dt>
+          <dd class="mt-0.5 font-medium tabular-nums">
+            {{
+              formatDate(ping.data.value.timestampUtc, { dateStyle: "medium", timeStyle: "medium" })
+            }}
+          </dd>
         </div>
       </dl>
-    </section>
+    </Card>
 
-    <section class="rounded-xl border border-border bg-surface p-5" aria-labelledby="echo-heading">
-      <h2 id="echo-heading" class="font-medium">Mutation with validation</h2>
-      <p class="mt-1 mb-4 text-sm text-text-muted">
-        Submitting publishes a domain event on the server and invalidates the query above.
-      </p>
-      <EchoForm />
-    </section>
-
-    <section
-      class="rounded-xl border border-border bg-surface p-5"
-      aria-labelledby="history-heading"
+    <Card
+      title="Mutation with validation"
+      description="Submitting publishes a domain event on the server and invalidates the query above."
+      heading-level="h2"
     >
-      <div class="flex items-center justify-between gap-4">
-        <h2 id="history-heading" class="font-medium">Client state (Pinia)</h2>
-        <button
-          type="button"
-          class="cursor-pointer rounded-md border border-border px-2.5 py-1.5 text-sm text-text-muted transition-colors hover:text-text"
+      <EchoForm />
+    </Card>
+
+    <Card title="Client state (Pinia)" heading-level="h2">
+      <template #actions>
+        <Button
+          variant="secondary"
+          size="sm"
           :aria-expanded="preferences.isHistoryVisible"
           aria-controls="echo-history"
           @click="preferences.toggleHistory()"
         >
           {{ preferences.isHistoryVisible ? "Hide" : "Show" }}
-        </button>
-      </div>
+        </Button>
+      </template>
 
-      <div v-show="preferences.isHistoryVisible" id="echo-history" class="mt-3">
+      <div v-show="preferences.isHistoryVisible" id="echo-history">
         <ul v-if="preferences.history.length > 0" class="space-y-1 text-sm">
           <li v-for="(entry, index) in preferences.history" :key="`${index}-${entry}`">
             {{ entry }}
@@ -98,6 +103,6 @@ const preferences = useDemoPreferencesStore();
         </ul>
         <p v-else class="text-sm text-text-muted">Nothing echoed yet in this session.</p>
       </div>
-    </section>
+    </Card>
   </div>
 </template>

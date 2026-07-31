@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Vue 3 frontend application of the Enterprise Framework. Feature-first architecture consuming the API through the core HTTP client (and, from Fase 3, the generated SDK).",
+  "description": "Vue 3 frontend application of the Enterprise Framework. Feature-first architecture consuming the design system (@enterprise/ui) and the generated SDK (@enterprise/sdk).",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --build && vite build",
@@ -14,28 +14,31 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@enterprise/sdk": "workspace:*",
+    "@enterprise/shared": "workspace:*",
+    "@enterprise/types": "workspace:*",
+    "@enterprise/ui": "workspace:*",
     "@heroicons/vue": "^2.2.0",
     "@tanstack/vue-query": "^5.101.4",
     "@vueuse/core": "^14.4.0",
-    "axios": "^1.19.0",
     "motion-v": "^2.3.0",
     "pinia": "^4.0.2",
-    "vue": "^3.5.40",
+    "vue": "catalog:",
     "vue-router": "^5.2.0",
-    "zod": "^4.4.3"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
-    "@tailwindcss/vite": "^4.3.3",
+    "@tailwindcss/vite": "catalog:",
     "@types/node": "^26.1.2",
-    "@vitejs/plugin-vue": "^6.0.8",
+    "@vitejs/plugin-vue": "catalog:",
     "@vitest/coverage-v8": "^4.1.10",
-    "@vue/test-utils": "^2.4.11",
-    "jsdom": "^30.0.1",
-    "tailwindcss": "^4.3.3",
-    "typescript": "^5.9.3",
-    "vite": "^8.2.0",
-    "vitest": "^4.1.10",
-    "vue-tsc": "^3.3.9"
+    "@vue/test-utils": "catalog:",
+    "jsdom": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "vue-tsc": "catalog:"
   }
 }

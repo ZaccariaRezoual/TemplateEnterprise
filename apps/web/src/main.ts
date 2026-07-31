@@ -1,11 +1,11 @@
 import { VueQueryPlugin } from "@tanstack/vue-query";
+import { installTheme } from "@enterprise/ui";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 import App from "@/app/App.vue";
 import { createQueryClient } from "@/app/providers/queryClient";
 import { logger } from "@/core/logger/logger";
 import { createAppRouter } from "@/router";
-import { installTheme } from "@/shared/composables/useTheme";
 import "@/assets/styles/main.css";
 
 /**

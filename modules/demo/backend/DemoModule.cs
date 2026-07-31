@@ -1,3 +1,4 @@
+using EnterpriseFramework.Modules.Abstractions;
 using EnterpriseFramework.Modules.Demo.Features.Echo;
 using EnterpriseFramework.Modules.Demo.Features.Ping;
 using FluentValidation;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using EnterpriseFramework.Modules.Abstractions;
 
 namespace EnterpriseFramework.Modules.Demo;
 
@@ -38,16 +38,27 @@ public sealed class DemoModule : IModule
     {
         var group = endpoints.MapGroup("/api/demo").WithTags("Demo");
 
-        group.MapGet(
-            "/ping",
-            async (ISender sender, CancellationToken cancellationToken) =>
-                Results.Ok(await sender.Send(new PingQuery(), cancellationToken))
-        );
+        // TypedResults (not Results) is required: it carries the response type
+        // into the OpenAPI document, which is what makes the generated SDK
+        // fully typed. WithName sets the operationId the SDK uses as the
+        // method name, so renaming a handler never renames a public SDK method.
+        group
+            .MapGet(
+                "/ping",
+                async (ISender sender, CancellationToken cancellationToken) =>
+                    TypedResults.Ok(await sender.Send(new PingQuery(), cancellationToken))
+            )
+            .WithName("demoPing")
+            .WithSummary("Returns a static pong payload with the server UTC time.");
 
-        group.MapPost(
-            "/echo",
-            async (EchoCommand command, ISender sender, CancellationToken cancellationToken) =>
-                Results.Ok(await sender.Send(command, cancellationToken))
-        );
+        group
+            .MapPost(
+                "/echo",
+                async (EchoCommand command, ISender sender, CancellationToken cancellationToken) =>
+                    TypedResults.Ok(await sender.Send(command, cancellationToken))
+            )
+            .WithName("demoEcho")
+            .WithSummary("Echoes the given text and publishes a domain event.")
+            .ProducesValidationProblem();
     }
 }
