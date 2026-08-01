@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2023",
-    "lib": ["ES2023"],
+    // DOM is required even though this is the Node-side config: Playwright's
+    // `page.evaluate` bodies are serialised and run IN THE BROWSER, so they
+    // legitimately reference `document` and `window` while living in a file
+    // that Node executes.
+    "lib": ["ES2023", "DOM"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "types": ["node"],

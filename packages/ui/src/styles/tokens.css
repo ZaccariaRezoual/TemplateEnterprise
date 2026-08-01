@@ -43,4 +43,33 @@
     outline: var(--focus-ring-width) solid var(--color-primary);
     outline-offset: var(--focus-ring-offset);
   }
+
+  /* Touch targets, enforced where it actually matters.
+     `pointer: coarse` means a finger, whatever the screen width — so a
+     desktop layout stays compact while a tablet or touchscreen laptop gets
+     the full 44px. Sizing by breakpoint instead would miss both cases.
+     Scoped to controls: WCAG exempts inline links inside prose, and forcing
+     44px on them would wreck paragraph rhythm. */
+  @media (pointer: coarse) {
+    :where(
+      button,
+      [role="button"],
+      select,
+      textarea,
+      input:not([type="checkbox"], [type="radio"])
+    ) {
+      min-height: var(--touch-target-min);
+    }
+
+    :where(button, [role="button"]) {
+      min-width: var(--touch-target-min);
+    }
+  }
+
+  /* Removes the 300ms tap delay without disabling pinch-to-zoom, which
+     `touch-action: none` would — and zoom is an accessibility requirement,
+     never something to trade for responsiveness. */
+  :where(button, [role="button"], a, summary) {
+    touch-action: manipulation;
+  }
 }

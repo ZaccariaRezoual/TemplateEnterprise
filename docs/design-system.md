@@ -355,7 +355,103 @@ bundle — components render unstyled with no build error.
 
 ---
 
-## 12. Verification
+## 12. Responsive & mobile
+
+**The application supports mobile 100%.** Not "degrades acceptably" — every
+page and every control must be fully usable on a 375px phone with a finger.
+This section is as binding as the accessibility contract.
+
+### Breakpoints
+
+Tailwind's defaults, used as-is so the scale matches what every developer
+already knows:
+
+| Prefix | Min width | Represents             | What changes                           |
+| ------ | --------- | ---------------------- | -------------------------------------- |
+| _none_ | 0         | small phone (375px)    | **the base layout** — write this first |
+| `sm`   | 640px     | large phone, landscape | denser padding, inline label text      |
+| `md`   | 768px     | tablet                 | navigation moves into the header       |
+| `lg`   | 1024px    | laptop                 | multi-column content                   |
+| `xl`   | 1280px    | desktop                | wider container only                   |
+
+**Mobile-first is not a preference, it is the mechanism.** Unprefixed classes
+are the phone layout; `sm:`/`md:`/`lg:` only ever _add_. Writing desktop
+styles first and undoing them with `max-` queries produces layouts that break
+on the devices you did not test.
+
+Test at **375, 768 and 1440**. 375 is the one that finds bugs.
+
+### Non-negotiable rules
+
+| Rule                                | Why                                                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **No horizontal page scroll, ever** | The one layout bug a user cannot work around. A deliberately scrollable _region_ (a data table) is fine; the page is not. |
+| **`min-h-dvh`, never `h-screen`**   | `100vh` on mobile is taller than the visible area because of browser chrome, so the bottom of every screen is cut off.    |
+| **Body text ≥16px on mobile**       | Below 16px iOS auto-zooms on focus, which reflows the page under the user's finger.                                       |
+| **Never disable zoom**              | `user-scalable=no` and `maximum-scale=1` are accessibility failures. The viewport meta stays as it is.                    |
+| **Nothing depends on hover**        | There is no hover on a touch screen. Hover may only _enhance_ what tap already reveals.                                   |
+| **Fixed bars reserve space**        | Content under a fixed header or bottom bar is unreachable. Reserve padding on the scrolling container.                    |
+| **Respect safe areas**              | `env(safe-area-inset-*)` for anything pinned to an edge, or the iOS home indicator eats the last row of controls.         |
+
+### Touch targets
+
+`--touch-target-min: 44px`, `--touch-target-spacing: 8px`.
+
+Enforced in `tokens.css` under `@media (pointer: coarse)` — by **input
+modality, not viewport width**. This matters: a tablet in landscape is wide
+_and_ touch-operated, and a touchscreen laptop is both at once. Sizing by
+breakpoint would miss both. Desktop pointer layouts stay compact; anything
+driven by a finger gets the full 44px automatically, with no per-component
+work.
+
+Scoped to controls (`button`, `[role=button]`, form fields). WCAG exempts
+inline links inside prose, and forcing 44px on them would wreck paragraph
+rhythm.
+
+`touch-action: manipulation` on interactive elements removes the 300ms tap
+delay **without** disabling pinch-to-zoom.
+
+### Layout patterns
+
+**Navigation** — bottom bar on phones, inline in the header from `md` up.
+Bottom is within thumb reach and is where users look on a phone. Maximum 5
+items, each with an icon _and_ a label: labels alone are hard to scan, icons
+alone are hard to understand.
+
+**Header** — holds only what must always be reachable (identity, status,
+account). Everything else moves out. Packing brand, nav and every control
+into one row is what causes horizontal scroll at 375px. Long values truncate;
+a long product name must never be what breaks the layout.
+
+**Dialog** — a full-width bottom sheet on phones, a centred box from `sm` up.
+A centred box on a phone wastes the edges and puts actions away from the
+thumb. `max-h-[85dvh]` with internal scrolling keeps the close affordance
+reachable when content is long.
+
+**Data tables** — keep every column and scroll _within_ the region. This
+requires a `min-w-*` on the table: without it `w-full` compresses columns into
+unreadable slivers instead of overflowing. The region gets `tabindex="0"`,
+`role="region"` and a label, because overflow containers are otherwise not
+keyboard-scrollable. Dropping columns on small screens hides data the user
+came for — prefer scrolling.
+
+**Forms** — single column on mobile, always. Side-by-side fields at 375px
+leave neither readable. Use semantic `type`s (`email`, `tel`, `number`) so the
+correct keyboard appears.
+
+### Verification
+
+`apps/web/e2e/responsive.spec.ts` asserts these at real device sizes, because
+responsive regressions are invisible to every other test: assertions on roles
+and text pass perfectly while the page scrolls sideways and half the controls
+are too small to tap. It measures horizontal overflow, bottom-bar placement,
+whether the last control is actually covered (`elementFromPoint`, not bounding
+boxes — a fixed bar lives in viewport coordinates while boxes are in document
+ones), touch-target heights under `pointer: coarse`, and `tap()` without hover.
+
+---
+
+## 13. Verification
 
 ```bash
 pnpm --filter @enterprise/ui storybook        # http://localhost:6006
@@ -366,6 +462,10 @@ pnpm --filter @enterprise/ui test             # behaviour + a11y
 The Storybook theme switcher is the verification surface: **every story must
 look correct in both themes.** A component that breaks after the switch has
 hardcoded a value instead of using a token.
+
+Responsive behaviour is verified by `apps/web/e2e/responsive.spec.ts` (see
+§12), which runs at 375px, on an emulated touch device, and at tablet and
+desktop widths.
 
 ---
 
@@ -381,3 +481,9 @@ hardcoded a value instead of using a token.
 | A colour-only status indicator        | colour **plus** text or `srLabel`            |
 | Patching a component inside a project | fix the tokenisation gap in the framework    |
 | A new colour "just for this screen"   | a semantic token, or an existing one         |
+| `h-screen` / `100vh`                  | `min-h-dvh`                                  |
+| Desktop first, undone with `max-`     | mobile base, extended with `sm:` `md:` `lg:` |
+| An action that appears only on hover  | visible on tap; hover may only enhance       |
+| A fixed bar with no reserved padding  | padding on the scrolling container           |
+| `w-full` table in `overflow-x-auto`   | add `min-w-*` so it scrolls, not squashes    |
+| Shipping a page tested only at 1440px | check 375px — that is where bugs are         |

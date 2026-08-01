@@ -57,8 +57,20 @@ watch(search, () => {
           {{ users.error.value?.message }}
         </p>
 
-        <div v-else-if="users.data.value" class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
+        <!-- A data table keeps all its columns and scrolls WITHIN this region
+             on narrow screens. `min-w` is what makes that work: without it
+             `w-full` compresses the columns into unreadable slivers instead of
+             overflowing. Dropping columns on mobile was the alternative, and it
+             hides data the user came for. `tabindex` makes the region
+             keyboard-scrollable, which overflow containers otherwise are not. -->
+        <div
+          v-else-if="users.data.value"
+          class="overflow-x-auto"
+          tabindex="0"
+          role="region"
+          aria-label="User accounts, scrollable"
+        >
+          <table class="w-full min-w-2xl text-left text-sm">
             <caption class="sr-only">
               User accounts
             </caption>

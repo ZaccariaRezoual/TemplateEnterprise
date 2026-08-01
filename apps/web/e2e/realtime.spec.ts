@@ -62,8 +62,13 @@ test.describe("Realtime", () => {
     await expect(second.getByTestId("notification-bell")).toBeVisible();
     // Wait for the second tab's socket to actually be up. Events are not
     // replayed on connect, so triggering before it is connected would test
-    // nothing — and the indicator disappearing is exactly "we are live".
-    await expect(second.getByTestId("connection-indicator")).toHaveCount(0);
+    // nothing. Asserting on the explicit status beats waiting for the warning
+    // to disappear: an absent element is also absent before it would ever
+    // appear, so that wait can pass while still disconnected.
+    await expect(second.getByTestId("connection-status")).toHaveAttribute(
+      "data-status",
+      "connected",
+    );
 
     await first.getByTestId("notify-me").click();
 

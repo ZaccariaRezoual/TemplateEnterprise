@@ -89,11 +89,17 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <!-- Mobile: a bottom sheet reaching the full width, because a centred box
+       on a phone wastes the edges and puts actions where the thumb is not.
+       From `sm` up it becomes the familiar centred dialog. `max-h-[85dvh]`
+       with internal scrolling keeps the close affordance reachable when the
+       content is long — dvh, not vh, so mobile browser chrome is accounted
+       for. -->
   <dialog
     ref="dialogRef"
     :aria-labelledby="titleId"
     :aria-describedby="description ? descriptionId : undefined"
-    class="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-(--dialog-radius) border border-border bg-surface p-0 text-text backdrop:bg-black/50"
+    class="mx-auto mt-auto mb-0 max-h-[85dvh] w-full overflow-y-auto rounded-t-(--dialog-radius) rounded-b-none border border-border bg-surface p-0 text-text shadow-(--dialog-shadow) backdrop:bg-(--dialog-backdrop) sm:my-auto sm:w-[min(32rem,calc(100vw-2rem))] sm:rounded-b-(--dialog-radius)"
     @close="onNativeClose"
     @cancel="onCancel"
     @click="onBackdropClick"

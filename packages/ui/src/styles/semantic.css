@@ -67,6 +67,13 @@
   /* Disabled must read as unavailable without dropping below the 3:1
      contrast a user still needs to read the label. */
   --opacity-disabled: 0.6;
+
+  /* Smallest comfortable touch target (Apple HIG 44pt; Material asks 48dp,
+     and 44 with 8px spacing satisfies both in practice). Enforced by input
+     MODALITY rather than viewport width — a tablet in landscape is wide and
+     still touch-operated, and a laptop with a touchscreen is both at once. */
+  --touch-target-min: 44px;
+  --touch-target-spacing: 8px;
 }
 
 /* Light theme (default) */

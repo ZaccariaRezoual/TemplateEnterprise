@@ -19,8 +19,9 @@ Framework enterprise monorepo (Vue 3 + .NET 10) che fa da base a tutti i futuri 
 3. **Rispetta l'ordine delle fasi** quando l'utente dice genericamente "procedi" / "continua": riprendi dalla prima fase non completata secondo i criteri di done in PLAN.md.
 4. **Ogni nuova funzionalità riusabile va nel posto giusto**: se può servire ad almeno due progetti → `packages/` o `modules/`, non dentro `apps/`.
 5. **Ogni modifica o aggiunta UI/UX parte da [docs/design-system.md](docs/design-system.md)**: prima di scrivere markup o stili, leggi il catalogo dei token e il regolamento, e usa ciò che esiste già. Se serve un valore nuovo, decidi il livello con la regola in §1 del documento, aggiungi il token e documentalo **nello stesso commit**. Vale per `packages/ui`, `apps/web`, i frontend dei moduli e qualsiasi pagina o componente nuovo. Un valore letterale nel markup (`#3b82f6`, `16px`, `rounded-md`, `duration-300`) è un bug, non una scorciatoia.
-6. **Aggiorna la documentazione** (`docs/`, README dei moduli) contestualmente al codice, non dopo.
-7. **Nessuna feature è completa senza test** (unit sempre; integration per il backend; e2e per i flussi principali).
+6. **Ogni pagina e ogni elemento è responsive e mobile-first, senza eccezioni**: l'applicativo supporta il mobile al 100%, non "in modo accettabile". Si scrive prima il layout del telefono (classi senza prefisso) e lo si _estende_ con `sm:`/`md:`/`lg:`; mai il contrario. Regole complete in §12 del design system, ma quelle che non si negoziano mai: **nessuno scroll orizzontale di pagina**, `min-h-dvh` invece di `h-screen`, testo ≥16px su mobile, zoom mai disabilitato, **niente che dipenda dall'hover** (su touch non esiste), barre fisse che riservano spazio al contenuto, e `env(safe-area-inset-*)` per ciò che è ancorato ai bordi. I target touch (44px) sono già imposti dai token via `pointer: coarse`. Una pagina nuova non è finita finché non è stata verificata a **375px**.
+7. **Aggiorna la documentazione** (`docs/`, README dei moduli) contestualmente al codice, non dopo.
+8. **Nessuna feature è completa senza test** (unit sempre; integration per il backend; e2e per i flussi principali; `e2e/responsive.spec.ts` per il comportamento mobile).
 
 ## Regole architetturali non negoziabili
 
