@@ -75,8 +75,8 @@ public sealed class SetUserRolesCommandHandler : IRequestHandler<SetUserRolesCom
 
         if (
             request.UserId == _currentUser.UserId
-            && !requested.Contains(BuiltInRoles.Administrator, StringComparer.Ordinal)
-            && _currentUser.Roles.Contains(BuiltInRoles.Administrator, StringComparer.Ordinal)
+            && !requested.Contains(BuiltInRoles.Admin, StringComparer.Ordinal)
+            && _currentUser.Roles.Contains(BuiltInRoles.Admin, StringComparer.Ordinal)
         )
         {
             throw new BusinessException(

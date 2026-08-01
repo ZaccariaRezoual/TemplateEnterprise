@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace EnterpriseFramework.Modules.Authorization.Features.GrantDefaultRole;
 
 /// <summary>
-/// Grants the default "User" role to every newly registered account.
+/// Grants the default "BasicUser" role to every newly registered account.
 ///
 /// This is the module boundary working as designed: Auth publishes that an
 /// account exists and knows nothing about roles; Authorization decides what a
@@ -56,12 +56,12 @@ public sealed partial class GrantDefaultRoleOnUserRegistered
         var userId = notification.DomainEvent.UserId;
 
         var defaultRole = await _dbContext
-            .Roles.SingleOrDefaultAsync(r => r.Name == BuiltInRoles.User, cancellationToken)
+            .Roles.SingleOrDefaultAsync(r => r.Name == BuiltInRoles.BasicUser, cancellationToken)
             .ConfigureAwait(false);
 
         if (defaultRole is null)
         {
-            LogMissingDefaultRole(_logger, BuiltInRoles.User, userId);
+            LogMissingDefaultRole(_logger, BuiltInRoles.BasicUser, userId);
             return;
         }
 

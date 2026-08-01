@@ -38,5 +38,8 @@ public sealed class PostgresApiFactory : WebApplicationFactory<Program>, IAsyncL
         // accident in unrelated flows (all tests share one client "IP" here).
         builder.UseSetting("RateLimiting:PermitLimit", "1000");
         builder.UseSetting("Modules:Auth:CredentialsPermitLimit", "1000");
+        // Same bootstrap account development gets, so the tests exercise the
+        // path a developer actually meets on a fresh database.
+        builder.UseSetting("Modules:Auth:BootstrapAdmin:Enabled", "true");
     }
 }

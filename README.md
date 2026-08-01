@@ -63,6 +63,13 @@ pnpm --filter @enterprise/web test:e2e   # end-to-end (API must be running)
 node scripts/generate-sdk.mjs
 ```
 
+Sign in at http://localhost:5173 with **admin@example.com** / **Password123!** —
+the bootstrap administrator seeded in Development only. Registration creates
+plain accounts (`BasicUser`), so this is the account that can administer users
+and roles. Configure or disable it under `Modules:Auth:BootstrapAdmin`; a
+deployment that enables it **must** set its own password, since this one is
+public in the repository. See [modules/auth/README.md](modules/auth/README.md).
+
 Seq (structured log viewer) is available at http://localhost:5341 once compose
 is up (login `admin` / `dev_password`). API health: `/health/ready`. OpenAPI
 document: `/openapi/v1.json`.

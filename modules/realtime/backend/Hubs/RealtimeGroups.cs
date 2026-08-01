@@ -27,7 +27,7 @@ public static class RealtimeGroups
     /// Group carrying every connection whose account holds a role.
     ///
     /// Scoped by tenant when multi-tenancy is on: without it, an event sent
-    /// to "role:Administrator" would reach the administrators of EVERY
+    /// to "role:Admin" would reach the administrators of EVERY
     /// customer — the one broadcast that silently crosses the isolation
     /// boundary the query filters protect everywhere else.
     /// </summary>

@@ -47,7 +47,7 @@ Other decisions worth knowing:
 - Requests to non-tenantless paths without a tenant are **rejected**, not
   allowed through unscoped.
 - SignalR role groups are **tenant-scoped** when tenancy is on. Otherwise an
-  event sent to `role:Administrator` would reach the administrators of every
+  event sent to `role:Admin` would reach the administrators of every
   customer — the one broadcast that crosses the boundary query filters protect
   everywhere else.
 - Use `IgnoreQueryFilters()` deliberately and rarely: the Users projection

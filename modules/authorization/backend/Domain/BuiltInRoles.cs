@@ -9,10 +9,10 @@ namespace EnterpriseFramework.Modules.Authorization.Domain;
 public static class BuiltInRoles
 {
     /// <summary>Full access, including user and role administration.</summary>
-    public const string Administrator = "Administrator";
+    public const string Admin = "Admin";
 
     /// <summary>Default role granted to every new account: no admin permissions.</summary>
-    public const string User = "User";
+    public const string BasicUser = "BasicUser";
 
     /// <summary>
     /// Definitions applied by the seeder, idempotently, at startup.
@@ -20,7 +20,7 @@ public static class BuiltInRoles
     /// <returns>Name, description and permissions of each built-in role.</returns>
     public static IReadOnlyList<(string Name, string Description, string[] Permissions)> Definitions =>
         [
-            (Administrator, "Full access to every feature.", [.. Permissions.All]),
-            (User, "Standard access without administration.", []),
+            (Admin, "Full access to every feature.", [.. Permissions.All]),
+            (BasicUser, "Standard access without administration.", []),
         ];
 }

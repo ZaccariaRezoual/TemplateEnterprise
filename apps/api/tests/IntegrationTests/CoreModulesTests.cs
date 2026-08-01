@@ -22,7 +22,7 @@ namespace EnterpriseFramework.IntegrationTests;
 /// </summary>
 public sealed class CoreModulesTests : IClassFixture<PostgresApiFactory>
 {
-    private static readonly string[] AdministratorRole = ["Administrator"];
+    private static readonly string[] AdminRole = [Modules.Authorization.Domain.BuiltInRoles.Admin];
 
     private readonly PostgresApiFactory _factory;
 
@@ -73,7 +73,7 @@ public sealed class CoreModulesTests : IClassFixture<PostgresApiFactory>
         body.RootElement.GetProperty("roles")
             .EnumerateArray()
             .Select(r => r.GetString())
-            .ShouldContain("User");
+            .ShouldContain(Modules.Authorization.Domain.BuiltInRoles.BasicUser);
         // The default role carries no administration permissions.
         body.RootElement.GetProperty("permissions").GetArrayLength().ShouldBe(0);
     }
@@ -83,7 +83,7 @@ public sealed class CoreModulesTests : IClassFixture<PostgresApiFactory>
     {
         // The Users module never reads Auth's tables: the profile can only
         // exist because the registration event crossed the module boundary.
-        var (adminClient, _, _) = await RegisterAsAdministratorAsync();
+        var (adminClient, _, _) = await RegisterAsAdminAsync();
         var (_, _, memberEmail) = await RegisterAsync();
 
         var response = await adminClient.GetAsync(
@@ -112,7 +112,7 @@ public sealed class CoreModulesTests : IClassFixture<PostgresApiFactory>
     [Fact]
     public async Task ProtectedEndpoint_AllowsOnceThePermissionIsGrantedAndTheTokenRefreshed()
     {
-        var (adminClient, _, _) = await RegisterAsAdministratorAsync();
+        var (adminClient, _, _) = await RegisterAsAdminAsync();
 
         var response = await adminClient.GetAsync(new Uri("/api/users", UriKind.Relative));
 
@@ -126,7 +126,7 @@ public sealed class CoreModulesTests : IClassFixture<PostgresApiFactory>
 
         var response = await memberClient.PutAsync(
             new Uri($"/api/authorization/users/{memberId}/roles", UriKind.Relative),
-            Json(new { roleNames = AdministratorRole })
+            Json(new { roleNames = AdminRole })
         );
 
         // A user cannot promote themselves: the module's own administration
@@ -137,7 +137,7 @@ public sealed class CoreModulesTests : IClassFixture<PostgresApiFactory>
     [Fact]
     public async Task Audit_RecordsCommandsAndLoginsFromModulesThatIgnoreIt()
     {
-        var (adminClient, adminId, adminEmail) = await RegisterAsAdministratorAsync();
+        var (adminClient, adminId, adminEmail) = await RegisterAsAdminAsync();
 
         // A login produces an event-sourced entry...
         await adminClient.PostAsync(
@@ -167,11 +167,11 @@ public sealed class CoreModulesTests : IClassFixture<PostgresApiFactory>
     }
 
     /// <summary>
-    /// Registers an account, promotes it to Administrator directly in the
+    /// Registers an account, promotes it to Admin directly in the
     /// database-backed module, then signs in again so the new permissions are
     /// present in the token.
     /// </summary>
-    private async Task<(HttpClient Client, Guid UserId, string Email)> RegisterAsAdministratorAsync()
+    private async Task<(HttpClient Client, Guid UserId, string Email)> RegisterAsAdminAsync()
     {
         var (client, userId, email) = await RegisterAsync();
 
@@ -180,7 +180,7 @@ public sealed class CoreModulesTests : IClassFixture<PostgresApiFactory>
             var dbContext =
                 scope.ServiceProvider.GetRequiredService<Modules.Authorization.Persistence.AuthorizationDbContext>();
             var adminRole = dbContext.Roles.Single(r =>
-                r.Name == Modules.Authorization.Domain.BuiltInRoles.Administrator
+                r.Name == Modules.Authorization.Domain.BuiltInRoles.Admin
             );
             dbContext.UserRoles.Add(
                 Modules.Authorization.Domain.UserRole.Grant(userId, adminRole.Id)
