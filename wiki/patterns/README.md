@@ -1,0 +1,50 @@
+# Pattern di sviluppo
+
+Indice per **attività**: cerca quello che devi fare, non l'area tecnica in cui
+ricade.
+
+Ogni pagina segue lo stesso schema (fonte normativa → quando serve → procedura
+→ come si verifica → errori tipici). Per aggiungerne una, copia
+[`_template.md`](_template.md) e leggi «Come si contribuisce» nella
+[home della wiki](../README.md).
+
+## Backend
+
+| Devo…                                          | Pagina                                                  |
+| ---------------------------------------------- | ------------------------------------------------------- |
+| esporre una nuova operazione dell'API          | [Aggiungere un endpoint](add-endpoint.md)               |
+| creare un modulo nuovo da zero                 | [Creare un modulo](create-module.md)                    |
+| far comunicare due moduli                      | [Far parlare due moduli](module-to-module.md)           |
+| proteggere qualcosa con un permesso nuovo      | [Aggiungere un permesso](add-permission.md)             |
+| dare al modulo le sue tabelle                  | [Persistenza di un modulo](module-persistence.md)       |
+| segnalare un errore al client                  | [Errori](errors.md)                                     |
+| far arrivare un evento ai client senza refresh | [Rendere un evento realtime](make-it-realtime.md)       |
+| mostrare qualcosa in dashboard                 | [Contribuire un widget](contribute-dashboard-widget.md) |
+| scrivere i test giusti                         | [Testare il backend](test-backend.md)                   |
+
+## Frontend
+
+_In arrivo (Fase 2 del [piano](../../plans/wiki.md))._
+
+| Devo…                                        | Pagina                    |
+| -------------------------------------------- | ------------------------- |
+| aggiungere una feature che consuma l'API     | `add-feature.md`          |
+| decidere dove tenere uno stato               | `state.md`                |
+| aggiornare l'SDK dopo un cambio di contratto | `regenerate-sdk.md`       |
+| aggiungere un componente al design system    | `add-ui-component.md`     |
+| scegliere il token giusto                    | `use-design-tokens.md`    |
+| verificare che una pagina sia responsive     | `responsive-checklist.md` |
+| nascondere qualcosa a chi non può vederlo    | `client-permissions.md`   |
+| aggiungere una stringa tradotta              | `i18n.md`                 |
+| scrivere i test giusti                       | `test-frontend.md`        |
+
+## Trasversali
+
+_In arrivo (Fase 3 del [piano](../../plans/wiki.md))._
+
+| Devo…                                 | Pagina               |
+| ------------------------------------- | -------------------- |
+| aprire una PR come si deve            | `git-workflow.md`    |
+| rivedere il codice di qualcun altro   | `code-review.md`     |
+| creare un progetto nuovo dal template | `new-project.md`     |
+| capire un errore che non ha senso     | `troubleshooting.md` |
