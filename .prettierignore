@@ -2,6 +2,9 @@ pnpm-lock.yaml
 # Generated from OpenAPI: formatting is owned by the generator, so the CI
 # drift check compares byte-identical output.
 packages/sdk/src/generated/
+# Emitted by `dotnet build`. Formatting it here would leave the file dirty
+# after every build and defeat the same drift check.
+apps/api/openapi/v1.json
 node_modules/
 dist/
 coverage/

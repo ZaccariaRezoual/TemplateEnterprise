@@ -7,7 +7,9 @@
   "paths": {
     "/api/features": {
       "get": {
-        "tags": ["Features"],
+        "tags": [
+          "Features"
+        ],
         "summary": "Returns every feature flag evaluated for the caller.",
         "operationId": "featuresGetAll",
         "responses": {
@@ -29,7 +31,9 @@
     },
     "/api/audit": {
       "get": {
-        "tags": ["Audit"],
+        "tags": [
+          "Audit"
+        ],
         "summary": "Reads the audit trail, newest first.",
         "operationId": "auditList",
         "parameters": [
@@ -38,7 +42,10 @@
             "in": "query",
             "schema": {
               "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": ["integer", "string"],
+              "type": [
+                "integer",
+                "string"
+              ],
               "format": "int32",
               "default": 50
             }
@@ -63,7 +70,9 @@
     },
     "/api/realtime/presence": {
       "get": {
-        "tags": ["Realtime"],
+        "tags": [
+          "Realtime"
+        ],
         "summary": "Lists the accounts currently connected.",
         "operationId": "realtimePresence",
         "responses": {
@@ -86,7 +95,9 @@
     },
     "/api/dashboard/widgets": {
       "get": {
-        "tags": ["Dashboard"],
+        "tags": [
+          "Dashboard"
+        ],
         "summary": "Returns the dashboard tiles visible to the caller.",
         "operationId": "dashboardWidgets",
         "responses": {
@@ -108,7 +119,9 @@
     },
     "/api/demo/ping": {
       "get": {
-        "tags": ["Demo"],
+        "tags": [
+          "Demo"
+        ],
         "summary": "Returns a static pong payload with the server UTC time.",
         "operationId": "demoPing",
         "responses": {
@@ -127,7 +140,9 @@
     },
     "/api/demo/echo": {
       "post": {
-        "tags": ["Demo"],
+        "tags": [
+          "Demo"
+        ],
         "summary": "Echoes the given text and publishes a domain event.",
         "operationId": "demoEcho",
         "requestBody": {
@@ -166,7 +181,9 @@
     },
     "/api/demo/notify-me": {
       "post": {
-        "tags": ["Demo"],
+        "tags": [
+          "Demo"
+        ],
         "summary": "Sends the caller a notification, demonstrating the realtime path.",
         "operationId": "demoNotifyMe",
         "requestBody": {
@@ -198,7 +215,9 @@
     },
     "/api/auth/register": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Creates an account and signs it in.",
         "operationId": "authRegister",
         "requestBody": {
@@ -237,7 +256,9 @@
     },
     "/api/auth/login": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Authenticates with email and password.",
         "operationId": "authLogin",
         "requestBody": {
@@ -276,7 +297,9 @@
     },
     "/api/auth/refresh": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Rotates the refresh token and returns a new access token.",
         "operationId": "authRefresh",
         "responses": {
@@ -295,7 +318,9 @@
     },
     "/api/auth/logout": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Revokes the current session's refresh token.",
         "operationId": "authLogout",
         "responses": {
@@ -307,7 +332,9 @@
     },
     "/api/auth/me": {
       "get": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Returns the authenticated caller's profile.",
         "operationId": "authMe",
         "responses": {
@@ -326,7 +353,9 @@
     },
     "/api/authorization/me": {
       "get": {
-        "tags": ["Authorization"],
+        "tags": [
+          "Authorization"
+        ],
         "summary": "Returns the caller's effective roles and permissions.",
         "operationId": "authorizationMe",
         "responses": {
@@ -345,7 +374,9 @@
     },
     "/api/authorization/roles": {
       "get": {
-        "tags": ["Authorization"],
+        "tags": [
+          "Authorization"
+        ],
         "summary": "Lists every role with its permissions.",
         "operationId": "authorizationListRoles",
         "responses": {
@@ -367,7 +398,9 @@
     },
     "/api/authorization/users/{userId}/roles": {
       "put": {
-        "tags": ["Authorization"],
+        "tags": [
+          "Authorization"
+        ],
         "summary": "Replaces the roles assigned to an account.",
         "operationId": "authorizationSetUserRoles",
         "parameters": [
@@ -410,7 +443,9 @@
     },
     "/api/authorization/permissions": {
       "get": {
-        "tags": ["Authorization"],
+        "tags": [
+          "Authorization"
+        ],
         "summary": "Lists the permission catalogue known to the framework.",
         "operationId": "authorizationListPermissions",
         "responses": {
@@ -432,7 +467,9 @@
     },
     "/api/users": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Lists user profiles, paged and searchable.",
         "operationId": "usersList",
         "parameters": [
@@ -441,7 +478,10 @@
             "in": "query",
             "schema": {
               "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": ["integer", "string"],
+              "type": [
+                "integer",
+                "string"
+              ],
               "format": "int32",
               "default": 1
             }
@@ -451,7 +491,10 @@
             "in": "query",
             "schema": {
               "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": ["integer", "string"],
+              "type": [
+                "integer",
+                "string"
+              ],
               "format": "int32",
               "default": 25
             }
@@ -490,7 +533,9 @@
     },
     "/api/users/{userId}": {
       "put": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Updates a user profile.",
         "operationId": "usersUpdate",
         "parameters": [
@@ -540,7 +585,9 @@
     },
     "/api/settings": {
       "get": {
-        "tags": ["Settings"],
+        "tags": [
+          "Settings"
+        ],
         "summary": "Returns every setting with its effective value for the caller.",
         "operationId": "settingsGetEffective",
         "responses": {
@@ -562,7 +609,9 @@
     },
     "/api/settings/me/{key}": {
       "put": {
-        "tags": ["Settings"],
+        "tags": [
+          "Settings"
+        ],
         "summary": "Sets the caller's own value for a setting.",
         "operationId": "settingsSetMine",
         "parameters": [
@@ -594,7 +643,9 @@
     },
     "/api/settings/{key}": {
       "put": {
-        "tags": ["Settings"],
+        "tags": [
+          "Settings"
+        ],
         "summary": "Sets the installation-wide value for a setting.",
         "operationId": "settingsSetGlobal",
         "parameters": [
@@ -626,14 +677,18 @@
     },
     "/api/files": {
       "post": {
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "summary": "Uploads a file and returns its metadata.",
         "operationId": "filesUpload",
         "requestBody": {
           "content": {
             "multipart/form-data": {
               "schema": {
-                "required": ["file"],
+                "required": [
+                  "file"
+                ],
                 "type": "object",
                 "properties": {
                   "file": {
@@ -661,7 +716,9 @@
     },
     "/api/files/{id}": {
       "get": {
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "summary": "Downloads a stored file.",
         "operationId": "filesDownload",
         "parameters": [
@@ -682,7 +739,9 @@
         }
       },
       "delete": {
-        "tags": ["Files"],
+        "tags": [
+          "Files"
+        ],
         "summary": "Deletes a stored file and its bytes.",
         "operationId": "filesDelete",
         "parameters": [
@@ -705,7 +764,9 @@
     },
     "/api/notifications": {
       "get": {
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "summary": "Lists the caller's notifications, newest first.",
         "operationId": "notificationsList",
         "parameters": [
@@ -722,7 +783,10 @@
             "in": "query",
             "schema": {
               "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": ["integer", "string"],
+              "type": [
+                "integer",
+                "string"
+              ],
               "format": "int32",
               "default": 50
             }
@@ -747,7 +811,9 @@
     },
     "/api/notifications/read": {
       "post": {
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "summary": "Marks one notification, or all of them, as read.",
         "operationId": "notificationsMarkRead",
         "requestBody": {
@@ -769,7 +835,9 @@
     },
     "/api/localization/locales": {
       "get": {
-        "tags": ["Localization"],
+        "tags": [
+          "Localization"
+        ],
         "summary": "Lists the supported locales.",
         "operationId": "localizationLocales",
         "responses": {
@@ -791,7 +859,9 @@
     },
     "/api/localization/translations/{locale}": {
       "get": {
-        "tags": ["Localization"],
+        "tags": [
+          "Localization"
+        ],
         "summary": "Returns the translation catalogue for a locale.",
         "operationId": "localizationTranslations",
         "parameters": [
@@ -842,7 +912,10 @@
             "format": "uuid"
           },
           "userId": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Account that acted, or null when anonymous.",
             "format": "uuid"
           },
@@ -859,7 +932,10 @@
             "description": "Whether the operation succeeded."
           },
           "correlationId": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Correlation id, to join with the logs."
           },
           "occurredAtUtc": {
@@ -871,7 +947,11 @@
         "description": "Audit entry as exposed to clients."
       },
       "AuthResponse": {
-        "required": ["accessToken", "accessTokenExpiresAtUtc", "user"],
+        "required": [
+          "accessToken",
+          "accessTokenExpiresAtUtc",
+          "user"
+        ],
         "type": "object",
         "properties": {
           "accessToken": {
@@ -891,7 +971,10 @@
         "description": "Body returned by register, login and refresh.\r\n\r\nDeliberately does NOT contain the refresh token: that travels only in an\r\nhttpOnly cookie, out of reach of any script (XSS containment). The access\r\ntoken is meant to be held in memory by the client, never persisted."
       },
       "DashboardWidget": {
-        "required": ["id", "title"],
+        "required": [
+          "id",
+          "title"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -907,27 +990,42 @@
             "$ref": "#/components/schemas/DashboardWidgetKind"
           },
           "value": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Formatted primary value for a stat widget."
           },
           "caption": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Optional supporting line (\"+3 this week\")."
           },
           "items": {
-            "type": ["null", "array"],
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
               "$ref": "#/components/schemas/DashboardWidgetItem"
             },
             "description": "Entries for a list widget."
           },
           "link": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Optional in-app route the tile navigates to."
           },
           "order": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": ["integer", "string"],
+            "type": [
+              "integer",
+              "string"
+            ],
             "description": "Sort hint; lower comes first, ties broken by title.",
             "format": "int32",
             "default": 100
@@ -936,7 +1034,9 @@
         "description": "A tile contributed to the dashboard by a module."
       },
       "DashboardWidgetItem": {
-        "required": ["label"],
+        "required": [
+          "label"
+        ],
         "type": "object",
         "properties": {
           "label": {
@@ -944,19 +1044,27 @@
             "description": "Primary text."
           },
           "detail": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Secondary text, e.g. a timestamp or actor."
           }
         },
         "description": "One entry of a DashboardWidgetKind.List widget."
       },
       "DashboardWidgetKind": {
-        "enum": ["Stat", "List"],
+        "enum": [
+          "Stat",
+          "List"
+        ],
         "description": "Shape a widget takes on screen.",
         "default": "Stat"
       },
       "EchoCommand": {
-        "required": ["text"],
+        "required": [
+          "text"
+        ],
         "type": "object",
         "properties": {
           "text": {
@@ -967,7 +1075,10 @@
         "description": "Sample command proving validation and event publishing end-to-end.\r\nEchoes the given text back and publishes DemoEchoedEvent."
       },
       "EchoResponse": {
-        "required": ["text", "length"],
+        "required": [
+          "text",
+          "length"
+        ],
         "type": "object",
         "properties": {
           "text": {
@@ -976,7 +1087,10 @@
           },
           "length": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": ["integer", "string"],
+            "type": [
+              "integer",
+              "string"
+            ],
             "description": "Length of the echoed text, in characters.",
             "format": "int32"
           }
@@ -987,21 +1101,37 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "title": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "status": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": ["null", "integer", "string"],
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
             "format": "int32"
           },
           "detail": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "instance": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "errors": {
             "type": "object",
@@ -1019,7 +1149,10 @@
         "format": "binary"
       },
       "LocaleDto": {
-        "required": ["code", "name"],
+        "required": [
+          "code",
+          "name"
+        ],
         "type": "object",
         "properties": {
           "code": {
@@ -1034,7 +1167,10 @@
         "description": "A locale the application supports."
       },
       "LoginCommand": {
-        "required": ["email", "password"],
+        "required": [
+          "email",
+          "password"
+        ],
         "type": "object",
         "properties": {
           "email": {
@@ -1049,11 +1185,16 @@
         "description": "Authenticates an account with email and password."
       },
       "MarkReadRequest": {
-        "required": ["notificationId"],
+        "required": [
+          "notificationId"
+        ],
         "type": "object",
         "properties": {
           "notificationId": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "The notification to mark, or null for all.",
             "format": "uuid"
           }
@@ -1061,7 +1202,15 @@
         "description": "Body of the \"mark read\" endpoint."
       },
       "NotificationDto": {
-        "required": ["id", "title", "body", "level", "link", "isUnread", "createdAtUtc"],
+        "required": [
+          "id",
+          "title",
+          "body",
+          "level",
+          "link",
+          "isUnread",
+          "createdAtUtc"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1082,7 +1231,10 @@
             "description": "Severity used for styling."
           },
           "link": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Optional in-app link."
           },
           "isUnread": {
@@ -1098,7 +1250,10 @@
         "description": "A notification as exposed to clients."
       },
       "NotifyMeCommand": {
-        "required": ["title", "body"],
+        "required": [
+          "title",
+          "body"
+        ],
         "type": "object",
         "properties": {
           "title": {
@@ -1113,7 +1268,12 @@
         "description": "Sends the caller a notification.\r\n\r\nExists so the realtime path is demonstrable and testable end to end: it\r\npublishes a notification request exactly as any real feature would, and\r\neverything after that — persistence, the realtime push, the badge and the\r\ntoast — happens without this module knowing any of it exists."
       },
       "PagedResultOfUserProfileDto": {
-        "required": ["items", "page", "pageSize", "totalCount"],
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
         "type": "object",
         "properties": {
           "items": {
@@ -1125,19 +1285,28 @@
           },
           "page": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": ["integer", "string"],
+            "type": [
+              "integer",
+              "string"
+            ],
             "description": "1-based page index.",
             "format": "int32"
           },
           "pageSize": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": ["integer", "string"],
+            "type": [
+              "integer",
+              "string"
+            ],
             "description": "Maximum items per page.",
             "format": "int32"
           },
           "totalCount": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": ["integer", "string"],
+            "type": [
+              "integer",
+              "string"
+            ],
             "description": "Total items across all pages.",
             "format": "int32"
           }
@@ -1145,7 +1314,10 @@
         "description": "A page of results."
       },
       "PingResponse": {
-        "required": ["message", "timestampUtc"],
+        "required": [
+          "message",
+          "timestampUtc"
+        ],
         "type": "object",
         "properties": {
           "message": {
@@ -1161,7 +1333,11 @@
         "description": "Response contract of PingQuery (exposed by the API and,\r\nthrough OpenAPI, by the generated SDK)."
       },
       "RegisterCommand": {
-        "required": ["email", "displayName", "password"],
+        "required": [
+          "email",
+          "displayName",
+          "password"
+        ],
         "type": "object",
         "properties": {
           "email": {
@@ -1180,7 +1356,13 @@
         "description": "Creates a new account and signs it in."
       },
       "RoleDto": {
-        "required": ["id", "name", "description", "isBuiltIn", "permissions"],
+        "required": [
+          "id",
+          "name",
+          "description",
+          "isBuiltIn",
+          "permissions"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1211,7 +1393,9 @@
         "description": "Role as exposed to clients."
       },
       "SetSettingRequest": {
-        "required": ["value"],
+        "required": [
+          "value"
+        ],
         "type": "object",
         "properties": {
           "value": {
@@ -1222,7 +1406,14 @@
         "description": "Body of the \"set setting\" endpoints."
       },
       "SettingDto": {
-        "required": ["key", "value", "description", "scope", "valueType", "isOverriddenByUser"],
+        "required": [
+          "key",
+          "value",
+          "description",
+          "scope",
+          "valueType",
+          "isOverriddenByUser"
+        ],
         "type": "object",
         "properties": {
           "key": {
@@ -1253,7 +1444,9 @@
         "description": "One effective setting as seen by the caller."
       },
       "SetUserRolesRequest": {
-        "required": ["roleNames"],
+        "required": [
+          "roleNames"
+        ],
         "type": "object",
         "properties": {
           "roleNames": {
@@ -1267,7 +1460,13 @@
         "description": "Body of the \"set user roles\" endpoint."
       },
       "StoredFileDto": {
-        "required": ["id", "fileName", "contentType", "sizeInBytes", "uploadedAtUtc"],
+        "required": [
+          "id",
+          "fileName",
+          "contentType",
+          "sizeInBytes",
+          "uploadedAtUtc"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1285,7 +1484,10 @@
           },
           "sizeInBytes": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": ["integer", "string"],
+            "type": [
+              "integer",
+              "string"
+            ],
             "description": "Size in bytes.",
             "format": "int64"
           },
@@ -1298,7 +1500,11 @@
         "description": "File metadata as exposed to clients. The storage key is never included:\r\nit is an internal detail of the provider."
       },
       "UpdateUserRequest": {
-        "required": ["displayName", "jobTitle", "isActive"],
+        "required": [
+          "displayName",
+          "jobTitle",
+          "isActive"
+        ],
         "type": "object",
         "properties": {
           "displayName": {
@@ -1306,7 +1512,10 @@
             "description": "New display name."
           },
           "jobTitle": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "New job title, or null to clear it."
           },
           "isActive": {
@@ -1317,7 +1526,10 @@
         "description": "Body of the \"update user\" endpoint."
       },
       "UserAuthorizationDto": {
-        "required": ["roles", "permissions"],
+        "required": [
+          "roles",
+          "permissions"
+        ],
         "type": "object",
         "properties": {
           "roles": {
@@ -1338,7 +1550,11 @@
         "description": "Effective authorization of an account: its roles and the union of their\r\npermissions. Returned by the \"my permissions\" endpoint the frontend uses\r\nto drive the UI."
       },
       "UserDto": {
-        "required": ["id", "email", "displayName"],
+        "required": [
+          "id",
+          "email",
+          "displayName"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1358,7 +1574,14 @@
         "description": "Account identity exposed to clients. Entities never cross the API\r\nboundary; this DTO is what OpenAPI (and therefore the SDK) sees.\r\n\r\nIt carries no roles or permissions on purpose: those belong to the\r\nAuthorization module and are served by `GET /api/authorization/me`.\r\nReturning them here would create a second source of truth that silently\r\ngoes stale."
       },
       "UserProfileDto": {
-        "required": ["id", "email", "displayName", "jobTitle", "isActive", "createdAtUtc"],
+        "required": [
+          "id",
+          "email",
+          "displayName",
+          "jobTitle",
+          "isActive",
+          "createdAtUtc"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1375,7 +1598,10 @@
             "description": "Name shown in the UI."
           },
           "jobTitle": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Optional job title."
           },
           "isActive": {
