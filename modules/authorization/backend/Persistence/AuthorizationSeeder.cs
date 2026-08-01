@@ -51,6 +51,26 @@ public sealed class AuthorizationSeeder : IHostedService
             }
         }
 
+        // Built-in roles are owned by the catalogue in code, so one that is no
+        // longer declared must not survive: renaming a role would otherwise
+        // leave the old one behind forever, still granting its permissions to
+        // whoever holds it. Custom roles have IsBuiltIn = false and are never
+        // touched.
+        var declared = BuiltInRoles.Definitions.Select(definition => definition.Name).ToArray();
+        var stale = await dbContext
+            .Roles.Where(role => role.IsBuiltIn && !declared.Contains(role.Name))
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        if (stale.Count > 0)
+        {
+            var staleIds = stale.Select(role => role.Id).ToArray();
+            dbContext.UserRoles.RemoveRange(
+                dbContext.UserRoles.Where(grant => staleIds.Contains(grant.RoleId))
+            );
+            dbContext.Roles.RemoveRange(stale);
+        }
+
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 

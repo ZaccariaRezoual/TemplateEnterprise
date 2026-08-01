@@ -42,6 +42,44 @@ is `false` (set it in production and run migrations as a release step):
 dotnet ef database update --project modules/auth/backend --startup-project apps/api/src/Api
 ```
 
+## The first administrator
+
+A fresh database has no way in: registration grants only the default role, and
+promoting an account requires `roles.write`, which nobody holds yet. So the
+module seeds a **bootstrap administrator** at startup.
+
+```json
+"Modules": {
+  "Auth": {
+    "BootstrapAdmin": {
+      "Enabled": true,
+      "Email": "admin@example.com",
+      "DisplayName": "Admin",
+      "Password": "Password123!"
+    }
+  }
+}
+```
+
+Enabled in `appsettings.Development.json` only. **A deployment that enables it
+must set its own password**: the one above is published in this repository, and
+this repository is copied verbatim into every project.
+
+How it works, and why it is not simply "create user with role Admin":
+
+- Auth creates the ACCOUNT and publishes `BootstrapAdminSeeded` (a public
+  contract event). It has no concept of a role and must not grow one.
+- Authorization subscribes and grants `Admin` — see that module's README.
+- The event fires **only for a newly created account**, so a restart never
+  re-promotes an account somebody deliberately demoted. Everything else about
+  an existing account (password included) is left untouched.
+- The seeding runs on `ApplicationStarted`, not in `StartAsync`: hosted
+  services run in module load order, which is a dependency graph, not a
+  seeding order — Auth starts before Authorization has even migrated its
+  schema.
+- A password that would fail the registration policy is refused rather than
+  seeded, so the account cannot be one the normal flow could never produce.
+
 ## Frontend (`@enterprise/module-auth`)
 
 The host consumes three exports: `installAuthModule` (bootstrap),
@@ -56,7 +94,12 @@ exchanging the refresh cookie at startup; the router guard awaits it.
 {
   "Jwt": { "SigningKey": "…", "AccessTokenMinutes": 15, "RefreshTokenDays": 7 },
   "Modules": {
-    "Auth": { "Enabled": true, "AutoMigrate": true, "SensitivePermitLimit": 10 }
+    "Auth": {
+      "Enabled": true,
+      "AutoMigrate": true,
+      "SensitivePermitLimit": 10,
+      "BootstrapAdmin": { "Enabled": false }
+    }
   }
 }
 ```

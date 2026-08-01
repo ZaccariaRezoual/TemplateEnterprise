@@ -109,6 +109,17 @@ public sealed class AuthModule : IModule
         {
             services.AddHostedService<AuthDbMigrator>();
         }
+
+        services
+            .AddOptions<BootstrapAdminOptions>()
+            .Bind(configuration.GetSection(BootstrapAdminOptions.SectionName));
+
+        // Registered after the migrator so the schema exists when it runs:
+        // hosted services start in registration order.
+        if (configuration.GetValue($"{BootstrapAdminOptions.SectionName}:Enabled", false))
+        {
+            services.AddHostedService<BootstrapAdminSeeder>();
+        }
     }
 
     /// <inheritdoc />

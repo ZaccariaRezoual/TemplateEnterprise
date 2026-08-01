@@ -29,12 +29,12 @@ describe("usePermissionsStore", () => {
   });
 
   it("loads roles and permissions from the API", async () => {
-    provideAuthorizationApi(mockApi(["Administrator"], ["users.read", "users.write"]));
+    provideAuthorizationApi(mockApi(["Admin"], ["users.read", "users.write"]));
     const store = usePermissionsStore();
 
     await store.load();
 
-    expect(store.roles).toEqual(["Administrator"]);
+    expect(store.roles).toEqual(["Admin"]);
     expect(store.can("users.read")).toBe(true);
     expect(store.isLoaded).toBe(true);
   });
@@ -69,7 +69,7 @@ describe("usePermissionsStore", () => {
   });
 
   it("clear drops the set so the next user never inherits it", async () => {
-    provideAuthorizationApi(mockApi(["Administrator"], ["users.read"]));
+    provideAuthorizationApi(mockApi(["Admin"], ["users.read"]));
     const store = usePermissionsStore();
     await store.load();
 
@@ -105,7 +105,7 @@ describe("v-can directive", () => {
   });
 
   it("keeps the element when the permission is held", async () => {
-    provideAuthorizationApi(mockApi(["Administrator"], ["users.write"]));
+    provideAuthorizationApi(mockApi(["Admin"], ["users.write"]));
     await usePermissionsStore().load();
 
     const wrapper = render();

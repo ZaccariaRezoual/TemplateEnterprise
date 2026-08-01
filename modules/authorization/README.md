@@ -19,9 +19,15 @@ never "is this user an Admin?".
 Deny rules are deliberately absent: they make "why can't this user do X?"
 unanswerable without a debugger.
 
-Built-in roles seeded on first run: **Administrator** (every permission) and
-**User** (none). Two only — a template that ships a dozen speculative roles
-forces every project to delete them.
+Built-in roles seeded on first run: **Admin** (every permission) and
+**BasicUser** (none). Two only — a template that ships a dozen speculative
+roles forces every project to delete them.
+
+Built-in roles are owned by the catalogue in code (`BuiltInRoles`): the seeder
+creates the missing ones, re-syncs their permissions on every boot, and
+**deletes built-in roles no longer declared**. Renaming one would otherwise
+leave the old role behind forever, still granting its permissions to whoever
+holds it. Custom roles (`IsBuiltIn = false`) are never touched.
 
 ## How it plugs in
 
@@ -30,7 +36,13 @@ forces every project to delete them.
   roles, and disabling this module simply produces tokens without permission
   claims.
 - **Default role**: subscribes to Auth's `UserRegistered` contract event and
-  grants "User". Registration keeps working if this module is removed.
+  grants "BasicUser". Registration keeps working if this module is removed.
+- **Bootstrap admin**: subscribes to Auth's `BootstrapAdminSeeded` contract
+  event and grants "Admin". This is what breaks the chicken-and-egg of a fresh
+  installation — see the Auth module's README. Auth creates the account and
+  knows nothing about roles; deciding that it is an administrator is this
+  module's business, so removing this module leaves the account existing but
+  powerless, which is the correct failure mode.
 - **Endpoint enforcement**: `RequirePermission(...)` (in
   `Modules.Abstractions`, so any module can use it) is turned into a policy by
   the host's `PermissionPolicyProvider`, generated on demand.

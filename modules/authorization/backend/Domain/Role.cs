@@ -15,7 +15,7 @@ public sealed class Role : EntityBase<Guid>
 
     private Role() { }
 
-    /// <summary>Unique role name (e.g. "Administrator").</summary>
+    /// <summary>Unique role name (e.g. "Admin").</summary>
     public string Name { get; private set; } = string.Empty;
 
     /// <summary>What the role is for, shown in the admin UI.</summary>
@@ -23,7 +23,7 @@ public sealed class Role : EntityBase<Guid>
 
     /// <summary>
     /// Whether the role ships with the framework. Built-in roles cannot be
-    /// deleted: removing "Administrator" would be an unrecoverable lock-out.
+    /// deleted: removing "Admin" would be an unrecoverable lock-out.
     /// </summary>
     public bool IsBuiltIn { get; private set; }
 
