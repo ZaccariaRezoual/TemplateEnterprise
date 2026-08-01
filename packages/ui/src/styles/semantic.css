@@ -27,6 +27,46 @@
   --color-warning: var(--semantic-warning);
   --color-danger: var(--semantic-danger);
   --color-on-status: var(--semantic-on-status);
+
+  /* Colour is not the only thing a brand owns. Shape, depth and motion are
+     just as recognisable, so they are tokens too — otherwise "make the
+     corners sharper" means editing every component. */
+
+  /* Shape. Named by ROLE, not by size: a rebrand changes what "control"
+     means once, instead of hunting every rounded-md. */
+  --radius-control: var(--radius-primitive-md);
+  --radius-surface: var(--radius-primitive-lg);
+  --radius-pill: var(--radius-primitive-full);
+
+  /* Depth. Two levels only: a surface that sits on the page, and one that
+     floats above it. More levels invite arbitrary choices. */
+  --shadow-raised: var(--elevation-primitive-1);
+  --shadow-overlay: var(--elevation-primitive-2);
+
+  /* Motion. Fast enough to feel instant, slow enough to be seen.
+     Set as Tailwind's DEFAULTS so every `transition-*` already written in the
+     codebase inherits them: a rule nobody has to remember beats one that has
+     to be applied at hundreds of call sites. */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --default-transition-duration: var(--duration-fast);
+  --default-transition-timing-function: var(--ease-standard);
+}
+
+/* Values Tailwind does not namespace, consumed as var() in components. */
+:root {
+  /* State changes the user did not initiate should be quick. */
+  --duration-fast: 150ms;
+  /* Movement the user did initiate can take longer. */
+  --duration-base: 200ms;
+
+  /* Focus is an accessibility guarantee, not a decoration: these are the
+     values the WCAG-compliant ring is built from. */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* Disabled must read as unavailable without dropping below the 3:1
+     contrast a user still needs to read the label. */
+  --opacity-disabled: 0.6;
 }
 
 /* Light theme (default) */

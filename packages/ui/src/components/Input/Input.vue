@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
  * -----------------------------------------------------------------------------
  * Input
@@ -51,7 +51,7 @@ const describedBy = computed(() => {
 
 const inputClasses = computed(() =>
   cn(
-    "w-full rounded-md border bg-surface px-3 py-2 text-sm text-text transition-colors",
+    "w-full rounded-(--input-radius) border bg-surface px-3 py-2 text-sm text-text transition-colors",
     "placeholder:text-text-muted disabled:cursor-not-allowed disabled:opacity-60",
     hasError.value ? "border-danger" : "border-border",
   ),

@@ -10,6 +10,7 @@ Framework enterprise monorepo (Vue 3 + .NET 10) che fa da base a tutti i futuri 
 
 - [Struttura.md](Struttura.md) — visione, architettura e linee guida complete. In caso di dubbio architetturale, vince questo file.
 - [PLAN.md](PLAN.md) — piano di costruzione in 9 fasi (0–8) con criteri di "done" per fase.
+- [docs/design-system.md](docs/design-system.md) — catalogo dei token e regolamento UI/UX. In caso di dubbio visivo, vince questo file.
 
 ## Come procedere a ogni richiesta
 
@@ -17,8 +18,9 @@ Framework enterprise monorepo (Vue 3 + .NET 10) che fa da base a tutti i futuri 
 2. **Colloca la richiesta nel piano**: se l'utente chiede una funzionalità che appartiene a una fase futura, verifica che i prerequisiti della fase esistano; se mancano, segnalalo e proponi il percorso minimo.
 3. **Rispetta l'ordine delle fasi** quando l'utente dice genericamente "procedi" / "continua": riprendi dalla prima fase non completata secondo i criteri di done in PLAN.md.
 4. **Ogni nuova funzionalità riusabile va nel posto giusto**: se può servire ad almeno due progetti → `packages/` o `modules/`, non dentro `apps/`.
-5. **Aggiorna la documentazione** (`docs/`, README dei moduli) contestualmente al codice, non dopo.
-6. **Nessuna feature è completa senza test** (unit sempre; integration per il backend; e2e per i flussi principali).
+5. **Ogni modifica o aggiunta UI/UX parte da [docs/design-system.md](docs/design-system.md)**: prima di scrivere markup o stili, leggi il catalogo dei token e il regolamento, e usa ciò che esiste già. Se serve un valore nuovo, decidi il livello con la regola in §1 del documento, aggiungi il token e documentalo **nello stesso commit**. Vale per `packages/ui`, `apps/web`, i frontend dei moduli e qualsiasi pagina o componente nuovo. Un valore letterale nel markup (`#3b82f6`, `16px`, `rounded-md`, `duration-300`) è un bug, non una scorciatoia.
+6. **Aggiorna la documentazione** (`docs/`, README dei moduli) contestualmente al codice, non dopo.
+7. **Nessuna feature è completa senza test** (unit sempre; integration per il backend; e2e per i flussi principali).
 
 ## Regole architetturali non negoziabili
 
@@ -121,29 +123,21 @@ Il codice deve essere auto-documentante: uno sviluppatore che apre un file per l
 
 ## Design System — gestione (`packages/ui`)
 
-Il design system è l'unico punto di personalizzazione visiva: un nuovo progetto si ri-brandizza modificando **solo i token del tema**, mai i componenti o le feature. Ogni modifica che rompe questa proprietà è un bug architetturale.
+**[docs/design-system.md](docs/design-system.md) è la fonte di verità**: catalogo completo dei token (colore, forma, elevazione, movimento, stato), specifiche dei componenti, contratto di accessibilità e anti-pattern. Questa sezione contiene solo le regole non negoziabili; per qualunque dettaglio vale il documento, e le due cose non vanno duplicate perché due copie divergono sempre.
 
-### Architettura dei token (3 livelli)
+**Prima di scrivere qualsiasi markup o stile**, in `packages/ui`, `apps/web` o nel frontend di un modulo: leggi il documento e usa i token esistenti.
 
-1. **Primitive** — valori grezzi (`--color-blue-500`, `--spacing-4`, `--radius-md`). Solo il design system li conosce.
-2. **Semantic** — significato, non valore (`--color-primary`, `--color-surface`, `--color-danger`, `--text-heading`). È il livello che i temi ridefiniscono: primitive → semantic è l'unica mappatura che cambia tra progetti/temi.
-3. **Component** — token specifici quando servono (`--button-radius`, `--card-shadow`), definiti sempre in funzione dei semantic.
+Le regole che non si negoziano:
 
-**Regola di consumo**: i componenti di `packages/ui` usano solo token semantic/component; `apps/` e `modules/` usano solo componenti del design system e token semantic. Nessuno, mai, referenzia un primitive o un valore letterale (`#3b82f6`, `16px`) fuori da `packages/ui`.
-
-### Implementazione
-
-- Token come **CSS variables** definite in `packages/ui` (es. `tokens/primitives.css`, `tokens/semantic.css`, `themes/light.css`, `themes/dark.css`), esposte a Tailwind v4 tramite `@theme` così che le utility (`bg-primary`, `text-danger`) risolvano sui token e non su valori fissi.
-- **Theme Engine**: light/dark/custom = un file di override dei token semantic + attributo sul root (`data-theme`). Cambiare tema o brand non tocca alcun componente.
-- **Personalizzazione per progetto**: un progetto che nasce dal template crea il proprio `themes/<brand>.css` (override dei semantic) e, se serve, ridefinisce i component token. Stop. Se per ottenere il risultato serve modificare un componente, il componente ha un buco di tokenizzazione: si sistema il componente nel framework, non nel progetto.
-
-### Regole operative
-
-- **Nuovo stile ricorrente → nuovo token semantic**, non un valore inline: se un colore/spacing serve in due punti, nasce come token.
-- **Nuovo componente**: prima si verifica che tutti i suoi stili risolvano su token; niente merge se contiene valori hardcoded (vale anche per shadow, z-index, durate delle animazioni Motion).
-- **Modifiche ai token semantic sono breaking** per tutti i progetti che usano il framework: rinominare o rimuovere un token richiede deprecazione documentata, non sostituzione silenziosa.
-- **`docs/design-system.md`** (da creare in Fase 3) è il catalogo: elenco token con significato e uso previsto, temi disponibili, guida "come brandizzare un nuovo progetto". Va aggiornato a ogni token o componente aggiunto, come da regola sulla documentazione contestuale.
-- Storybook deve permettere di visualizzare ogni componente in ogni tema: è il test visivo che la proprietà "cambio token = cambio ovunque" regge.
+- Il design system è l'unico punto di personalizzazione visiva: un nuovo progetto si ri-brandizza modificando **solo i token semantic**, mai i componenti o le feature. Ogni modifica che rompe questa proprietà è un bug architetturale.
+- **Tre livelli di token**: primitive (valori grezzi, li conosce solo `semantic.css`) → semantic (significato, l'unico livello che i temi ridefiniscono) → component (l'eccezione di un singolo componente, sempre in funzione dei semantic). Il livello di un token nuovo si decide con la regola in §1 del documento.
+- **Nessun valore letterale fuori dai file dei token.** Niente `#3b82f6`, `16px`, `rounded-md`, `duration-300`, shadow o z-index scritti a mano: `apps/` e `modules/` usano solo componenti del design system e token semantic.
+- **Il focus visibile non si rimuove mai.** Se stona, si cambia il token `--focus-ring-*`.
+- **Il colore da solo non è informazione**: sempre accompagnato da testo, icona o `srLabel`.
+- **Modificare o rimuovere un token semantic è breaking** per tutti i progetti sul framework: serve deprecazione documentata, mai sostituzione silenziosa.
+- **Se per ottenere un risultato devi modificare un componente**, quel componente ha un buco di tokenizzazione: si sistema nel framework, mai nel progetto.
+- **Ogni token o componente aggiunto va documentato in `docs/design-system.md` nello stesso commit.**
+- Storybook mostra ogni componente in ogni tema: è il test visivo che la proprietà "cambio token = cambio ovunque" regge. L'addon a11y è configurato per **fallire**, non avvisare.
 
 ## Comandi (man mano che il repo cresce)
 

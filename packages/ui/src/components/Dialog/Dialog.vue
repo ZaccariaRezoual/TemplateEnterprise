@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
  * -----------------------------------------------------------------------------
  * Dialog
@@ -93,7 +93,7 @@ onBeforeUnmount(() => {
     ref="dialogRef"
     :aria-labelledby="titleId"
     :aria-describedby="description ? descriptionId : undefined"
-    class="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-xl border border-border bg-surface p-0 text-text backdrop:bg-black/50"
+    class="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-(--dialog-radius) border border-border bg-surface p-0 text-text backdrop:bg-black/50"
     @close="onNativeClose"
     @cancel="onCancel"
     @click="onBackdropClick"

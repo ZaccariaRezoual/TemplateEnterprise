@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
  * -----------------------------------------------------------------------------
  * ToastHost
@@ -54,7 +54,7 @@ const ACCENT_CLASSES: Record<ToastVariant, string> = {
       v-for="toast in visible"
       :key="toast.id"
       :role="toast.variant === 'danger' ? 'alert' : undefined"
-      class="pointer-events-auto flex w-full max-w-sm gap-3 overflow-hidden rounded-lg border shadow-lg"
+      class="pointer-events-auto flex w-full max-w-sm gap-3 overflow-hidden rounded-(--toast-radius) border shadow-(--toast-shadow)"
       :class="cn(VARIANT_CLASSES[toast.variant])"
       data-testid="toast"
     >

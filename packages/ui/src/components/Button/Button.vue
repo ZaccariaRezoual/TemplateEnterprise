@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
  * -----------------------------------------------------------------------------
  * Button
@@ -57,7 +57,7 @@ const isInteractionBlocked = computed(() => props.disabled || props.loading);
 
 const classes = computed(() =>
   cn(
-    "inline-flex cursor-pointer items-center justify-center rounded-md font-medium transition-colors",
+    "inline-flex cursor-pointer items-center justify-center rounded-(--button-radius) font-medium transition-colors",
     "disabled:cursor-not-allowed disabled:opacity-60",
     VARIANT_CLASSES[props.variant],
     SIZE_CLASSES[props.size],

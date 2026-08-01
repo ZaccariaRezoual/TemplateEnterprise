@@ -6,11 +6,16 @@
  * design system owns the values.
  *
  * Layer order is load-bearing: primitives define raw values, semantic maps
- * them to meaning and is the only layer a theme or a brand overrides.
+ * them to meaning and is the only layer a theme overrides, and component
+ * tokens let a single component be adjusted without forking it.
+ *
+ * The full catalogue and the rules for adding to it are in
+ * docs/design-system.md.
  */
 
 @import "./primitives.css";
 @import "./semantic.css";
+@import "./components.css";
 
 /* Base styles that must hold in every application using the design system. */
 @layer base {
@@ -29,9 +34,13 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Visible focus for keyboard users on every interactive element. */
+  /* Visible focus for keyboard users on every interactive element.
+     Applied here, once, with :where() so it costs no specificity and a
+     component can still override it — but nobody has to remember to add it.
+     Removing focus styling is never an acceptable design choice; if it looks
+     wrong, change the token, not the visibility. */
   :where(a, button, input, select, textarea, [tabindex]):focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--color-primary);
+    outline-offset: var(--focus-ring-offset);
   }
 }

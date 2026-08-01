@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
  * -----------------------------------------------------------------------------
  * Badge
@@ -36,7 +36,7 @@ const VARIANT_CLASSES: Record<NonNullable<BadgeProps["variant"]>, string> = {
 
 const classes = computed(() =>
   cn(
-    "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
+    "inline-flex items-center rounded-(--badge-radius) border px-2 py-0.5 text-xs font-medium",
     VARIANT_CLASSES[props.variant],
     attrs["class"] as string | undefined,
   ),

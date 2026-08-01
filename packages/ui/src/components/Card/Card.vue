@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
  * -----------------------------------------------------------------------------
  * Card
@@ -29,7 +29,7 @@ const bodyPadding = computed(() => (props.flush ? "" : "px-5 pb-5"));
 
 <template>
   <section
-    class="rounded-xl border border-border bg-surface"
+    class="rounded-(--card-radius) border border-border bg-surface"
     :aria-labelledby="hasTitle ? titleId : undefined"
   >
     <header v-if="hasTitle || $slots.header || $slots.actions" class="flex gap-4 p-5">

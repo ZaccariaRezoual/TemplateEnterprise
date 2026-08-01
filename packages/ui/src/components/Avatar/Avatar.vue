@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
  * -----------------------------------------------------------------------------
  * Avatar
@@ -58,7 +58,7 @@ const SIZE_CLASSES: Record<NonNullable<AvatarProps["size"]>, string> = {
 
 const classes = computed(() =>
   cn(
-    "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full",
+    "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-(--avatar-radius)",
     "bg-background font-medium text-text-muted select-none",
     SIZE_CLASSES[props.size],
     attrs["class"] as string | undefined,

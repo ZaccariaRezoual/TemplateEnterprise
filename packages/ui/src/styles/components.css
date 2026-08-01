@@ -1,0 +1,43 @@
+/**
+ * COMPONENT TOKENS — per-component overrides. Layer 3 of 3.
+ *
+ * Every value here MUST resolve to a semantic token, never to a primitive and
+ * never to a literal. That is what keeps the layer useful: it exists so a
+ * project can say "our cards are flatter" or "our buttons are pills" without
+ * forking a component, while a brand change to `--color-primary` still flows
+ * through everything automatically.
+ *
+ * Not every property deserves a token. A token is justified when a project
+ * would plausibly want to change it for ONE component and not the others; if
+ * the answer is "they should all change together", it belongs in the semantic
+ * layer instead.
+ */
+
+:root {
+  /* Button — the most rebranded control in any product. */
+  --button-radius: var(--radius-control);
+
+  /* Input — shares the control radius so fields and buttons align visually
+     when they sit side by side in a form row. */
+  --input-radius: var(--radius-control);
+
+  /* Card — the main content surface. */
+  --card-radius: var(--radius-surface);
+  --card-shadow: none;
+  --card-border-width: 1px;
+  --card-padding: --spacing(5);
+
+  /* Dialog — an overlay, so it earns depth the page does not have. */
+  --dialog-radius: var(--radius-surface);
+  --dialog-shadow: var(--shadow-overlay);
+  --dialog-backdrop: oklch(0 0 0 / 0.5);
+
+  /* Toast — floats like a dialog but must never look like one, or users
+     will expect it to need dismissing. */
+  --toast-radius: var(--radius-control);
+  --toast-shadow: var(--shadow-overlay);
+
+  /* Badge and Avatar — pill-shaped by default. */
+  --badge-radius: var(--radius-pill);
+  --avatar-radius: var(--radius-pill);
+}
