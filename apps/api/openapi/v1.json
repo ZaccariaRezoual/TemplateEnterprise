@@ -84,6 +84,28 @@
         }
       }
     },
+    "/api/dashboard/widgets": {
+      "get": {
+        "tags": ["Dashboard"],
+        "summary": "Returns the dashboard tiles visible to the caller.",
+        "operationId": "dashboardWidgets",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DashboardWidget"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/demo/ping": {
       "get": {
         "tags": ["Demo"],
@@ -625,7 +647,14 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoredFileDto"
+                }
+              }
+            }
           }
         }
       }
@@ -668,8 +697,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "No Content"
           }
         }
       }
@@ -860,6 +889,71 @@
           }
         },
         "description": "Body returned by register, login and refresh.\r\n\r\nDeliberately does NOT contain the refresh token: that travels only in an\r\nhttpOnly cookie, out of reach of any script (XSS containment). The access\r\ntoken is meant to be held in memory by the client, never persisted."
+      },
+      "DashboardWidget": {
+        "required": ["id", "title"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Stable identifier, prefixed by the owning module (\"users.total\")."
+          },
+          "title": {
+            "type": "string",
+            "description": "Short label shown above the value."
+          },
+          "kind": {
+            "description": "How to render it.",
+            "$ref": "#/components/schemas/DashboardWidgetKind"
+          },
+          "value": {
+            "type": ["null", "string"],
+            "description": "Formatted primary value for a stat widget."
+          },
+          "caption": {
+            "type": ["null", "string"],
+            "description": "Optional supporting line (\"+3 this week\")."
+          },
+          "items": {
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/DashboardWidgetItem"
+            },
+            "description": "Entries for a list widget."
+          },
+          "link": {
+            "type": ["null", "string"],
+            "description": "Optional in-app route the tile navigates to."
+          },
+          "order": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "description": "Sort hint; lower comes first, ties broken by title.",
+            "format": "int32",
+            "default": 100
+          }
+        },
+        "description": "A tile contributed to the dashboard by a module."
+      },
+      "DashboardWidgetItem": {
+        "required": ["label"],
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "Primary text."
+          },
+          "detail": {
+            "type": ["null", "string"],
+            "description": "Secondary text, e.g. a timestamp or actor."
+          }
+        },
+        "description": "One entry of a DashboardWidgetKind.List widget."
+      },
+      "DashboardWidgetKind": {
+        "enum": ["Stat", "List"],
+        "description": "Shape a widget takes on screen.",
+        "default": "Stat"
       },
       "EchoCommand": {
         "required": ["text"],
@@ -1172,6 +1266,37 @@
         },
         "description": "Body of the \"set user roles\" endpoint."
       },
+      "StoredFileDto": {
+        "required": ["id", "fileName", "contentType", "sizeInBytes", "uploadedAtUtc"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Public identifier used to download or delete.",
+            "format": "uuid"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "Name as uploaded."
+          },
+          "contentType": {
+            "type": "string",
+            "description": "Content type declared at upload."
+          },
+          "sizeInBytes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "description": "Size in bytes.",
+            "format": "int64"
+          },
+          "uploadedAtUtc": {
+            "type": "string",
+            "description": "When it was uploaded.",
+            "format": "date-time"
+          }
+        },
+        "description": "File metadata as exposed to clients. The storage key is never included:\r\nit is an internal detail of the provider."
+      },
       "UpdateUserRequest": {
         "required": ["displayName", "jobTitle", "isActive"],
         "type": "object",
@@ -1276,6 +1401,9 @@
     },
     {
       "name": "Realtime"
+    },
+    {
+      "name": "Dashboard"
     },
     {
       "name": "Demo"

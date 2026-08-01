@@ -15,6 +15,8 @@ public sealed class FeatureFlagsTests
         public Guid? UserId => userId;
 
         public IReadOnlyList<string> Roles => [];
+
+        public IReadOnlyList<string> Permissions => [];
     }
 
     private sealed class StubTenant(Guid? tenantId) : ITenantContext

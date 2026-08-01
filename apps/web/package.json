@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@enterprise/module-auth": "workspace:*",
+    "@enterprise/module-dashboard": "workspace:*",
     "@enterprise/module-authorization": "workspace:*",
     "@enterprise/module-localization": "workspace:*",
     "@enterprise/module-notifications": "workspace:*",

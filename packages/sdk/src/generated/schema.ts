@@ -55,6 +55,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/dashboard/widgets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the dashboard tiles visible to the caller. */
+        get: operations["dashboardWidgets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/demo/ping": {
         parameters: {
             query?: never;
@@ -495,6 +512,42 @@ export interface components {
             /** @description The authenticated account. */
             user: components["schemas"]["UserDto"];
         };
+        /** @description A tile contributed to the dashboard by a module. */
+        DashboardWidget: {
+            /** @description Stable identifier, prefixed by the owning module ("users.total"). */
+            id: string;
+            /** @description Short label shown above the value. */
+            title: string;
+            /** @description How to render it. */
+            kind?: components["schemas"]["DashboardWidgetKind"];
+            /** @description Formatted primary value for a stat widget. */
+            value?: null | string;
+            /** @description Optional supporting line ("+3 this week"). */
+            caption?: null | string;
+            /** @description Entries for a list widget. */
+            items?: null | components["schemas"]["DashboardWidgetItem"][];
+            /** @description Optional in-app route the tile navigates to. */
+            link?: null | string;
+            /**
+             * Format: int32
+             * @description Sort hint; lower comes first, ties broken by title.
+             * @default 100
+             */
+            order: number | string;
+        };
+        /** @description One entry of a DashboardWidgetKind.List widget. */
+        DashboardWidgetItem: {
+            /** @description Primary text. */
+            label: string;
+            /** @description Secondary text, e.g. a timestamp or actor. */
+            detail?: null | string;
+        };
+        /**
+         * @description Shape a widget takes on screen.
+         * @default Stat
+         * @enum {unknown}
+         */
+        DashboardWidgetKind: "Stat" | "List";
         /**
          * @description Sample command proving validation and event publishing end-to-end.
          *     Echoes the given text back and publishes DemoEchoedEvent.
@@ -668,6 +721,31 @@ export interface components {
             /** @description The complete new set of role names. */
             roleNames: string[];
         };
+        /**
+         * @description File metadata as exposed to clients. The storage key is never included:
+         *     it is an internal detail of the provider.
+         */
+        StoredFileDto: {
+            /**
+             * Format: uuid
+             * @description Public identifier used to download or delete.
+             */
+            id: string;
+            /** @description Name as uploaded. */
+            fileName: string;
+            /** @description Content type declared at upload. */
+            contentType: string;
+            /**
+             * Format: int64
+             * @description Size in bytes.
+             */
+            sizeInBytes: number | string;
+            /**
+             * Format: date-time
+             * @description When it was uploaded.
+             */
+            uploadedAtUtc: string;
+        };
         /** @description Body of the "update user" endpoint. */
         UpdateUserRequest: {
             /** @description New display name. */
@@ -798,6 +876,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": string[];
+                };
+            };
+        };
+    };
+    dashboardWidgets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardWidget"][];
                 };
             };
         };
@@ -1259,7 +1357,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["StoredFileDto"];
+                };
             };
         };
     };
@@ -1294,8 +1394,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description No Content */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };

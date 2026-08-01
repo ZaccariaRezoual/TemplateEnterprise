@@ -6,7 +6,7 @@ import { expect, test } from "@playwright/test";
  */
 test.describe("Demo feature", () => {
   test("loads server state and echoes a text", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/demo");
 
     await expect(page).toHaveURL(/\/demo$/);
     await expect(page.getByRole("heading", { name: "Demo feature" })).toBeVisible();

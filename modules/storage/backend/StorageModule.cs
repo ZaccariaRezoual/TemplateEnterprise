@@ -1,4 +1,4 @@
-using EnterpriseFramework.Application.Abstractions;
+﻿using EnterpriseFramework.Application.Abstractions;
 using EnterpriseFramework.Application.Exceptions;
 using EnterpriseFramework.Modules.Abstractions;
 using EnterpriseFramework.Modules.Authorization.Domain;
@@ -9,6 +9,7 @@ using EnterpriseFramework.Modules.Storage.Persistence;
 using EnterpriseFramework.Modules.Storage.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -82,7 +83,9 @@ public sealed class StorageModule : IModule
             .RequirePermission(Permissions.Files.Delete);
     }
 
-    private static async Task<IResult> UploadAsync(
+    // Concrete result types, not IResult: they carry the response shape into
+    // the OpenAPI document and therefore into the generated SDK.
+    private static async Task<Ok<StoredFileDto>> UploadAsync(
         IFormFile file,
         StorageDbContext dbContext,
         IFileStorageProvider provider,
@@ -134,7 +137,7 @@ public sealed class StorageModule : IModule
         );
     }
 
-    private static async Task<IResult> DownloadAsync(
+    private static async Task<FileStreamHttpResult> DownloadAsync(
         Guid id,
         StorageDbContext dbContext,
         IFileStorageProvider provider,
@@ -150,7 +153,7 @@ public sealed class StorageModule : IModule
         // Served as a download with a generic content type: never echo the
         // uploader's content type, or an uploaded .html executes on this
         // origin with the user's session.
-        return Results.File(
+        return TypedResults.File(
             content,
             "application/octet-stream",
             stored.FileName,
@@ -158,7 +161,7 @@ public sealed class StorageModule : IModule
         );
     }
 
-    private static async Task<IResult> DeleteAsync(
+    private static async Task<NoContent> DeleteAsync(
         Guid id,
         StorageDbContext dbContext,
         IFileStorageProvider provider,

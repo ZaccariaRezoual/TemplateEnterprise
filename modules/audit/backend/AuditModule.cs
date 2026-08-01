@@ -1,4 +1,5 @@
-﻿using EnterpriseFramework.Modules.Abstractions;
+﻿using EnterpriseFramework.Application.Abstractions;
+using EnterpriseFramework.Modules.Abstractions;
 using EnterpriseFramework.Modules.Audit.Behaviors;
 using EnterpriseFramework.Modules.Audit.Features.ListEntries;
 using EnterpriseFramework.Modules.Audit.Persistence;
@@ -46,6 +47,8 @@ public sealed class AuditModule : IModule
         );
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AuditModule).Assembly));
+
+        services.AddScoped<IDashboardWidgetProvider, Features.Dashboard.AuditWidgetProvider>();
 
         // Registered last so it wraps the whole pipeline: the audit entry
         // reflects the final outcome, including validation failures.

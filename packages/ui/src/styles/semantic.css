@@ -18,6 +18,10 @@
   --color-background: var(--semantic-background);
   --color-surface: var(--semantic-surface);
   --color-surface-raised: var(--semantic-surface-raised);
+  /* Recessed fill: skeletons, progress tracks, anything that reads as an
+     empty slot rather than as content. Distinct from `border`, which draws a
+     line, and from `surface`, which carries content. */
+  --color-surface-sunken: var(--semantic-surface-sunken);
   --color-border: var(--semantic-border);
 
   --color-text: var(--semantic-text);
@@ -85,6 +89,7 @@
   --semantic-background: var(--color-neutral-50);
   --semantic-surface: var(--color-neutral-0);
   --semantic-surface-raised: var(--color-neutral-0);
+  --semantic-surface-sunken: var(--color-neutral-200);
   --semantic-border: var(--color-neutral-200);
 
   --semantic-text: var(--color-neutral-900);
@@ -105,6 +110,7 @@
   --semantic-background: var(--color-neutral-950);
   --semantic-surface: var(--color-neutral-900);
   --semantic-surface-raised: var(--color-neutral-800);
+  --semantic-surface-sunken: var(--color-neutral-800);
   --semantic-border: var(--color-neutral-800);
 
   --semantic-text: var(--color-neutral-100);

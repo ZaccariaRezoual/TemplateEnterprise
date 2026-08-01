@@ -37,7 +37,9 @@ modules/<name>/
    When a module needs behavior rather than notification, the HOST defines an
    extension point in `Application/Abstractions` and both sides depend on that
    (see `IUserClaimsEnricher`: Authorization contributes claims to the tokens
-   Auth issues, with neither module referencing the other).
+   Auth issues, with neither module referencing the other, and
+   `IDashboardWidgetProvider`: any module contributes a tile to the landing
+   page without Dashboard knowing it exists).
 6. **Persistence is module-owned**: a module with entities defines its own
    `DbContext` in its own PostgreSQL schema, with its own migration history.
    Installing/removing the module never touches other modules' data. A module

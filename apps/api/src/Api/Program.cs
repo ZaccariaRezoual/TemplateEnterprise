@@ -11,6 +11,7 @@ using EnterpriseFramework.Modules.Abstractions;
 using EnterpriseFramework.Modules.Audit;
 using EnterpriseFramework.Modules.Auth;
 using EnterpriseFramework.Modules.Authorization;
+using EnterpriseFramework.Modules.Dashboard;
 using EnterpriseFramework.Modules.Demo;
 using EnterpriseFramework.Modules.Email;
 using EnterpriseFramework.Modules.Localization;
@@ -74,6 +75,7 @@ try
             typeof(NotificationsModule).Assembly,
             typeof(LocalizationModule).Assembly,
             typeof(RealtimeModule).Assembly,
+            typeof(DashboardModule).Assembly,
         ],
         builder.Configuration
     );

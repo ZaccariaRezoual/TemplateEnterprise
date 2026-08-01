@@ -18,6 +18,9 @@
     <ProjectReference Include="..\..\auth\shared\EnterpriseFramework.Modules.Auth.Contracts.csproj" />
     <ProjectReference
       Include="..\..\authorization\backend\EnterpriseFramework.Modules.Authorization.csproj" />
+    <!-- Note: no reference to the Dashboard module. Contributing a tile only
+         needs the contract in Application. -->
+
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" />

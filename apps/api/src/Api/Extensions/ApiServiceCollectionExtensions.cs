@@ -1,4 +1,5 @@
-﻿using System.Threading.RateLimiting;
+﻿using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using EnterpriseFramework.Api.ErrorHandling;
 using EnterpriseFramework.Api.Options;
 
@@ -28,6 +29,15 @@ public static class ApiServiceCollectionExtensions
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddOpenApi();
+
+        // Enums travel as their NAME, not their ordinal. A generated SDK then
+        // exposes `"List" | "Stat"` instead of `0 | 1`, which is both readable
+        // at the call site and safe to reorder: inserting a value in the middle
+        // of a C# enum silently changes the meaning of every persisted or
+        // in-flight integer, while a name keeps meaning what it says.
+        services.ConfigureHttpJsonOptions(options =>
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter())
+        );
 
         AddCorsPolicy(services, configuration);
         AddRateLimiting(services, configuration);

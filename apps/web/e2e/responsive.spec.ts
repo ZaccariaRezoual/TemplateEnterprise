@@ -32,7 +32,7 @@ async function register(page: Page): Promise<void> {
   await page.getByLabel("Email").fill(`rsp-${crypto.randomUUID()}@example.com`);
   await page.getByLabel("Password").fill("Str0ngPassphrase");
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page).toHaveURL(/\/demo$/);
+  await expect(page).toHaveURL(/\/dashboard$/);
 }
 
 test.describe("Mobile (375px)", () => {
@@ -65,11 +65,18 @@ test.describe("Mobile (375px)", () => {
 
   test("the last control is not covered by the bottom bar", async ({ page }) => {
     await register(page);
+    // The demo page is the longest one in the app, so it is where a fixed bar
+    // actually has content to cover.
+    await page.goto("/demo");
+
+    const target = page.getByTestId("notify-me");
+    // Wait for the page to be fully laid out before measuring: scrolling to a
+    // height that async content has not produced yet lands short of the end.
+    await expect(target).toBeVisible();
 
     // Scroll to the very bottom: that is where a fixed bar overlaps content,
     // and where reserved padding either works or does not.
-    await page.evaluate(() => globalThis.scrollTo(0, document.body.scrollHeight));
-    const target = page.getByTestId("notify-me");
+    await page.evaluate(() => globalThis.scrollTo(0, document.documentElement.scrollHeight));
     await expect(target).toBeInViewport();
 
     // Comparing bounding boxes would be wrong — they are document
@@ -127,7 +134,7 @@ test.describe("Touch devices", () => {
     // tap(), not click(): proves nothing depends on a hover state first.
     await page.getByRole("button", { name: "Create account" }).tap();
 
-    await expect(page).toHaveURL(/\/demo$/);
+    await expect(page).toHaveURL(/\/dashboard$/);
   });
 });
 

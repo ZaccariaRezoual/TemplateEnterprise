@@ -19,4 +19,14 @@ public interface ICurrentUser
 
     /// <summary>Role names of the caller; empty when anonymous.</summary>
     IReadOnlyList<string> Roles { get; }
+
+    /// <summary>
+    /// Permissions granted to the caller, from the token's claims.
+    ///
+    /// Endpoints normally declare <c>RequirePermission(...)</c> and never read
+    /// this. It exists for the cases a policy cannot express — deciding which
+    /// of several results to return, or which tiles a dashboard may show —
+    /// where the code must branch rather than allow or deny the whole request.
+    /// </summary>
+    IReadOnlyList<string> Permissions { get; }
 }

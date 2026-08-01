@@ -1,5 +1,6 @@
 import { installAuthModule, useSessionStore } from "@enterprise/module-auth";
 import { installAuthorizationModule, syncPermissions } from "@enterprise/module-authorization";
+import { installDashboardModule } from "@enterprise/module-dashboard";
 import { installLocalizationModule, loadLocale } from "@enterprise/module-localization";
 import {
   installNotificationsModule,
@@ -60,6 +61,7 @@ installAuthModule({ api, router, setAuthTokenProvider, setUnauthorizedHandler })
 installAuthorizationModule({ app, router, api });
 installUsersModule({ api });
 installNotificationsModule({ api });
+installDashboardModule({ api });
 installLocalizationModule({ app, api });
 // A function, not the token: SignalR calls it again on every reconnect, so a
 // session that refreshed while offline reconnects with the current token.
