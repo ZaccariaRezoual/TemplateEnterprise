@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   Api layer: ASP.NET Core Minimal API host and composition root.
   The ONLY project that references Infrastructure and the module backends;
   it wires everything together (DI, middleware, module loading).
@@ -44,6 +44,8 @@
       Include="..\..\..\..\modules\localization\backend\EnterpriseFramework.Modules.Localization.csproj" />
     <ProjectReference
       Include="..\..\..\..\modules\realtime\backend\EnterpriseFramework.Modules.Realtime.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\dashboard\backend\EnterpriseFramework.Modules.Dashboard.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />

@@ -42,4 +42,8 @@ public sealed class HttpContextCurrentUser : ICurrentUser
     /// <inheritdoc />
     public IReadOnlyList<string> Roles =>
         Principal?.FindAll(ClaimTypes.Role).Select(c => c.Value).ToArray() ?? [];
+
+    /// <inheritdoc />
+    public IReadOnlyList<string> Permissions =>
+        Principal?.FindAll(PermissionClaims.Permission).Select(c => c.Value).ToArray() ?? [];
 }

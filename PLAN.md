@@ -203,6 +203,26 @@ Obiettivo: moduli applicativi e dimostrazione della composizione finale.
 - **Dashboard** (widget system + realtime), **Calendar**, **Chat** (su ChatHub), **CMS**, **Reporting**, **Payments**, **AI Assistant**, **Workflow Engine**
 - **App template di riferimento**: un'app demo che compone i moduli e serve da starter per i nuovi progetti (`scripts/create-project` per lo scaffolding)
 
+### Stato: completata — con una riduzione di scope deliberata
+
+Realizzati:
+
+- **Dashboard** (`modules/dashboard`): widget system basato su
+  `IDashboardWidgetProvider`, con contributi da Users, Notifications e Audit;
+  griglia responsive, skeleton, refresh via realtime. È la landing page.
+- **`scripts/create-project`**: copia+rinomina verificata (il progetto generato
+  compila e passa i test). Vedi [docs/create-project.md](docs/create-project.md).
+- `Skeleton` aggiunto al design system; enum serializzati per nome nell'API.
+
+**Non realizzati, per scelta**: Calendar, Chat, CMS, Reporting, Payments, AI
+Assistant, Workflow Engine. Costruirli qui significherebbe indovinare i
+requisiti di prodotti che non esistono ancora, e ogni progetto futuro
+erediterebbe quelle ipotesi insieme al costo di rimuoverle. L'obiettivo reale
+della fase — _dimostrare la composizione finale_ — è soddisfatto dalla
+Dashboard: mostra che un modulo nuovo si aggancia alla landing page
+implementando un'interfaccia, senza che Dashboard o il frontend lo conoscano.
+Un modulo di business si aggiunge quando un progetto lo richiede davvero.
+
 ---
 
 ## Trasversale a tutte le fasi

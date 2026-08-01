@@ -31,7 +31,7 @@ import { useSessionStore } from "@enterprise/module-auth";
 import { usePermissions } from "@enterprise/module-authorization";
 import { NotificationBell } from "@enterprise/module-notifications";
 import { ConnectionIndicator } from "@enterprise/module-realtime";
-import { BeakerIcon, UsersIcon } from "@heroicons/vue/24/outline";
+import { BeakerIcon, Squares2X2Icon, UsersIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 import ThemeToggle from "@/shared/components/ThemeToggle.vue";
 
@@ -44,6 +44,7 @@ const { can } = usePermissions();
 // to scan, and one with icons alone is hard to understand.
 const navigation = computed(() =>
   [
+    { label: "Dashboard", to: "/dashboard", icon: Squares2X2Icon, permission: undefined },
     { label: "Demo", to: "/demo", icon: BeakerIcon, permission: undefined },
     { label: "Users", to: "/users", icon: UsersIcon, permission: "users.read" },
   ].filter((item) => item.permission === undefined || can(item.permission)),

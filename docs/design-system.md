@@ -86,6 +86,7 @@ same colour.
 | `background`     | `bg-background`     | the page behind everything         |
 | `surface`        | `bg-surface`        | cards, headers, panels             |
 | `surface-raised` | `bg-surface-raised` | dialogs, toasts, popovers          |
+| `surface-sunken` | `bg-surface-sunken` | an empty slot: skeletons, tracks   |
 | `border`         | `border-border`     | every divider and outline          |
 | `text`           | `text-text`         | body copy                          |
 | `text-muted`     | `text-text-muted`   | secondary copy, placeholders       |
@@ -235,6 +236,20 @@ from the green one.
 `size`: `sm` · `md` · `lg`. `name` is **required** — it produces the initials
 fallback _and_ the accessible name. Set `decorative` when the name is already
 adjacent in the DOM, so it is not announced twice.
+
+### Skeleton
+
+`shape`: `text` · `block` · `circle`, plus `width` / `height`.
+
+Use it — not a spinner — whenever the eventual layout is known: the space is
+reserved up front, so arriving data does not shift the page, and the user sees
+the shape of what is coming. A spinner is right only when the result's shape is
+genuinely unknown.
+
+Compose several to match the layout being replaced; that is what makes the
+swap invisible. Skeletons are `aria-hidden` (a screen reader gains nothing from
+"loading" repeated per placeholder) — announce the state on the container
+instead, with `aria-busy`. The pulse stops under `prefers-reduced-motion`.
 
 ### Dialog
 

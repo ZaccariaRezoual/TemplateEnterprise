@@ -1,5 +1,6 @@
 import { authRoutes } from "@enterprise/module-auth";
 import { authorizationRoutes } from "@enterprise/module-authorization";
+import { dashboardRoutes } from "@enterprise/module-dashboard";
 import { usersRoutes } from "@enterprise/module-users";
 import { createRouter, createWebHistory, type Router, type RouteRecordRaw } from "vue-router";
 import { logger } from "@/core/logger/logger";
@@ -13,7 +14,8 @@ import { demoRoutes } from "@/features/demo/routes";
  * them: adding a feature or module means adding one import here.
  */
 const routes: RouteRecordRaw[] = [
-  { path: "/", redirect: "/demo" },
+  { path: "/", redirect: "/dashboard" },
+  ...dashboardRoutes,
   ...demoRoutes,
   ...authRoutes,
   ...authorizationRoutes,

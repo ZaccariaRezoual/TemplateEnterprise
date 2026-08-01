@@ -17,7 +17,7 @@ test.describe("Permissions", () => {
     await page.getByLabel("Email").fill(`perms-${crypto.randomUUID()}@example.com`);
     await page.getByLabel("Password").fill("Str0ngPassphrase");
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(page).toHaveURL(/\/demo$/);
+    await expect(page).toHaveURL(/\/dashboard$/);
   }
 
   test("hides navigation the user cannot open", async ({ page }) => {

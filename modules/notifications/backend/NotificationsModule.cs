@@ -1,3 +1,4 @@
+﻿using EnterpriseFramework.Application.Abstractions;
 using EnterpriseFramework.Modules.Abstractions;
 using EnterpriseFramework.Modules.Notifications.Features;
 using EnterpriseFramework.Modules.Notifications.Persistence;
@@ -44,6 +45,8 @@ public sealed class NotificationsModule : IModule
                     )
             )
         );
+
+        services.AddScoped<IDashboardWidgetProvider, Features.Dashboard.NotificationsWidgetProvider>();
 
         services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(NotificationsModule).Assembly)

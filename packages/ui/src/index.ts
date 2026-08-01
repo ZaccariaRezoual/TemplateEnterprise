@@ -13,6 +13,7 @@ export * from "./components/Button";
 export * from "./components/Card";
 export * from "./components/Dialog";
 export * from "./components/Input";
+export * from "./components/Skeleton";
 export * from "./components/Toast";
 
 export { installTheme, useTheme } from "./theme/useTheme";

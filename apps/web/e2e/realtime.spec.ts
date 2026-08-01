@@ -16,7 +16,10 @@ test.describe("Realtime", () => {
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password").fill("Str0ngPassphrase");
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(page).toHaveURL(/\/demo$/);
+    await expect(page).toHaveURL(/\/dashboard$/);
+
+    // The demo page owns the control that triggers a server-sent notification.
+    await page.goto("/demo");
     return email;
   }
 

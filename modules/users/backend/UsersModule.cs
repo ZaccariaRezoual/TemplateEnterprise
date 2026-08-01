@@ -1,4 +1,5 @@
-﻿using EnterpriseFramework.Modules.Abstractions;
+﻿using EnterpriseFramework.Application.Abstractions;
+using EnterpriseFramework.Modules.Abstractions;
 using EnterpriseFramework.Modules.Authorization.Domain;
 using EnterpriseFramework.Modules.Users.Features.ListUsers;
 using EnterpriseFramework.Modules.Users.Features.UpdateUser;
@@ -46,6 +47,10 @@ public sealed class UsersModule : IModule
         );
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(UsersModule).Assembly));
+
+        // Contributes dashboard tiles. The Dashboard module never learns
+        // this module exists; it resolves providers from the container.
+        services.AddScoped<IDashboardWidgetProvider, Features.Dashboard.UsersWidgetProvider>();
         services.AddValidatorsFromAssembly(typeof(UsersModule).Assembly);
 
         if (configuration.ShouldAutoMigrate(Name))
