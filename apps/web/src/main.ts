@@ -21,7 +21,8 @@ import { createQueryClient } from "@/app/providers/queryClient";
 import { api, setAuthTokenProvider, setUnauthorizedHandler } from "@/core/api/apiClient";
 import { installFeatureFlags, useFeatureFlagsStore } from "@/core/features/featureFlags";
 import { logger } from "@/core/logger/logger";
-import { createAppRouter } from "@/router";
+import { createAppRouter, privateRoutes } from "@/router";
+import { ADMIN_BASE, registerAdminArea } from "@/router/adminArea";
 import "@/assets/styles/main.css";
 
 /**
@@ -41,7 +42,6 @@ app.config.errorHandler = (error, _instance, info) => {
 const router = createAppRouter();
 
 app.use(createPinia());
-app.use(router);
 app.use(VueQueryPlugin, { queryClient: createQueryClient() });
 
 // Stores the composition root itself observes (safe after Pinia is installed).
@@ -57,15 +57,33 @@ void useFeatureFlagsStore().load();
 // Order matters: Auth installs the authentication guard, Authorization the
 // permission guard, so an anonymous user is asked to sign in rather than told
 // they lack permissions.
-installAuthModule({ api, router, setAuthTokenProvider, setUnauthorizedHandler });
+const authGuard = installAuthModule({
+  api,
+  router,
+  setAuthTokenProvider,
+  setUnauthorizedHandler,
+  homePath: ADMIN_BASE,
+});
+
+// The private area exists ONLY because the guard above is installed: the call
+// requires the proof `installAuthModule` returns, so an application assembled
+// without the Auth module cannot register administrative screens at all.
+registerAdminArea(router, privateRoutes, authGuard);
+
 installAuthorizationModule({ app, router, api });
 installUsersModule({ api });
 installNotificationsModule({ api });
-installDashboardModule({ api });
+installDashboardModule({ api, linkBase: ADMIN_BASE });
 installLocalizationModule({ app, api });
 // A function, not the token: SignalR calls it again on every reconnect, so a
 // session that refreshed while offline reconnects with the current token.
 installRealtimeModule({ getAccessToken: () => session.accessToken });
+
+// The router is installed LAST, on purpose: `app.use(router)` starts the first
+// navigation immediately, and a deep link into the private area must find that
+// area already registered. Installing it earlier made a cold load of
+// /admin/... resolve to the not-found page.
+app.use(router);
 
 // Translations are fetched, not bundled: the app paints first and gets its
 // strings a moment later.

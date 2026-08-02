@@ -19,6 +19,7 @@ import { Button, Card, Input } from "@enterprise/ui";
 import { ApplicationError } from "@enterprise/shared";
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { getHomePath } from "../home";
 import { useSessionStore } from "../stores/session.store";
 import { loginFormSchema } from "../validators/auth.validator";
 
@@ -54,7 +55,8 @@ async function submit(): Promise<void> {
   isSubmitting.value = true;
   try {
     await session.login(parsed.data);
-    const redirect = typeof route.query["redirect"] === "string" ? route.query["redirect"] : "/";
+    const redirect =
+      typeof route.query["redirect"] === "string" ? route.query["redirect"] : getHomePath();
     await router.replace(redirect);
   } catch (error) {
     formError.value =

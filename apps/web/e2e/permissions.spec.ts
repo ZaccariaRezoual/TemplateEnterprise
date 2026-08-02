@@ -17,7 +17,7 @@ test.describe("Permissions", () => {
     await page.getByLabel("Email").fill(`perms-${crypto.randomUUID()}@example.com`);
     await page.getByLabel("Password").fill("Str0ngPassphrase");
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(page).toHaveURL(/\/dashboard$/);
+    await expect(page).toHaveURL(/\/admin\/dashboard$/);
   }
 
   test("hides navigation the user cannot open", async ({ page }) => {
@@ -31,7 +31,7 @@ test.describe("Permissions", () => {
   test("redirects a direct visit to the forbidden page", async ({ page }) => {
     await register(page);
 
-    await page.goto("/users");
+    await page.goto("/admin/users");
 
     await expect(page).toHaveURL(/\/forbidden/);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("do not have access");

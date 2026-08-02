@@ -7,6 +7,16 @@
  * (refresh cookie) and logout.
  */
 test.describe("Auth module", () => {
+  test("no page of the private area opens to an anonymous visitor", async ({ page }) => {
+    // Every screen under /admin, not just the one the happy path visits: a
+    // route added without `meta.requiresAuth` would be reachable by anyone,
+    // and nothing else in the suite would notice.
+    for (const path of ["/admin", "/admin/dashboard", "/admin/users", "/admin/account"]) {
+      await page.goto(path);
+      await expect(page, `${path} opened without a session`).toHaveURL(/\/login/);
+    }
+  });
+
   test("guards, registers, survives a reload and signs out", async ({ page }) => {
     // Random, not just a timestamp: parallel workers can land on the same
     // millisecond and collide on the unique email constraint.
@@ -14,8 +24,8 @@ test.describe("Auth module", () => {
 
     // Anonymous visit to a protected route → guard redirects to login,
     // remembering the destination.
-    await page.goto("/account");
-    await expect(page).toHaveURL(/\/login\?redirect=(%2F|\/)account/);
+    await page.goto("/admin/account");
+    await expect(page).toHaveURL(/\/login\?redirect=(%2F|\/)admin(%2F|\/)account/);
 
     // Register (registration signs in) and land back on the app.
     await page.getByRole("link", { name: "Create one" }).click();
@@ -37,8 +47,8 @@ test.describe("Auth module", () => {
     // Sign out: back to login, and the protected route is locked again.
     await page.getByTestId("sign-out").click();
     await expect(page).toHaveURL(/\/login/);
-    await page.goto("/account");
-    await expect(page).toHaveURL(/\/login\?redirect=(%2F|\/)account/);
+    await page.goto("/admin/account");
+    await expect(page).toHaveURL(/\/login\?redirect=(%2F|\/)admin(%2F|\/)account/);
   });
 
   test("rejects wrong credentials with a single generic message", async ({ page }) => {

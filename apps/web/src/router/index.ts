@@ -5,6 +5,7 @@ import { usersRoutes } from "@enterprise/module-users";
 import { createRouter, createWebHistory, type Router, type RouteRecordRaw } from "vue-router";
 import { logger } from "@/core/logger/logger";
 import { demoRoutes } from "@/features/demo/routes";
+import { ADMIN_BASE, splitByArea } from "@/router/adminArea";
 
 /**
  * Route registry.
@@ -12,14 +13,36 @@ import { demoRoutes } from "@/features/demo/routes";
  * Features own their routes and export them from `features/<name>/routes.ts`;
  * module frontends export theirs from their package. This file only composes
  * them: adding a feature or module means adding one import here.
+ *
+ * The composition splits them into two AREAS by `meta.requiresAuth`:
+ * everything private is rebased under `/admin` and registered separately, by
+ * `registerAdminArea`, which the bootstrap can only call after the Auth
+ * module has installed its guard (see `adminArea.ts`).
  */
-const routes: RouteRecordRaw[] = [
-  { path: "/", redirect: "/dashboard" },
+const contributedRoutes: RouteRecordRaw[] = [
   ...dashboardRoutes,
   ...demoRoutes,
   ...authRoutes,
   ...authorizationRoutes,
   ...usersRoutes,
+];
+
+const { publicRoutes, adminRoutes } = splitByArea(contributedRoutes);
+
+/**
+ * Private routes, rebased under `/admin`, plus the landing redirect of the
+ * area. Which screen greets a signed-in user is the application's decision,
+ * not the Dashboard module's — so it lives here rather than in the module.
+ *
+ * Registered by `registerAdminArea`.
+ */
+export const privateRoutes: readonly RouteRecordRaw[] = [
+  ...adminRoutes,
+  { path: ADMIN_BASE, redirect: `${ADMIN_BASE}/dashboard` },
+];
+
+const routes: RouteRecordRaw[] = [
+  ...publicRoutes,
   {
     path: "/:pathMatch(.*)*",
     name: "not-found",
@@ -31,12 +54,16 @@ const routes: RouteRecordRaw[] = [
 /**
  * Creates the application router with the framework navigation guards.
  *
+ * It registers only the routes anyone may open. The private area is added by
+ * `registerAdminArea`, so an application assembled without the Auth module
+ * simply has no administrative screens — rather than having them unguarded.
+ *
  * Guards implemented here:
  * - Document title from `route.meta.title`.
  *
- * The authentication and permission guards are added by the Auth module in
- * Fase 4; they hook into `meta.requiresAuth` / `meta.permissions`, already
- * typed in `types/router.d.ts`.
+ * The authentication and permission guards are installed by the Auth and
+ * Authorization modules; they hook into `meta.requiresAuth` /
+ * `meta.permissions`, typed by those modules.
  *
  * @returns The configured router instance.
  */

@@ -2,7 +2,7 @@
 
 **Fonte normativa**: [`docs/design-system.md`](../../docs/design-system.md)
 §12 · [`CLAUDE.md`](../../CLAUDE.md) punto 6 delle regole di lavoro
-**Esempio nel codice**: `apps/web/src/layouts/DefaultLayout.vue` ·
+**Esempio nel codice**: `apps/web/src/layouts/AdminLayout.vue` ·
 `apps/web/e2e/responsive.spec.ts`
 
 ## Quando serve

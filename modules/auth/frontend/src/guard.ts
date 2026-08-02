@@ -1,4 +1,5 @@
 import type { Router } from "vue-router";
+import { getHomePath } from "./home";
 import { useSessionStore } from "./stores/session.store";
 
 /**
@@ -9,8 +10,8 @@ import { useSessionStore } from "./stores/session.store";
  *   cookie is never bounced to /login by a race.
  * - Routes with `meta.requiresAuth` redirect anonymous users to /login,
  *   remembering the destination in the `redirect` query for post-login return.
- * - Signed-in users visiting /login or /register are sent home: those pages
- *   have no meaning inside a session.
+ * - Signed-in users visiting /login or /register are sent to the host's home
+ *   path: those pages have no meaning inside a session.
  *
  * The permission guard (meta.permissions, PBAC) is added by the Permissions
  * module in Fase 5.
@@ -30,7 +31,7 @@ export function installAuthGuard(router: Router): void {
     }
 
     if ((to.name === "login" || to.name === "register") && session.isAuthenticated) {
-      return { path: "/" };
+      return { path: getHomePath() };
     }
 
     return true;

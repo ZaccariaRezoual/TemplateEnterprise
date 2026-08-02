@@ -18,11 +18,11 @@ import { ToastHost } from "@enterprise/ui";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BlankLayout from "@/layouts/BlankLayout.vue";
-import DefaultLayout from "@/layouts/DefaultLayout.vue";
+import AdminLayout from "@/layouts/AdminLayout.vue";
 
 const route = useRoute();
 
-const layout = computed(() => (route.meta.layout === "blank" ? BlankLayout : DefaultLayout));
+const layout = computed(() => (route.meta.layout === "blank" ? BlankLayout : AdminLayout));
 </script>
 
 <template>

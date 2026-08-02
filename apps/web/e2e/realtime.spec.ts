@@ -16,10 +16,10 @@ test.describe("Realtime", () => {
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password").fill("Str0ngPassphrase");
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(page).toHaveURL(/\/dashboard$/);
+    await expect(page).toHaveURL(/\/admin\/dashboard$/);
 
     // The demo page owns the control that triggers a server-sent notification.
-    await page.goto("/demo");
+    await page.goto("/admin/demo");
     return email;
   }
 
@@ -61,7 +61,7 @@ test.describe("Realtime", () => {
     await register(first);
 
     const second = await context.newPage();
-    await second.goto("/demo");
+    await second.goto("/admin/demo");
     await expect(second.getByTestId("notification-bell")).toBeVisible();
     // Wait for the second tab's socket to actually be up. Events are not
     // replayed on connect, so triggering before it is connected would test
