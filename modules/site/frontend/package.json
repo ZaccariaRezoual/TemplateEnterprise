@@ -13,11 +13,14 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@enterprise/sdk": "workspace:*",
+    "@enterprise/shared": "workspace:*",
     "@enterprise/ui": "workspace:*"
   },
   "peerDependencies": {
     "vue": "^3.5.0",
-    "vue-router": "^5.0.0"
+    "vue-router": "^5.0.0",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@heroicons/vue": "^2.2.0",
@@ -29,6 +32,7 @@
     "vitest": "catalog:",
     "vue": "catalog:",
     "vue-router": "^5.2.0",
-    "vue-tsc": "catalog:"
+    "vue-tsc": "catalog:",
+    "zod": "catalog:"
   }
 }

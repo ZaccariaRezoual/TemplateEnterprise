@@ -6,20 +6,28 @@
  *
  * Public contact page.
  *
- * For now it publishes the address and the email: the form arrives with its
- * backend in Fase 2 of plans/public-and-admin-areas.md. Shipping the form
- * first would mean a page that looks finished and silently drops every
- * message — worse than no form at all, because the visitor believes they have
- * written to us.
+ * Shows the form when the host wired an API client, and the plain address
+ * otherwise: the public site also works as pages only, and a form that cannot
+ * submit is worse than no form — the visitor believes they have written.
+ *
+ * The address stays visible either way. Some people would rather write from
+ * their own mail client, and taking that away to force a form is a choice
+ * made for our convenience, not theirs.
  */
+import { computed } from "vue";
+import { isContactAvailable } from "../api/site.api";
 import { useSiteContent } from "../content";
+import ContactForm from "../components/ContactForm.vue";
 import PageSection from "../components/PageSection.vue";
 
 const content = useSiteContent();
+const canSubmit = computed(() => isContactAvailable());
 </script>
 
 <template>
   <PageSection :title="content.contact.title" :intro="content.contact.intro" heading-level="h1">
+    <ContactForm v-if="canSubmit" class="mb-10" />
+
     <dl class="space-y-4 text-sm">
       <div>
         <dt class="font-medium">Email</dt>

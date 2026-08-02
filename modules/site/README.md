@@ -47,10 +47,26 @@ funzionare in un'applicazione assemblata senza autenticazione.
 mentre tutto il privato viene ricollocato sotto `/admin` dal composition root.
 `publicSite: true` è solo un marcatore di guscio, non un permesso.
 
-**Il form contatti non c'è ancora.** La pagina pubblica email e indirizzo; il
-form arriva con il suo backend in Fase 2. Spedire prima il form significa una
-pagina che sembra finita e perde ogni messaggio in silenzio — peggio di
-nessun form, perché il visitatore crede di aver scritto.
+**Il form contatti non salva niente.** `POST /api/site/contact` pubblica
+`ContactMessageReceived` e il modulo Email lo recapita. Persistere i messaggi
+significherebbe uno schema, una schermata per leggerli e un permesso per
+aprirla: un piccolo CRM, che un progetto aggiunge quando sa di volerlo.
+
+**Serve un subscriber.** Senza il modulo Email (o un altro che ascolti
+l'evento) il form accetta i messaggi e nessuno li trasporta. È il prezzo
+dell'indipendenza fra moduli, ed è scritto qui perché non si scopra dal
+silenzio.
+
+**Honeypot, non captcha.** Un campo nascosto che i bot compilano: zero
+dipendenze, zero attrito per il visitatore, e ferma la maggior parte del
+traffico automatico. Una submission con l'honeypot pieno viene scartata **e
+risponde ugualmente successo** — dire a un bot che è stato riconosciuto
+insegna solo a chi l'ha scritto a riprovare meglio. Un captcha si aggiunge se
+e quando i log mostrano che serve.
+
+**Rate limit proprio, più stretto del globale.** È l'unico endpoint anonimo
+che accetta testo libero, cioè la superficie di abuso dell'intera API. Un
+essere umano scrive un messaggio, non cinque al minuto.
 
 **`data-surface="public"` c'è già, e per ora non fa niente.** È il gancio su
 cui la Fase 3 appoggerà gli override dei token semantic che danno alla vetrina
@@ -85,9 +101,27 @@ layout di `App.vue`.
 **Un progetto che è solo un gestionale non installa questo modulo**: la radice
 torna a reindirizzare all'area riservata, senza cancellare codice.
 
+## Configurazione
+
+```json
+{
+  "Modules": {
+    "Site": {
+      "ContactRecipient": "info@example.com",
+      "ContactPermitLimit": 3,
+      "ContactRateLimitWindowSeconds": 300
+    }
+  }
+}
+```
+
+`ContactRecipient` sta qui e non nel modulo Email: **chi** riceve i messaggi è
+una decisione del sito, e viaggia dentro l'evento perché il modulo che li
+recapita non debba sapere nulla di questo sito.
+
 ## Da fare prima di andare online
 
-1. `contact.email` — finché non c'è il form, è l'unico modo per essere
-   contattati.
+1. `Modules:Site:ContactRecipient` — altrimenti i messaggi vanno
+   all'indirizzo di esempio.
 2. `privacy` — un sito che raccoglie nome ed email deve pubblicare
    un'informativa reale. Il segnaposto è peggio del nulla.

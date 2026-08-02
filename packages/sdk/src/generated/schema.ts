@@ -72,6 +72,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/site/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accepts a message from the public contact form. */
+        post: operations["siteContact"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/demo/ping": {
         parameters: {
             query?: never;
@@ -696,6 +713,26 @@ export interface components {
             /** @description Permissions granted by the role. */
             permissions: string[];
         };
+        /** @description A message written by an anonymous visitor on the public contact form. */
+        SendContactMessageCommand: {
+            /** @description Name the visitor typed. */
+            name: string;
+            /** @description Address to reply to. */
+            email: string;
+            /** @description The message itself. */
+            body: string;
+            /**
+             * @description Honeypot. A real visitor never sees this field and therefore leaves it
+             *     empty; automated submitters fill every input they find. When it carries a
+             *     value the submission is dropped and still answered with success — telling
+             *     a bot it was detected only teaches whoever wrote it to try again.
+             *
+             *     A honeypot instead of a captcha: no third-party dependency, no cognitive
+             *     load for the visitor, and it stops the bulk of automated traffic. A captcha
+             *     is a reasonable next step if the logs ever show it is needed — not before.
+             */
+            website?: null | string;
+        };
         /** @description Body of the "set setting" endpoints. */
         SetSettingRequest: {
             /** @description Raw value; must parse as the setting's declared type. */
@@ -896,6 +933,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DashboardWidget"][];
+                };
+            };
+        };
+    };
+    siteContact: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendContactMessageCommand"];
+            };
+        };
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
                 };
             };
         };

@@ -1,3 +1,5 @@
+import type { ApiClient } from "@enterprise/sdk";
+import { provideSiteApi } from "./api/site.api";
 import { defaultSiteContent, provideSiteContent, type SiteContent } from "./content";
 
 /**
@@ -25,6 +27,12 @@ let links: SiteLinks = defaultLinks;
 /** Integration seams the HOST exposes and this module plugs into. */
 export interface SiteModuleHost {
   /**
+   * The application's configured SDK client, used by the contact form.
+   * Omit it and the contact page publishes the address instead of a form it
+   * could not submit.
+   */
+  api?: ApiClient | undefined;
+  /**
    * The project's content. Omit it and the placeholder copy is used, which
    * says on screen that it is a placeholder.
    */
@@ -44,6 +52,10 @@ export interface SiteModuleHost {
  */
 export function installSiteModule(host: SiteModuleHost = {}): void {
   provideSiteContent(host.content ?? defaultSiteContent);
+
+  if (host.api !== undefined) {
+    provideSiteApi(host.api);
+  }
 
   // Assignment, not a conditional update: installing must fully define the
   // module's state. A second install that silently kept the previous links

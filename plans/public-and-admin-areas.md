@@ -262,6 +262,11 @@ peggio di una pagina che pubblica un indirizzo email.
 ✅ **Done quando**: un messaggio inviato dal browser compare nel log
 dell'`IEmailSender` di sviluppo, e un secondo invio ravvicinato viene limitato.
 
+**Fatto.** Endpoint anonimo con policy di rate limit propria e honeypot; Site
+pubblica `ContactMessageReceived`, Email lo recapita — nessuno dei due
+referenzia l'altro. Aggiunti alla gerarchia condivisa `RateLimitedError` (429
+non aveva un tipo) e `Textarea` al design system.
+
 ### Fase 3 — Design system della vetrina
 
 - **Definizione con la skill `ui-ux-pro-max`** del linguaggio visivo della

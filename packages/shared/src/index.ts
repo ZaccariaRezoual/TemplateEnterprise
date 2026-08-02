@@ -8,6 +8,7 @@ export {
   ForbiddenError,
   NetworkError,
   NotFoundError,
+  RateLimitedError,
   ServerError,
   UnauthorizedError,
   ValidationError,

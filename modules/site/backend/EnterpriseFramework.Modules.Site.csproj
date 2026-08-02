@@ -1,21 +1,23 @@
 <!--
-  Email module: templated outbound email with a swappable provider.
-  No database of its own: it queues in memory and sends through a provider.
+  Site module backend: the public site's only endpoint, the contact form.
+  No database of its own: a message is published on the event bus and
+  delivered by whichever module handles email.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>EnterpriseFramework.Modules.Email</RootNamespace>
+    <RootNamespace>EnterpriseFramework.Modules.Site</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference
       Include="..\..\..\apps\api\src\Application\EnterpriseFramework.Application.csproj" />
     <ProjectReference
       Include="..\..\..\apps\api\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\..\auth\shared\EnterpriseFramework.Modules.Auth.Contracts.csproj" />
-    <ProjectReference Include="..\..\site\shared\EnterpriseFramework.Modules.Site.Contracts.csproj" />
+    <ProjectReference Include="..\shared\EnterpriseFramework.Modules.Site.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>

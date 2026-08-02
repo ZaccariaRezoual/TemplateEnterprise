@@ -82,6 +82,7 @@ installLocalizationModule({ app, api });
 // importing the Auth module to find out: it keeps working in an application
 // assembled without authentication at all.
 installSiteModule({
+  api,
   content: siteContent,
   links: {
     entryPath: () => (session.isAuthenticated ? ADMIN_BASE : "/login"),
