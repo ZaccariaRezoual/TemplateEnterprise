@@ -38,11 +38,14 @@ Ogni pagina segue lo stesso schema (fonte normativa → quando serve → procedu
 
 ## Trasversali
 
-_In arrivo (Fase 3 del [piano](../../plans/wiki.md))._
+| Devo…                                 | Pagina                                                  |
+| ------------------------------------- | ------------------------------------------------------- |
+| aprire una PR come si deve            | [Aprire una PR come si deve](git-workflow.md)           |
+| rivedere il codice di qualcun altro   | [Rivedere il codice di qualcun altro](code-review.md)   |
+| creare un progetto nuovo dal template | [Creare un progetto nuovo dal template](new-project.md) |
+| capire un errore che non ha senso     | [Errori che non hanno senso](troubleshooting.md)        |
 
-| Devo…                                 | Pagina               |
-| ------------------------------------- | -------------------- |
-| aprire una PR come si deve            | `git-workflow.md`    |
-| rivedere il codice di qualcun altro   | `code-review.md`     |
-| creare un progetto nuovo dal template | `new-project.md`     |
-| capire un errore che non ha senso     | `troubleshooting.md` |
+---
+
+Se una pagina manca, [aggiungila](_template.md) — le regole sono nella
+[home della wiki](../README.md).

@@ -202,6 +202,28 @@ scoprire i passaggi che sembrano ovvi solo a chi li ha già fatti.
 ✅ **Done quando**: la CI fallisce su un link rotto e la checklist di PR
 include la wiki.
 
+---
+
+## Stato di avanzamento
+
+| Fase | Stato | Cosa esiste                                                                   |
+| ---- | ----- | ----------------------------------------------------------------------------- |
+| 0    | ✅    | `wiki/README.md`, `patterns/README.md`, `_template.md`, regola in `CLAUDE.md` |
+| 1    | ✅    | 9 pattern backend                                                             |
+| 2    | ✅    | 9 pattern frontend                                                            |
+| 3    | ✅    | `getting-started/` (day-one, tour, glossary) + 4 pattern trasversali          |
+| 4    | ✅    | `scripts/check-links.mjs` in CI, PR template, `decisions/`                    |
+
+**Non ancora verificato**: il criterio di done della Fase 3 richiede una
+persona che non ha mai visto il repository. È l'unico modo di scoprire i
+passaggi che sembrano ovvi solo a chi li ha già fatti — nessuna rilettura lo
+sostituisce.
+
+**Le ADR sono un contenitore, non un contenuto.** Le decisioni di questo
+framework sono già motivate nei README dei moduli, che è dove servono; portarle
+in `decisions/` significherebbe duplicarle. La cartella esiste per le decisioni
+trasversali future.
+
 ## 7. Manutenzione: perché questa wiki non morirà
 
 Le wiki muoiono perché aggiornarle è un lavoro separato dal codice. Contromisure:
@@ -229,9 +251,12 @@ come lo si legge:
 | GitHub Wiki sincronizzata | UI familiare                                    | Repo separato: il diff si stacca dal codice |
 | Sito statico (VitePress)  | Ricerca, navigazione, versionamento per release | Un altro build da mantenere in CI           |
 
-**Raccomandazione**: partire da "solo repo" e valutare VitePress in Fase 4,
-quando ci sarà contenuto sufficiente da giustificarlo. Costruire il sito prima
-delle pagine significa avere un bel contenitore vuoto.
+**Deciso: solo repo.** Con 22 pagine, la ricerca di GitHub e un grep sono
+sufficienti, e il markdown resta a un diff di distanza dal codice che descrive.
+
+VitePress si valuta quando comparirà un sintomo concreto — «non trovo la
+pagina», non «sarebbe bello avere un sito». Costruire il sito prima significa
+aggiungere un build alla CI per un problema che nessuno ha ancora.
 
 ## 9. Lingua — deciso: italiano
 
