@@ -1,6 +1,7 @@
 import { authRoutes } from "@enterprise/module-auth";
 import { authorizationRoutes } from "@enterprise/module-authorization";
 import { dashboardRoutes } from "@enterprise/module-dashboard";
+import { siteRoutes } from "@enterprise/module-site";
 import { usersRoutes } from "@enterprise/module-users";
 import { createRouter, createWebHistory, type Router, type RouteRecordRaw } from "vue-router";
 import { logger } from "@/core/logger/logger";
@@ -20,6 +21,7 @@ import { ADMIN_BASE, splitByArea } from "@/router/adminArea";
  * module has installed its guard (see `adminArea.ts`).
  */
 const contributedRoutes: RouteRecordRaw[] = [
+  ...siteRoutes,
   ...dashboardRoutes,
   ...demoRoutes,
   ...authRoutes,

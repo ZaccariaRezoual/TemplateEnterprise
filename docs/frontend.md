@@ -24,7 +24,8 @@ Routes split by `meta.requiresAuth`, in `router/adminArea.ts`:
 
 - routes that require a session are rebased under **`/admin`** and registered
   by `registerAdminArea`;
-- everything else stays at the root, where the public site lives.
+- everything else stays at the root, where the public site lives
+  (`modules/site`, wrapped in its own shell via `meta.publicSite`).
 
 `registerAdminArea` **requires the proof returned by `installAuthModule`**.
 `meta.requiresAuth` is enforced by that module's guard and by nothing else, so

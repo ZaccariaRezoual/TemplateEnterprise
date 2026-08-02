@@ -247,6 +247,11 @@ pagina che riceve più traffico da telefono di qualunque altra.
 ✅ **Done quando**: il sito pubblico si naviga da anonimo, l'area riservata
 resta protetta, e disabilitare il modulo riporta l'applicazione a com'è oggi.
 
+**Fatto.** `modules/site` con cinque pagine, `PublicLayout`, contenuti in
+`apps/web/src/site.config.ts`. Il form contatti resta segnaposto fino alla
+Fase 2, di proposito: una pagina che sembra finita e perde i messaggi è
+peggio di una pagina che pubblica un indirizzo email.
+
 ### Fase 2 — Form contatti end-to-end
 
 - `POST /api/site/contact`: anonimo, rate limit dedicato, honeypot, validazione

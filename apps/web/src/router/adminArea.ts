@@ -64,8 +64,11 @@ export function registerAdminArea(
     router.addRoute(route);
   }
 
-  // Added here rather than in the static table: without the private area
-  // there is nothing to send people to, and the public site (Fase 1) will
-  // claim "/" for itself.
-  router.addRoute({ path: "/", redirect: ADMIN_BASE });
+  // The root belongs to the public site when there is one. Only an
+  // application assembled WITHOUT the Site module — an internal tool — sends
+  // its root straight to the private area, and only then is there nothing
+  // else it could show.
+  if (!router.getRoutes().some((route) => route.path === "/")) {
+    router.addRoute({ path: "/", redirect: ADMIN_BASE });
+  }
 }

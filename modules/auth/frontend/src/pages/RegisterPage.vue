@@ -16,6 +16,7 @@ import { Button, Card, Input } from "@enterprise/ui";
 import { ApplicationError, ValidationError } from "@enterprise/shared";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { getHomePath } from "../home";
 import { useSessionStore } from "../stores/session.store";
 import { registerFormSchema } from "../validators/auth.validator";
 
@@ -56,7 +57,7 @@ async function submit(): Promise<void> {
   isSubmitting.value = true;
   try {
     await session.register(parsed.data);
-    await router.replace("/");
+    await router.replace(getHomePath());
   } catch (error) {
     if (error instanceof ValidationError) {
       // Server field names are PascalCase (FluentValidation property names).
