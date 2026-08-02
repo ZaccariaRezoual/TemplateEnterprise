@@ -1,11 +1,15 @@
 <script setup lang="ts">
 /**
  * -----------------------------------------------------------------------------
- * DefaultLayout
+ * AdminLayout
  * -----------------------------------------------------------------------------
  *
- * Standard application shell: header with product name, primary navigation,
+ * Shell of the PRIVATE area: header with product name, primary navigation,
  * session controls and theme control, plus the routed page area.
+ *
+ * It is the shell of everything under `/admin`. The public site has its own
+ * (Fase 1 of plans/public-and-admin-areas.md), because a marketing page and a
+ * work tool need opposite things from their chrome.
  *
  * Responsibilities:
  * - Provides the page chrome and the skip link required for keyboard users.
@@ -33,6 +37,7 @@ import { NotificationBell } from "@enterprise/module-notifications";
 import { ConnectionIndicator } from "@enterprise/module-realtime";
 import { BeakerIcon, Squares2X2Icon, UsersIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
+import { ADMIN_BASE } from "@/router/adminArea";
 import ThemeToggle from "@/shared/components/ThemeToggle.vue";
 
 const session = useSessionStore();
@@ -44,9 +49,14 @@ const { can } = usePermissions();
 // to scan, and one with icons alone is hard to understand.
 const navigation = computed(() =>
   [
-    { label: "Dashboard", to: "/dashboard", icon: Squares2X2Icon, permission: undefined },
-    { label: "Demo", to: "/demo", icon: BeakerIcon, permission: undefined },
-    { label: "Users", to: "/users", icon: UsersIcon, permission: "users.read" },
+    {
+      label: "Dashboard",
+      to: `${ADMIN_BASE}/dashboard`,
+      icon: Squares2X2Icon,
+      permission: undefined,
+    },
+    { label: "Demo", to: `${ADMIN_BASE}/demo`, icon: BeakerIcon, permission: undefined },
+    { label: "Users", to: `${ADMIN_BASE}/users`, icon: UsersIcon, permission: "users.read" },
   ].filter((item) => item.permission === undefined || can(item.permission)),
 );
 </script>
@@ -87,7 +97,7 @@ const navigation = computed(() =>
 
           <RouterLink
             v-if="session.isAuthenticated"
-            to="/account"
+            :to="`${ADMIN_BASE}/account`"
             class="max-w-32 truncate rounded-md px-2 py-1.5 text-sm text-text-muted transition-colors hover:bg-background hover:text-text sm:px-3"
             active-class="bg-background text-text"
             data-testid="nav-account"

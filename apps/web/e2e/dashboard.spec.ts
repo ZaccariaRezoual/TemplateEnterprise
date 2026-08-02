@@ -14,7 +14,7 @@ async function register(page: Page): Promise<void> {
   await page.getByLabel("Email").fill(`dash-${crypto.randomUUID()}@example.com`);
   await page.getByLabel("Password").fill("Str0ngPassphrase");
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page).toHaveURL(/\/dashboard$/);
+  await expect(page).toHaveURL(/\/admin\/dashboard$/);
 }
 
 test.describe("Dashboard", () => {

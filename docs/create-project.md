@@ -75,10 +75,10 @@ When you no longer need it, remove it deliberately — it is a short list:
 3. In `apps/api/src/Api/Program.cs`, remove the `using` and the
    `typeof(DemoModule).Assembly` entry.
 4. In `apps/web/src/router/index.ts`, remove the `demoRoutes` import and spread.
-5. In `apps/web/src/layouts/DefaultLayout.vue`, remove the `Demo` navigation
+5. In `apps/web/src/layouts/AdminLayout.vue`, remove the `Demo` navigation
    entry and the now-unused `BeakerIcon` import.
 6. In `apps/web/e2e/realtime.spec.ts` and `responsive.spec.ts`, replace the
-   `page.goto("/demo")` calls: realtime needs some other endpoint that raises a
+   `page.goto("/admin/demo")` calls: realtime needs some other endpoint that raises a
    notification, and the responsive "last control" test needs any page long
    enough to scroll.
 

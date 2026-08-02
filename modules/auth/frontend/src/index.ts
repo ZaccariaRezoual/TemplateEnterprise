@@ -9,7 +9,8 @@ import "./types/router";
  * the UI reflects the session (e.g. the header). Everything else is internal.
  */
 export { installAuthModule } from "./install";
-export type { AuthModuleHost } from "./install";
+export type { AuthGuardInstallation, AuthModuleHost } from "./install";
+export { getHomePath } from "./home";
 export { authRoutes } from "./routes";
 export { useSessionStore } from "./stores/session.store";
 export type { AuthResponse, AuthUser } from "./api/auth.api";

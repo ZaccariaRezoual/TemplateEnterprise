@@ -13,6 +13,9 @@ export const demoRoutes: RouteRecordRaw[] = [
     path: "/demo",
     name: "demo",
     component: () => import("@/features/demo/pages/DemoPage.vue"),
-    meta: { title: "Demo" },
+    // Private: it is the framework's playground, and one of its actions
+    // notifies the CALLER, so there has to be one. Without this flag the page
+    // would stay outside /admin and a project's visitors could land on it.
+    meta: { title: "Demo", requiresAuth: true },
   },
 ];

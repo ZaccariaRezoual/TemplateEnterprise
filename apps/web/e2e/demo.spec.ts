@@ -1,14 +1,26 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 /**
  * Smoke test of the full stack: browser → Vite proxy → API → PostgreSQL/Redis.
  * Requires the API to be running (see playwright.config.ts).
  */
+/** The demo lives in the private area, so every test signs in first. */
+async function openDemo(page: Page): Promise<void> {
+  await page.goto("/register");
+  await page.getByLabel("Display name").fill("Demo User");
+  await page.getByLabel("Email").fill(`demo-${crypto.randomUUID()}@example.com`);
+  await page.getByLabel("Password").fill("Str0ngPassphrase");
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page).toHaveURL(/\/admin\/dashboard$/);
+
+  await page.goto("/admin/demo");
+}
+
 test.describe("Demo feature", () => {
   test("loads server state and echoes a text", async ({ page }) => {
-    await page.goto("/demo");
+    await openDemo(page);
 
-    await expect(page).toHaveURL(/\/demo$/);
+    await expect(page).toHaveURL(/\/admin\/demo$/);
     await expect(page.getByRole("heading", { name: "Demo feature" })).toBeVisible();
 
     // Server state arrived through TanStack Query.
@@ -26,7 +38,7 @@ test.describe("Demo feature", () => {
   });
 
   test("shows the server validation message for empty input", async ({ page }) => {
-    await page.goto("/demo");
+    await openDemo(page);
 
     await page.getByLabel("Text to echo").fill(" ");
     await page.getByRole("button", { name: "Send" }).click();
@@ -38,7 +50,7 @@ test.describe("Demo feature", () => {
   });
 
   test("switches theme without reloading", async ({ page }) => {
-    await page.goto("/demo");
+    await openDemo(page);
 
     await page.getByRole("radio", { name: "Dark" }).click();
 

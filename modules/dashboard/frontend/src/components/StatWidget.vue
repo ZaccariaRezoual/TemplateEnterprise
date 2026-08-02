@@ -16,17 +16,17 @@
  *   grid where nothing is emphasised.
  */
 import { Card } from "@enterprise/ui";
-import type { DashboardWidget } from "../api/dashboard.api";
+import { computed } from "vue";
+import { resolveWidgetLink, type DashboardWidget } from "../api/dashboard.api";
 
-defineProps<{ widget: DashboardWidget }>();
+const props = defineProps<{ widget: DashboardWidget }>();
+
+// The server names a route; the host decides where that route lives.
+const target = computed(() => resolveWidgetLink(props.widget.link));
 </script>
 
 <template>
-  <component
-    :is="widget.link ? 'RouterLink' : 'div'"
-    :to="widget.link ?? undefined"
-    class="block rounded-(--card-radius)"
-  >
+  <component :is="target ? 'RouterLink' : 'div'" :to="target" class="block rounded-(--card-radius)">
     <Card>
       <p class="text-sm text-text-muted">{{ widget.title }}</p>
       <p class="mt-1 text-3xl font-semibold tracking-tight tabular-nums">

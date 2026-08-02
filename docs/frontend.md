@@ -18,6 +18,24 @@ src/
   types/      Ambient declarations (route meta, Vite env)
 ```
 
+## Two areas
+
+Routes split by `meta.requiresAuth`, in `router/adminArea.ts`:
+
+- routes that require a session are rebased under **`/admin`** and registered
+  by `registerAdminArea`;
+- everything else stays at the root, where the public site lives.
+
+`registerAdminArea` **requires the proof returned by `installAuthModule`**.
+`meta.requiresAuth` is enforced by that module's guard and by nothing else, so
+an application assembled without it would otherwise carry an administrative
+shell that opens to anyone. Demanding the token makes that assembly fail to
+compile instead of failing silently.
+
+The router is installed on the app **after** the modules, because
+`app.use(router)` starts the first navigation and a deep link into the private
+area must find it already registered.
+
 ## The request path
 
 ```

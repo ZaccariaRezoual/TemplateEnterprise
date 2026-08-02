@@ -118,6 +118,11 @@ duplicando.
    requisito sta accanto alla route che protegge, non in una tabella centrale
    che nessuno aggiorna.
 
+   **`requiresAuth` decide anche l'area**: le rotte che lo dichiarano vengono
+   ricollocate sotto `/admin` dal composition root (`router/adminArea.ts`), e
+   registrate solo se il modulo Auth ha installato la sua guardia. Il path che
+   scrivi qui è quindi relativo all'area: `/users` diventa `/admin/users`.
+
 ## Come si verifica
 
 ```bash

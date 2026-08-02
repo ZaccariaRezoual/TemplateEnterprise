@@ -1,5 +1,5 @@
 import type { ApiClient } from "@enterprise/sdk";
-import { provideDashboardApi } from "./api/dashboard.api";
+import { provideDashboardApi, provideDashboardLinkBase } from "./api/dashboard.api";
 
 /**
  * Public surface of `@enterprise/module-dashboard`.
@@ -15,6 +15,12 @@ export { dashboardRoutes } from "./routes";
 export interface DashboardModuleHost {
   /** The application's configured SDK client. */
   api: ApiClient;
+  /**
+   * Prefix applied to widget links, e.g. "/admin". A provider names a route
+   * ("/users"); where the application places it is the host's decision.
+   * Defaults to none.
+   */
+  linkBase?: string | undefined;
 }
 
 /**
@@ -27,4 +33,8 @@ export interface DashboardModuleHost {
  */
 export function installDashboardModule(host: DashboardModuleHost): void {
   provideDashboardApi(host.api);
+
+  if (host.linkBase !== undefined) {
+    provideDashboardLinkBase(host.linkBase);
+  }
 }

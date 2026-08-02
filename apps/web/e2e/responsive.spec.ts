@@ -32,19 +32,22 @@ async function register(page: Page): Promise<void> {
   await page.getByLabel("Email").fill(`rsp-${crypto.randomUUID()}@example.com`);
   await page.getByLabel("Password").fill("Str0ngPassphrase");
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page).toHaveURL(/\/dashboard$/);
+  await expect(page).toHaveURL(/\/admin\/dashboard$/);
 }
 
 test.describe("Mobile (375px)", () => {
   test.use({ viewport: { width: 375, height: 667 } });
 
   test("no page scrolls horizontally", async ({ page }) => {
-    for (const path of ["/login", "/register", "/demo"]) {
+    for (const path of ["/login", "/register"]) {
       await page.goto(path);
       await expectNoHorizontalScroll(page);
     }
 
     await register(page);
+    await expectNoHorizontalScroll(page);
+
+    await page.goto("/admin/demo");
     await expectNoHorizontalScroll(page);
 
     await page.goto("/nope-does-not-exist");
@@ -67,7 +70,7 @@ test.describe("Mobile (375px)", () => {
     await register(page);
     // The demo page is the longest one in the app, so it is where a fixed bar
     // actually has content to cover.
-    await page.goto("/demo");
+    await page.goto("/admin/demo");
 
     const target = page.getByTestId("notify-me");
     // Wait for the page to be fully laid out before measuring: scrolling to a
@@ -134,7 +137,7 @@ test.describe("Touch devices", () => {
     // tap(), not click(): proves nothing depends on a hover state first.
     await page.getByRole("button", { name: "Create account" }).tap();
 
-    await expect(page).toHaveURL(/\/dashboard$/);
+    await expect(page).toHaveURL(/\/admin\/dashboard$/);
   });
 });
 
