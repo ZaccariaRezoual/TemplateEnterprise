@@ -107,7 +107,7 @@ budget — se aggiungi una factory tua, ricordati di fare lo stesso.
 un errore che parla di Docker e non del tuo test. Non è il tuo test.
 
 **Il test asserisce una posizione sullo schermo e fallisce.** Non è un test
-backend: vedi `test-frontend.md` (Fase 2).
+backend: vedi [Testare il frontend](test-frontend.md).
 
 ## Correlati
 
