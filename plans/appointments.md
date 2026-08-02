@@ -30,10 +30,14 @@ Appointment
   StartUtc, EndUtc  DateTime      sempre UTC (§4)
   Status            enum          Requested → Confirmed → Completed
                                             ↘ Cancelled / NoShow
+  ContactPhone      string        obbligatorio: §3
   CustomerNote      string?       scritta in prenotazione
   AdminNote         string?       mai mostrata al cliente
-  ReminderSentAtUtc DateTime?     §8: rende il promemoria idempotente
   CreatedAtUtc / UpdatedAtUtc
+
+AppointmentReminder                un promemoria inviato, §8
+  AppointmentId, Kind (DayBefore | SameDayMorning), SentAtUtc
+  UNIQUE (AppointmentId, Kind)     ← l'idempotenza la garantisce il database
 
 AppointmentHistory                 chi ha fatto cosa e quando
   AppointmentId, ChangedByUserId, FromStatus, ToStatus, FromStartUtc, ToStartUtc, AtUtc
@@ -55,20 +59,25 @@ comandi, ma qui serve una storia leggibile _dentro_ l'appuntamento.
 interroga Services, si costruisce la propria copia sottoscrivendone gli eventi
 pubblici.
 
-## 3. Chi può prenotare — decisione da prendere subito
+## 3. Chi può prenotare — **deciso: account obbligatorio**
 
-L'utente ha chiesto notifiche **via email e via SignalR** al cliente. SignalR
-richiede un'identità: **senza account non c'è canale realtime**, e non c'è
-nemmeno un modo sicuro di far annullare un appuntamento a distanza di giorni.
+Per prenotare serve un account con **email, password e numero di telefono**.
 
-| Opzione                                | Conseguenze                                                                                  |
-| -------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **Account obbligatorio** (consigliata) | Notifiche complete, storico, annullamento sicuro. Attrito: registrazione prima di confermare |
-| Ospite con link firmato                | Zero attrito, ma niente realtime, e ogni azione passa da un token nell'email                 |
+Il telefono è il canale che funziona quando gli altri no: un appuntamento
+saltato si recupera con una chiamata, non con una mail non letta.
 
-Consigliata la prima, con la registrazione **all'ultimo passo**: si sceglie
-servizio, giorno e ora _prima_ di chiedere qualsiasi dato. Chiedere l'account
-all'inizio è ciò che fa abbandonare le prenotazioni.
+**Dove vive il numero.** Sull'appuntamento (`ContactPhone`), non solo sul
+profilo: è il recapito _per quella prenotazione_, e chi prenota per conto di
+qualcun altro lascia legittimamente un numero diverso. Se il profilo ne ha uno,
+il campo arriva precompilato.
+
+**La registrazione è l'ultimo passo.** Si sceglie servizio, giorno e ora
+_prima_ di chiedere qualsiasi dato: chiedere l'account all'inizio è ciò che fa
+abbandonare le prenotazioni. Chi è già registrato salta il passo e conferma.
+
+Conseguenza tecnica: la registrazione dentro il flusso di prenotazione non deve
+perdere la selezione. Lo slot scelto viaggia nella prenotazione, e al ritorno
+dal login la conferma riparte da lì — non dalla prima schermata.
 
 ## 4. Fusi orari — la parte che si sbaglia sempre
 
@@ -122,18 +131,35 @@ ALTER TABLE appointments.appointments
   ADD CONSTRAINT no_overlap
   EXCLUDE USING gist (
     tstzrange(start_utc, end_utc) WITH &&
-  ) WHERE (status IN ('Requested', 'Confirmed'));
+  ) WHERE (status = 'Confirmed');
 ```
 
-Due appuntamenti sovrapposti diventano **impossibili**, non improbabili. Il
-codice applicativo gestisce la violazione e risponde «lo slot è appena stato
-preso», che è la verità.
+Due appuntamenti **confermati** sovrapposti diventano impossibili, non
+improbabili.
 
-Decisione dentro il vincolo: **anche `Requested` occupa**. Altrimenti dieci
-richieste non confermate sullo stesso slot sono legittime, e nove persone
-riceveranno un rifiuto dopo aver aspettato. Il rischio opposto — slot bloccati
-da richieste mai confermate — si gestisce con una scadenza (`ExpiresAtUtc`) o
-con la conferma rapida; va deciso, non ignorato.
+### Deciso: una richiesta non occupa lo slot
+
+Il vincolo copre solo `Confirmed`, quindi più persone possono chiedere lo
+stesso orario. Con la conferma manuale (§ decisione 3) è coerente: chi
+amministra sceglie.
+
+Ma va progettato, perché tre conseguenze non sono ovvie:
+
+1. **Il conflitto si sposta alla conferma.** Confermando la seconda richiesta
+   sovrapposta il database rifiuta. L'interfaccia deve dirlo prima: una
+   richiesta in conflitto con un appuntamento già confermato si mostra
+   **segnalata**, non come una qualsiasi.
+2. **Confermarne una rifiuta le altre.** Alla conferma, le richieste
+   sovrapposte passano automaticamente a `Cancelled` con motivo «slot non più
+   disponibile», e i loro autori ricevono la notifica. Lasciarle appese
+   significa persone che aspettano una risposta che non arriverà.
+3. **La pagina pubblica deve essere onesta.** Dice «richiesta inviata», mai
+   «prenotazione confermata»: finché l'amministratore non conferma, quell'ora
+   non è di nessuno. È la differenza fra un'attesa e una promessa non
+   mantenuta.
+
+Il rovescio positivo: nessuno slot resta bloccato da richieste mai confermate,
+quindi **non serve una scadenza** — una cosa in meno che può guastarsi.
 
 ⟶ Se un giorno l'attività avrà **più operatori**, il vincolo diventa per
 operatore. La migration di allora aggiunge la colonna al vincolo: vale la pena
@@ -193,17 +219,29 @@ Due dettagli che valgono:
   `ForGroup("role:Admin")`, con la cautela già documentata — in
   un'installazione multi-tenant quel gruppo attraversa i tenant.
 
-### I promemoria: l'unica parte con un tempo proprio
+### I promemoria — **decisi: due**
+
+1. **Il giorno prima** (24 ore prima dell'orario).
+2. **La mattina stessa**, a un'ora locale configurata (default 08:00).
+
+Il secondo non è un «offset»: è un **orario del giorno**. Un appuntamento alle
+9:30 e uno alle 18:00 devono ricevere lo stesso promemoria alle 8:00, non
+rispettivamente alle 8:30 e alle 17:00. Modellarlo come «N ore prima»
+funzionerebbe per un solo appuntamento della giornata.
 
 Il framework **non ha uno scheduler** (rimandato in Fase 7 di PLAN.md, per
-scelta). Serve un `BackgroundService` che ogni minuto cerca gli appuntamenti
-che iniziano entro N ore e pubblica `AppointmentReminderDue`.
+scelta). Serve un `BackgroundService` che ogni minuto valuta le due regole e
+pubblica `AppointmentReminderDue`.
 
-**Idempotenza per costruzione**: si marca `ReminderSentAtUtc` con un
-`UPDATE … WHERE ReminderSentAtUtc IS NULL RETURNING …`. Chi vince la riga manda
-il promemoria. Con due istanze dell'API, la seconda non trova nulla da
-mandare — senza questo, il cliente riceve due email identiche, che è il modo
-più veloce per far disattivare le notifiche.
+**L'idempotenza la garantisce il database**, non il codice: la tabella
+`AppointmentReminder` ha un vincolo di unicità su `(AppointmentId, Kind)`, e
+chi inserisce per primo manda la notifica. Con due istanze dell'API la seconda
+viola il vincolo e non manda nulla. Senza, il cliente riceve due email
+identiche — il modo più veloce per fargli disattivare le notifiche.
+
+Un promemoria si manda **solo per gli appuntamenti confermati**: avvisare
+qualcuno di un appuntamento che nessuno ha ancora accettato è peggio del
+silenzio.
 
 ## 9. Frontend
 
@@ -228,19 +266,55 @@ e riportare alla scelta dell'ora, non a un errore generico.
 `/admin/appointments`: viste mese/settimana/giorno, trascinamento per spostare,
 pannello di dettaglio con conferma/annulla/note, gestione della disponibilità.
 
-**Decisione: libreria o costruzione?** Un calendario con trascinamento scritto a
-mano è settimane di lavoro e di casi limite. Una libreria è giustificata, con
-due vincoli non negoziabili:
+**Deciso: libreria, e la libreria è FullCalendar.**
 
-- **incapsulata in un nostro componente**, così l'app non dipende dalla sua
-  API;
-- **tematizzata dai token**: molte librerie portano CSS proprio, ed è
-  esattamente il modo in cui rientrano dalla finestra i valori letterali che il
-  design system tiene fuori dalla porta.
+Un calendario con trascinamento scritto a mano è settimane di lavoro e di casi
+limite (settimane a cavallo di mesi, eventi sovrapposti, tutto-il-giorno, ora
+legale). Le candidate valutate:
 
-Candidate da valutare in Fase 3: Schedule-X e vue-cal (leggere, native Vue),
-FullCalendar (matura, più pesante, licenza da leggere per le funzioni
-premium).
+| Libreria         | Perché sì                                                                                                          | Perché no                                   |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| **FullCalendar** | Aspetto e interazioni da Google Calendar; trascinamento incluso nel pacchetto MIT; wrapper Vue ufficiale; maturità | Più pesante; porta CSS proprio              |
+| Schedule-X       | Nativa Vue 3, leggera, molto simile a Google Calendar                                                              | Più giovane; alcuni plugin sono a pagamento |
+| vue-cal          | Leggerissima                                                                                                       | Trascinamento e viste meno complete         |
+
+Scelgo **FullCalendar** perché il trascinamento — che è il requisito — è nel
+pacchetto libero, e perché su un calendario di lavoro la maturità vale più
+della leggerezza.
+
+**Da verificare in Fase 3, non da dare per scontato**: licenza delle viste che
+useremo (le viste _timeline/risorse_ sono premium; mese, settimana e giorno non
+lo sono) e peso reale del bundle. Se una delle due sorprende, si cambia — ed è
+proprio per questo che vale il vincolo seguente.
+
+Due vincoli non negoziabili:
+
+- **Incapsulata in un nostro componente** (`AppointmentCalendar.vue`): l'app
+  parla con la nostra interfaccia, non con quella della libreria. Sostituirla
+  diventa un file, non una riscrittura.
+- **Tematizzata dai token.** La libreria porta il proprio CSS, ed è esattamente
+  il modo in cui i valori letterali rientrano dalla finestra dopo che il design
+  system li ha tenuti fuori dalla porta. Le sue variabili CSS si mappano sui
+  nostri token semantic, e il calendario segue il tema chiaro/scuro come tutto
+  il resto.
+
+### Aggiungere l'appuntamento al proprio calendario
+
+Requisito esplicito: Google Calendar e calendario iOS. Due meccanismi, **zero
+dipendenze e nessun OAuth**:
+
+| Meccanismo                                                                                    | Copre                                         |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| **File `.ics`** (allegato alla mail di conferma + link «Aggiungi al calendario»)              | Apple Calendar, Outlook, e l'import di Google |
+| **URL template di Google Calendar** (`calendar.google.com/calendar/render?action=TEMPLATE&…`) | Google Calendar con un click                  |
+
+L'`.ics` porta anche gli **aggiornamenti**: uno spostamento rimanda il file con
+lo stesso `UID` e `SEQUENCE` incrementato, e il calendario del cliente si
+aggiorna da solo invece di accumulare doppioni.
+
+Resta fuori la **sincronizzazione bidirezionale** (leggere il calendario del
+cliente): richiede OAuth, token da rinnovare e un consenso che quasi nessuno
+concede a un fornitore di servizi.
 
 ### Utente — i miei appuntamenti
 
@@ -259,16 +333,16 @@ perché sono dati propri. Ci si annulla entro il limite consentito.
       "BufferMinutes": 0,
       "MinimumNoticeHours": 2,
       "MaxAdvanceDays": 60,
-      "ReminderHoursBefore": [24],
+      "ReminderDayBeforeHours": 24,
+      "ReminderSameDayLocalTime": "08:00",
       "CustomerCancellationCutoffHours": 24
     }
   }
 }
 ```
 
-`ReminderHoursBefore` è una lista: «24 ore prima» e «1 ora prima» sono due
-promemoria diversi, e il campo `ReminderSentAtUtc` diventa allora una tabella
-di promemoria inviati. Va deciso in Fase 4: **uno solo** basta quasi sempre.
+I due promemoria sono modellati diversamente **perché sono cose diverse**: uno
+è una distanza dall'appuntamento, l'altro è un'ora del giorno (§8).
 
 ## 11. Fasi
 
@@ -280,14 +354,15 @@ slot** con i suoi test.
 ✅ **Done quando**: i test coprono buffer, preavviso, chiusure, giorno del
 cambio ora legale e giornata già piena — e passano.
 
-### Fase 1 — Prenotazione e concorrenza
+### Fase 1 — Prenotazione, conferma e concorrenza
 
-Endpoint di disponibilità e prenotazione, vincolo di esclusione, gestione della
-violazione.
+Endpoint di disponibilità, prenotazione (`Requested`), conferma, vincolo di
+esclusione e gestione della violazione, rifiuto automatico delle richieste
+sovrapposte.
 
-✅ **Done quando**: un test d'integrazione lancia **due prenotazioni simultanee
-sullo stesso slot** e ne conferma esattamente una, con un errore comprensibile
-per l'altra.
+✅ **Done quando**: un test d'integrazione lancia **due conferme simultanee su
+richieste sovrapposte** e ne va a buon fine esattamente una, con un errore
+comprensibile per l'altra; e confermare una richiesta annulla le sovrapposte.
 
 ### Fase 2 — Flusso pubblico
 
@@ -306,7 +381,8 @@ rifiutato dal server e la UI torna indietro senza ricaricare.
 
 ### Fase 4 — Notifiche
 
-Eventi pubblici, sottoscrizione di Email, ICS, promemoria idempotenti.
+Eventi pubblici, sottoscrizione di Email, allegato `.ics` e link «Aggiungi al
+calendario» (ICS + URL Google), i due promemoria idempotenti.
 
 ✅ **Done quando**: prenotazione, conferma, spostamento e annullamento
 producono email (nel log dell'`IEmailSender` di sviluppo) **e** notifica
@@ -347,15 +423,18 @@ falliscono.
 - **Liste d'attesa e prenotazioni ricorrenti**: si aggiungono quando qualcuno
   le chiede davvero.
 
-## 14. Decisioni da confermare
+## 14. Decisioni prese
 
-1. **Account obbligatorio per prenotare** (§3)? Cambia il flusso pubblico e il
-   perimetro delle notifiche.
-2. **Le richieste non confermate occupano lo slot** (§6)? In caso affermativo,
-   dopo quanto scadono?
-3. **Conferma manuale o automatica**? Il piano assume che l'amministratore
-   confermi. Con la conferma automatica, `Requested` sparisce e metà delle
-   notifiche con lui.
-4. **Quanti promemoria** e a che distanza (§10)?
-5. **Libreria del calendario** (§9): valutazione in Fase 3, o preferenza già
-   ora?
+1. **Account obbligatorio** per prenotare, con email, password e **telefono**;
+   registrazione all'ultimo passo (§3).
+2. **Le richieste non occupano lo slot**: il vincolo copre solo `Confirmed`, e
+   confermarne una rifiuta automaticamente le sovrapposte (§6).
+3. **Conferma manuale**: `Requested` esiste, e la pagina pubblica dice
+   «richiesta», mai «confermato».
+4. **Due promemoria**: il giorno prima, e la mattina stessa alle 08:00 locali
+   (§8).
+5. **FullCalendar**, incapsulato e tematizzato; aggiunta al calendario del
+   cliente via `.ics` e URL template di Google (§9).
+
+Resta una sola cosa da verificare **durante** la Fase 3, non prima: licenza e
+peso di FullCalendar per le viste che useremo.

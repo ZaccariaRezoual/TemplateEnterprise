@@ -257,11 +257,18 @@ documentazione.
 Il primo test d'integrazione è il più importante: **una bozza che finisce in
 vetrina è il fallimento che questo modulo deve rendere impossibile**.
 
-## 12. Decisioni da confermare
+## 12. Decisioni prese
 
-1. **Prezzo**: lo mostriamo? Molti servizi B2B non lo espongono. Il campo può
-   esistere ed essere nullable — ma se non serve mai, non va aggiunto.
-2. **Riordino in amministrazione**: campo numerico (semplice) o trascinamento
-   (più naturale, più costo)? Consiglio il campo, e il trascinamento se
-   l'elenco supera la decina.
-3. **Immagini pubbliche**: confermi la modifica al modulo Storage (§4)?
+1. **Prezzo**: campo presente e nullable, mostrato **solo quando valorizzato**.
+   Costa una riga di form e una condizione nel markup, e un progetto che non lo
+   usa non lo vede. Toglierlo dopo, invece, è una migration.
+2. **Riordino in amministrazione**: campo numerico. Il trascinamento si aggiunge
+   se l'elenco supera la decina — prima di allora è lavoro speso per riordinare
+   cinque righe.
+3. **Immagini pubbliche**: si procede con la modifica al modulo Storage (§4),
+   perché la lacuna è del framework: ogni progetto avrà prima o poi
+   un'immagine pubblica. Default **privato**, visibilità esplicita all'upload.
+
+⟶ Conseguenza delle decisioni sugli appuntamenti
+([appointments.md](appointments.md) §14): un servizio prenotabile richiede
+`DurationMinutes`, e la CTA del dettaglio porterà a `/book/{slug}`.
