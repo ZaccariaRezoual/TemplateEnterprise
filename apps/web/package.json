@@ -15,11 +15,12 @@
   },
   "dependencies": {
     "@enterprise/module-auth": "workspace:*",
-    "@enterprise/module-dashboard": "workspace:*",
     "@enterprise/module-authorization": "workspace:*",
+    "@enterprise/module-dashboard": "workspace:*",
     "@enterprise/module-localization": "workspace:*",
     "@enterprise/module-notifications": "workspace:*",
     "@enterprise/module-realtime": "workspace:*",
+    "@enterprise/module-site": "workspace:*",
     "@enterprise/module-users": "workspace:*",
     "@enterprise/sdk": "workspace:*",
     "@enterprise/shared": "workspace:*",

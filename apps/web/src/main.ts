@@ -11,6 +11,7 @@ import {
   disconnectRealtime,
   installRealtimeModule,
 } from "@enterprise/module-realtime";
+import { installSiteModule } from "@enterprise/module-site";
 import { installUsersModule } from "@enterprise/module-users";
 import { VueQueryPlugin } from "@tanstack/vue-query";
 import { installTheme } from "@enterprise/ui";
@@ -18,6 +19,7 @@ import { createPinia } from "pinia";
 import { createApp, watch } from "vue";
 import App from "@/app/App.vue";
 import { createQueryClient } from "@/app/providers/queryClient";
+import { siteContent } from "@/site.config";
 import { api, setAuthTokenProvider, setUnauthorizedHandler } from "@/core/api/apiClient";
 import { installFeatureFlags, useFeatureFlagsStore } from "@/core/features/featureFlags";
 import { logger } from "@/core/logger/logger";
@@ -75,6 +77,17 @@ installUsersModule({ api });
 installNotificationsModule({ api });
 installDashboardModule({ api, linkBase: ADMIN_BASE });
 installLocalizationModule({ app, api });
+
+// The public site asks the host where its "way in" leads, instead of
+// importing the Auth module to find out: it keeps working in an application
+// assembled without authentication at all.
+installSiteModule({
+  content: siteContent,
+  links: {
+    entryPath: () => (session.isAuthenticated ? ADMIN_BASE : "/login"),
+    entryLabel: () => (session.isAuthenticated ? "Area riservata" : "Accedi"),
+  },
+});
 // A function, not the token: SignalR calls it again on every reconnect, so a
 // session that refreshed while offline reconnects with the current token.
 installRealtimeModule({ getAccessToken: () => session.accessToken });

@@ -107,5 +107,8 @@ module depends on it, startup fails fast with a clear error.
 - [`modules/realtime`](../modules/realtime/README.md) — a module that makes
   every other module live without any of them referencing it, via a marker
   interface and an open discovery of its implementations.
+- [`modules/site`](../modules/site/README.md) — a frontend-only module so far:
+  the public site, whose content is a typed file the project owns and whose
+  pages a project may replace outright.
 - [`modules/demo`](../modules/demo/README.md) — the minimal skeleton: query,
   validated command, event publish/subscribe.
