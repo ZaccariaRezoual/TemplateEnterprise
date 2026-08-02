@@ -26,7 +26,7 @@ defineProps<{
   <ul v-if="items.length > 0" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
     <li v-for="item in items" :key="item.title">
       <Card :title="item.title" heading-level="h3">
-        <p class="text-sm text-text-muted">{{ item.body }}</p>
+        <p class="text-text-muted">{{ item.body }}</p>
       </Card>
     </li>
   </ul>

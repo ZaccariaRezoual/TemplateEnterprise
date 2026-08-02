@@ -46,6 +46,20 @@
   --elevation-primitive-1: 0 1px 2px 0 oklch(0 0 0 / 0.05);
   --elevation-primitive-2: 0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
 
+  /* Type scale for headings, fluid.
+     `clamp()` rather than a value per breakpoint: a heading that grows with
+     the viewport needs no `sm:`/`lg:` variants at every call site, and it can
+     never be forgotten on one page. The minimum is the phone size, the
+     maximum stops growth before a line becomes shorter than a few words. */
+  --font-size-primitive-title: clamp(1.25rem, 1.1rem + 0.8vw, 1.5rem);
+  --font-size-primitive-heading: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);
+  --font-size-primitive-display: clamp(2rem, 1.4rem + 3vw, 3.25rem);
+
+  /* Vertical rhythm of a page band. The public surface breathes; a work tool
+     does not, which is why these are separated from Tailwind's spacing. */
+  --space-primitive-band: --spacing(10);
+  --space-primitive-band-lg: --spacing(20);
+
   /* Status scales */
   --color-success-500: oklch(0.65 0.16 150);
   --color-success-600: oklch(0.56 0.15 150);

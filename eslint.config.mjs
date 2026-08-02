@@ -63,7 +63,9 @@ export default tseslint.config(
   // Node code: build scripts, tooling config and end-to-end tests.
   {
     files: [
-      "scripts/**",
+      // Both the repository's scripts and an app's own build scripts: the
+      // prerender step lives in apps/web because it needs that app's tooling.
+      "**/scripts/**",
       "**/*.config.{js,mjs,ts}",
       "**/.storybook/**",
       "**/e2e/**",

@@ -1,0 +1,10 @@
+# The private area is behind authentication, so a crawler could not read it
+# anyway — disallowing it keeps crawl budget on the pages that matter and
+# keeps /admin URLs out of search results.
+User-agent: *
+Allow: /
+Disallow: /admin
+
+# A `Sitemap:` line is appended by scripts/prerender.mjs when
+# VITE_PUBLIC_BASE_URL is set: the directive requires an absolute URL, and
+# only the deployment knows its own address.

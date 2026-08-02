@@ -20,6 +20,15 @@ const envSchema = z.object({
   VITE_API_TIMEOUT_MS: z.coerce.number().int().positive().default(15_000),
   /** Minimum level the logger emits. */
   VITE_LOG_LEVEL: z.enum(["debug", "info", "warn", "error", "silent"]).default("info"),
+  /**
+   * Absolute address of the deployment, e.g. "https://acme.example".
+   *
+   * Used for the canonical URL and `og:url` of the public pages. Empty by
+   * default and then simply omitted: guessing it from `location` would
+   * publish the preview domain — or localhost — as the canonical address of
+   * every page, which is worse than having none.
+   */
+  VITE_PUBLIC_BASE_URL: z.string().default(""),
 });
 
 /** Validated, immutable application environment. */

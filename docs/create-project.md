@@ -56,6 +56,24 @@ Then make it yours:
    notifications, localization, realtime, dashboard) stay.
 3. **Dashboard** — implement `IDashboardWidgetProvider` in each new module so
    the landing page reflects your product (see `modules/dashboard/README.md`).
+4. **Public site** — rewrite `apps/web/src/site.config.ts`: it holds every word
+   of the home, about, services, contact and privacy pages. Three of them are
+   not optional before going live:
+   - `contact.email` and `Modules:Site:ContactRecipient`, or messages go to an
+     address that belongs to nobody;
+   - `privacy`, because a site collecting a name and an email needs a real
+     notice — the placeholder is worse than none;
+   - `VITE_PUBLIC_BASE_URL`, without which the canonical URL, the sitemap and
+     the `robots.txt` sitemap line are all skipped.
+
+   A project that is only an internal tool deletes the `installSiteModule`
+   call and the `siteRoutes` import instead: the root then goes straight to
+   `/admin`.
+
+5. **Publish the public pages as static HTML** with
+   `pnpm --filter @acme-crm/web build:static`. Link unfurlers do not run
+   JavaScript, so without this step every shared link shows the same empty
+   preview.
 
 ## Removing the Demo module
 

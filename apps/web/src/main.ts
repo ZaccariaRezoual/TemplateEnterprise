@@ -21,8 +21,10 @@ import App from "@/app/App.vue";
 import { createQueryClient } from "@/app/providers/queryClient";
 import { siteContent } from "@/site.config";
 import { api, setAuthTokenProvider, setUnauthorizedHandler } from "@/core/api/apiClient";
+import { env } from "@/core/config/env";
 import { installFeatureFlags, useFeatureFlagsStore } from "@/core/features/featureFlags";
 import { logger } from "@/core/logger/logger";
+import { configureSeo } from "@/core/seo/applySeo";
 import { createAppRouter, privateRoutes } from "@/router";
 import { ADMIN_BASE, registerAdminArea } from "@/router/adminArea";
 import "@/assets/styles/main.css";
@@ -40,6 +42,10 @@ const app = createApp(App);
 app.config.errorHandler = (error, _instance, info) => {
   logger.error("Unhandled Vue error", { error, info });
 };
+
+// Before the router: the first navigation happens on `app.use(router)`, and
+// it must already know the product's name.
+configureSeo({ siteName: siteContent.name, baseUrl: env.VITE_PUBLIC_BASE_URL });
 
 const router = createAppRouter();
 

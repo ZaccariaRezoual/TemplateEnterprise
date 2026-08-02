@@ -5,6 +5,7 @@ import { siteRoutes } from "@enterprise/module-site";
 import { usersRoutes } from "@enterprise/module-users";
 import { createRouter, createWebHistory, type Router, type RouteRecordRaw } from "vue-router";
 import { logger } from "@/core/logger/logger";
+import { applySeo } from "@/core/seo/applySeo";
 import { demoRoutes } from "@/features/demo/routes";
 import { ADMIN_BASE, splitByArea } from "@/router/adminArea";
 
@@ -61,7 +62,8 @@ const routes: RouteRecordRaw[] = [
  * simply has no administrative screens — rather than having them unguarded.
  *
  * Guards implemented here:
- * - Document title from `route.meta.title`.
+ * - Document metadata (title, description, canonical, Open Graph) from
+ *   `route.meta`.
  *
  * The authentication and permission guards are installed by the Auth and
  * Authorization modules; they hook into `meta.requiresAuth` /
@@ -76,8 +78,10 @@ export function createAppRouter(): Router {
     scrollBehavior: (_to, _from, savedPosition) => savedPosition ?? { top: 0 },
   });
 
-  router.beforeEach((to) => {
-    document.title = to.meta.title === undefined ? "Enterprise Framework" : `${to.meta.title}`;
+  // Title, description, canonical and Open Graph tags, on every navigation:
+  // a page nobody remembered to think about still gets them.
+  router.afterEach((to) => {
+    applySeo(to);
   });
 
   router.onError((error) => {

@@ -282,6 +282,11 @@ non aveva un tipo) e `Textarea` al design system.
 design system, e cambiare i token semantic la ri-brandizza — entrambe le aree
 insieme, ciascuna con il proprio carattere.
 
+**Fatto.** Token di ruolo (`text-display`/`heading`/`title`, fluidi con
+`clamp()`) e di ritmo (`py-band`/`py-band-lg`), ridefiniti dentro
+`[data-surface="public"]`. Tre documenti: base condivisa, admin, public.
+I componenti restano nel modulo: oggi li usa una superficie sola.
+
 ### Fase 4 — SEO
 
 - `useSeo()`: title, description, Open Graph per rotta
@@ -290,6 +295,12 @@ insieme, ciascuna con il proprio carattere.
 
 ✅ **Done quando**: ogni pagina pubblica ha meta unici, e (con il prerender)
 l'HTML servito contiene il testo senza eseguire JavaScript.
+
+**Fatto.** `applySeo` nel guard (title, description, canonical, Open Graph),
+`robots.txt`, e `pnpm --filter @enterprise/web build:static`: Playwright — già
+presente per gli e2e, nessuna dipendenza nuova — visita le rotte pubbliche e
+salva l'HTML reso, più `sitemap.xml`. Verificato: `dist/services/index.html`
+contiene titolo, meta, canonical e il testo della pagina.
 
 ### Fase 5 — Documentazione
 
@@ -300,6 +311,9 @@ l'HTML servito contiene il testo senza eseguire JavaScript.
 
 ✅ **Done quando**: aggiungere una pagina pubblica si fa seguendo solo la
 pattern page.
+
+**Fatto.** [wiki/patterns/add-public-page.md](../wiki/patterns/add-public-page.md),
+`modules/site/README.md`, `docs/create-project.md` e la regola in `CLAUDE.md`.
 
 ## 10. Cosa NON prevede questo piano
 

@@ -31,16 +31,20 @@ withDefaults(
 </script>
 
 <template>
-  <section class="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+  <section class="mx-auto max-w-5xl px-4 py-band sm:px-6 sm:py-band-lg">
     <component
       :is="headingLevel"
       v-if="title"
-      class="text-2xl font-semibold tracking-tight sm:text-3xl"
+      :class="headingLevel === 'h1' ? 'text-display' : 'text-heading'"
+      class="font-semibold tracking-tight"
     >
       {{ title }}
     </component>
 
-    <p v-if="intro" class="mt-3 max-w-2xl text-text-muted">{{ intro }}</p>
+    <!-- `max-w-prose` keeps a line between 45 and 75 characters, which is
+         where prose stays readable — a full-width paragraph on a laptop is
+         the most common readability mistake on a marketing page. -->
+    <p v-if="intro" class="mt-3 max-w-prose text-text-muted">{{ intro }}</p>
 
     <div v-if="$slots.default" :class="title || intro ? 'mt-8' : ''">
       <slot />
