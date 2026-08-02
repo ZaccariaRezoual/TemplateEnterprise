@@ -11,6 +11,22 @@ radius, a shadow or a duration of its own.
 in one place, and every screen follows — no component edits, no find-and-replace
 across features. Every rule below exists to protect that property.
 
+### Three documents, one system
+
+The application has two surfaces with opposite needs — a dense work tool and a
+public brochure — so the reference is split by audience:
+
+| Document                                           | Covers                                                             |
+| -------------------------------------------------- | ------------------------------------------------------------------ |
+| **This file**                                      | The shared foundation: tokens, accessibility, conventions, theming |
+| [design-system-admin.md](design-system-admin.md)   | The private area: density, tables, forms, working navigation       |
+| [design-system-public.md](design-system-public.md) | The public site: rhythm, type scale, sections, CTA                 |
+
+The two surface documents describe **different uses of the same tokens**, never
+a second set of them. If either starts defining its own colours or radii, the
+rebranding property is gone — and that property is most of the reason this
+template exists.
+
 ---
 
 ## 1. Token architecture
@@ -341,6 +357,26 @@ theme-aware.**
 
 Adding a theme = adding one `[data-theme="…"]` block of semantic overrides in
 `semantic.css`. Nothing else changes.
+
+### Surfaces
+
+A **theme** answers "which palette"; a **surface** answers "which rhythm and
+scale". Both are semantic-token overrides, and both are applied by an
+attribute on an ancestor: `data-theme` on `<html>`, `data-surface` on a shell.
+
+```css
+[data-surface="public"] {
+  --semantic-text-display: var(--font-size-primitive-display);
+  --semantic-space-band: var(--space-primitive-band);
+}
+```
+
+`PublicLayout` sets `data-surface="public"`; everything inside it inherits the
+larger type and the wider rhythm without a single page knowing. The private
+area uses the defaults on `:root`.
+
+Adding a surface follows the same three rules as adding a theme: **semantic
+tokens only**, defined for every theme, documented in the surface's file.
 
 ### Rebranding a project
 

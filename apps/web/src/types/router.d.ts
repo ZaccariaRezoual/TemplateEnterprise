@@ -13,5 +13,11 @@ declare module "vue-router" {
     title?: string;
     /** Layout wrapping the page; defaults to "default". Use "blank" for login/error screens. */
     layout?: "default" | "blank";
+    /**
+     * Meta description of the page, used for search results and link
+     * previews. Worth writing for public routes; pointless for private ones,
+     * which no crawler will ever reach.
+     */
+    description?: string;
   }
 }

@@ -11,6 +11,12 @@
  * asks the visitor to make a decision before they know anything — and the
  * usual result is that they make none.
  *
+ * Structure and rhythm follow the "Trust & Authority / minimal single column"
+ * direction: one column, large type, generous whitespace, nothing playful.
+ * The sizes are not written here — they come from the surface's tokens (see
+ * docs/design-system-public.md), so the same markup reads as a work tool
+ * inside /admin and as a brochure outside it.
+ *
  * All of the words come from `SiteContent`: this file is the layout, the
  * project owns the message.
  */
