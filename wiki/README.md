@@ -9,14 +9,14 @@ file veri del repository.
 
 ## Da dove partire
 
-| Se sei…                        | Vai a                                                                                                 |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| davanti a un'attività concreta | [patterns/](patterns/README.md)                                                                       |
-| curioso del «perché»           | [`docs/`](../docs/) e i README in `modules/`                                                          |
-| al primo giorno sul progetto   | `getting-started/` — in arrivo; per ora [README.md](../README.md) → «Getting started»                 |
-| bloccato da un errore strano   | `patterns/troubleshooting.md` — in arrivo; gli errori noti sono negli «Errori tipici» di ogni pattern |
-
-Lo stato di avanzamento della wiki è in [`plans/wiki.md`](../plans/wiki.md).
+| Se sei…                        | Vai a                                                                           |
+| ------------------------------ | ------------------------------------------------------------------------------- |
+| al primo giorno sul progetto   | [Primo giorno](getting-started/day-one.md)                                      |
+| davanti a un'attività concreta | [patterns/](patterns/README.md)                                                 |
+| bloccato da un errore strano   | [Errori che non hanno senso](patterns/troubleshooting.md)                       |
+| perso fra le cartelle          | [Giro del repository](getting-started/tour.md)                                  |
+| davanti a una parola oscura    | [Glossario](getting-started/glossary.md)                                        |
+| curioso del «perché»           | [decisions/](decisions/README.md), [`docs/`](../docs/) e i README in `modules/` |
 
 ## Il confine con `docs/` — leggilo prima di scrivere qui
 
@@ -37,6 +37,14 @@ mese, la versione sbagliata che però tutti leggono.
 
 **Verifica del confine**: cancellando una pagina di questa wiki non si deve
 perdere nessuna informazione normativa — solo tempo.
+
+## Com'è organizzata
+
+| Cartella           | Cosa contiene                                                                                                                        |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `getting-started/` | [primo giorno](getting-started/day-one.md), [giro del repository](getting-started/tour.md), [glossario](getting-started/glossary.md) |
+| `patterns/`        | [il cuore](patterns/README.md): una pagina per attività                                                                              |
+| `decisions/`       | [ADR](decisions/README.md): decisioni con alternative ragionevoli                                                                    |
 
 ## Le altre fonti, e a chi parlano
 
@@ -60,6 +68,11 @@ perdere nessuna informazione normativa — solo tempo.
 4. Aggiungi la pagina all'indice in [`patterns/README.md`](patterns/README.md).
 5. **Stessa PR del codice.** Una pagina aggiornata «dopo» è una pagina
    aggiornata mai.
+6. Controlla i link prima di aprire la PR — la CI fallisce se uno è rotto:
+
+   ```bash
+   pnpm check:links
+   ```
 
 Lingua: italiano. Gli identificatori restano in inglese come nel codice —
 si scrive «il validator di `UpdateUserCommand`», mai la sua traduzione, perché

@@ -36,6 +36,11 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
+      # Broken links are the first symptom of documentation drifting away from
+      # the code, and the cheapest kind of rot to catch.
+      - name: Documentation links
+        run: node scripts/check-links.mjs
+
       - name: Type check
         run: pnpm typecheck
 
