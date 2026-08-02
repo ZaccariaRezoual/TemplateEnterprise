@@ -18,6 +18,7 @@ using EnterpriseFramework.Modules.Localization;
 using EnterpriseFramework.Modules.Notifications;
 using EnterpriseFramework.Modules.Realtime;
 using EnterpriseFramework.Modules.Settings;
+using EnterpriseFramework.Modules.Site;
 using EnterpriseFramework.Modules.Storage;
 using EnterpriseFramework.Modules.Users;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -76,6 +77,7 @@ try
             typeof(LocalizationModule).Assembly,
             typeof(RealtimeModule).Assembly,
             typeof(DashboardModule).Assembly,
+            typeof(SiteModule).Assembly,
         ],
         builder.Configuration
     );

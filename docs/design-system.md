@@ -214,6 +214,17 @@ using it for emphasis trains users to ignore it where it matters.
 | `type`  | `text` · `email` · `password` · `search` · `tel` · `url` · `number`                                                                   |
 | slots   | `prefix`, `suffix`                                                                                                                    |
 
+### Textarea
+
+Same contract as `Input` (`label` required, `hint`, `error`, `required`,
+`disabled`, `readonly`), plus `rows` (default 5) and `maxlength`.
+
+Use it whenever the expected answer is prose: a single-line box tells the
+person "one line is enough", and they answer accordingly.
+
+Setting `maxlength` shows a live counter, announced politely — a limit
+discovered on submit means rewriting a message already finished.
+
 ### Card
 
 | Prop           | Notes                                                                                                    |

@@ -22,6 +22,8 @@
       Include="..\..\..\..\modules\realtime\backend\EnterpriseFramework.Modules.Realtime.csproj" />
     <ProjectReference
       Include="..\..\..\..\modules\dashboard\backend\EnterpriseFramework.Modules.Dashboard.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\modules\site\backend\EnterpriseFramework.Modules.Site.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />

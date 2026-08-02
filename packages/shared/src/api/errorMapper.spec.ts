@@ -1,10 +1,11 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   ApplicationError,
   BusinessError,
   ForbiddenError,
   NetworkError,
   NotFoundError,
+  RateLimitedError,
   ServerError,
   UnauthorizedError,
   ValidationError,
@@ -79,5 +80,18 @@ describe("mapTransportFailure", () => {
     const original = new ForbiddenError("nope");
 
     expect(mapTransportFailure(original)).toBe(original);
+  });
+});
+
+describe("rate limiting", () => {
+  it("maps 429 to its own type", () => {
+    // The client has to tell "slow down" apart from a generic failure: the
+    // remedy is waiting, not retrying immediately or reporting a bug.
+    const error = mapResponseToApplicationError(429, {
+      title: "Too Many Requests",
+      status: 429,
+    });
+
+    expect(error).toBeInstanceOf(RateLimitedError);
   });
 });

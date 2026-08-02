@@ -12,5 +12,7 @@ export { default as PublicLayout } from "./layouts/PublicLayout.vue";
 export { installSiteModule, useSiteLinks } from "./install";
 export type { SiteLinks, SiteModuleHost } from "./install";
 export { siteRoutes } from "./routes";
+export { contactFormSchema } from "./validators/contact.validator";
+export type { ContactFormValues } from "./validators/contact.validator";
 export { defaultSiteContent, useSiteContent } from "./content";
 export type { SiteContent, SiteHighlight, SitePage } from "./content";

@@ -4,6 +4,7 @@
   ForbiddenError,
   NetworkError,
   NotFoundError,
+  RateLimitedError,
   ServerError,
   UnauthorizedError,
   ValidationError,
@@ -44,6 +45,8 @@ export function mapResponseToApplicationError(
       return new NotFoundError(message, options);
     case 422:
       return new BusinessError(message, options);
+    case 429:
+      return new RateLimitedError(message, options);
     default:
       return status >= 500
         ? new ServerError(message, options)

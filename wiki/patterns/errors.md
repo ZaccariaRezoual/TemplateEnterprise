@@ -64,8 +64,13 @@ proposito** per pilotare una risposta.
 
 4. **Lato frontend** la gerarchia è speculare (`ApplicationError`,
    `ValidationError`, `BusinessError`, `NotFoundError`, …) e la mappatura da
-   ProblemDetails avviene **solo** in `core/api/apiClient.ts`. Nessuna feature
-   ispeziona uno status code a mano.
+   ProblemDetails avviene **solo** in `packages/shared` (`errorMapper.ts`).
+   Nessuna feature ispeziona uno status code a mano.
+
+   Un tipo esiste solo lato client: **`RateLimitedError`** (429). Nessuna
+   eccezione lo lancia — il limite è imposto dal middleware prima che un
+   handler parta — ma il client deve distinguerlo: «aspetta un momento» è un
+   messaggio diverso, e un rimedio diverso, da «qualcosa è andato storto».
 
 ## Come si verifica
 

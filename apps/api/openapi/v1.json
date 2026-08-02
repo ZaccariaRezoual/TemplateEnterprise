@@ -117,6 +117,40 @@
         }
       }
     },
+    "/api/site/contact": {
+      "post": {
+        "tags": [
+          "Site"
+        ],
+        "summary": "Accepts a message from the public contact form.",
+        "operationId": "siteContact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendContactMessageCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/demo/ping": {
       "get": {
         "tags": [
@@ -1392,6 +1426,36 @@
         },
         "description": "Role as exposed to clients."
       },
+      "SendContactMessageCommand": {
+        "required": [
+          "name",
+          "email",
+          "body"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name the visitor typed."
+          },
+          "email": {
+            "type": "string",
+            "description": "Address to reply to."
+          },
+          "body": {
+            "type": "string",
+            "description": "The message itself."
+          },
+          "website": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Honeypot. A real visitor never sees this field and therefore leaves it\r\nempty; automated submitters fill every input they find. When it carries a\r\nvalue the submission is dropped and still answered with success — telling\r\na bot it was detected only teaches whoever wrote it to try again.\r\n\r\nA honeypot instead of a captcha: no third-party dependency, no cognitive\r\nload for the visitor, and it stops the bulk of automated traffic. A captcha\r\nis a reasonable next step if the logs ever show it is needed — not before."
+          }
+        },
+        "description": "A message written by an anonymous visitor on the public contact form."
+      },
       "SetSettingRequest": {
         "required": [
           "value"
@@ -1630,6 +1694,9 @@
     },
     {
       "name": "Dashboard"
+    },
+    {
+      "name": "Site"
     },
     {
       "name": "Demo"

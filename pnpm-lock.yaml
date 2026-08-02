@@ -435,6 +435,12 @@ importers:
 
   modules/site/frontend:
     dependencies:
+      '@enterprise/sdk':
+        specifier: workspace:*
+        version: link:../../../packages/sdk
+      '@enterprise/shared':
+        specifier: workspace:*
+        version: link:../../../packages/shared
       '@enterprise/ui':
         specifier: workspace:*
         version: link:../../../packages/ui
@@ -469,6 +475,9 @@ importers:
       vue-tsc:
         specifier: 'catalog:'
         version: 3.3.9(typescript@5.9.3)
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
 
   modules/users/frontend:
     dependencies:

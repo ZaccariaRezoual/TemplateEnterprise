@@ -61,6 +61,28 @@ test.describe("Public site", () => {
     }
   });
 
+  test("a visitor can write through the contact form", async ({ page }) => {
+    await page.goto("/contact");
+
+    await page.getByLabel("Nome").fill("Ada Lovelace");
+    await page.getByLabel("Email").fill(`visitor-${crypto.randomUUID()}@example.com`);
+    await page.getByLabel("Messaggio").fill("Vorrei informazioni sui vostri servizi.");
+    await page.getByRole("button", { name: "Invia" }).click();
+
+    // The form is replaced by the confirmation: an empty form would read as
+    // "nothing happened", and the visitor would write again.
+    await expect(page.getByTestId("contact-sent")).toBeVisible();
+    await expect(page.locator("form")).toHaveCount(0);
+  });
+
+  test("the honeypot is hidden from people and from the keyboard", async ({ page }) => {
+    await page.goto("/contact");
+
+    const honeypot = page.locator("#site-contact-website");
+    await expect(honeypot).toBeHidden();
+    await expect(honeypot).toHaveAttribute("tabindex", "-1");
+  });
+
   test.describe("on a 375px phone", () => {
     test.use({ viewport: { width: 375, height: 667 } });
 

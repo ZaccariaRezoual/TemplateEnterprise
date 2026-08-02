@@ -65,6 +65,16 @@ export class ForbiddenError extends ApplicationError {}
 export class NotFoundError extends ApplicationError {}
 
 /**
+ * The caller sent too many requests and was rate limited (HTTP 429).
+ *
+ * It has no counterpart in the backend exception hierarchy because nothing
+ * throws it: the limit is enforced by middleware before a handler runs. It
+ * exists here because the CLIENT has to tell it apart — "slow down" is a
+ * different message, and a different remedy, from "something went wrong".
+ */
+export class RateLimitedError extends ApplicationError {}
+
+/**
  * The request never produced a usable response: offline, DNS failure, timeout
  * or CORS rejection. Distinct from server errors because it is usually
  * retryable and warrants a different message ("check your connection").
