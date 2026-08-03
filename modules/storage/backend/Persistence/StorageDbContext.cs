@@ -36,7 +36,13 @@ public sealed class StorageDbContext : DbContext
             file.HasIndex(f => f.UploadedByUserId);
             file.Property(f => f.FileName).HasMaxLength(400);
             file.Property(f => f.ContentType).HasMaxLength(200);
+            file.Property(f => f.SafeContentType).HasMaxLength(200);
             file.Property(f => f.StorageKey).HasMaxLength(200);
+            // Stored as its NAME, like every enum that leaves this process:
+            // inserting a value into the enum would otherwise silently change
+            // the meaning of every integer already in the table — and here
+            // that means turning private files public.
+            file.Property(f => f.Visibility).HasConversion<string>().HasMaxLength(20);
             file.Ignore(f => f.DomainEvents);
         });
     }

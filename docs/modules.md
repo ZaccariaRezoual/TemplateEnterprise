@@ -110,5 +110,17 @@ module depends on it, startup fails fast with a clear error.
 - [`modules/site`](../modules/site/README.md) — a frontend-only module so far:
   the public site, whose content is a typed file the project owns and whose
   pages a project may replace outright.
+- [`modules/appointments`](../modules/appointments/README.md) — the module
+  with the hardest correctness problems in the framework, and the reference
+  for three of them: a **pure function** for logic whose edge cases (time
+  zones, clock changes) cannot be tested any other way; a **database
+  constraint** rather than a check-then-write for something two requests can
+  race; and **idempotency from a unique index** rather than from code, for
+  work a second replica may repeat.
+- [`modules/services`](../modules/services/README.md) — a **vertical** module
+  that owns its public pages as well as its administration, and the pattern
+  for keeping drafts off a public endpoint: two route families rather than one
+  flag. Also the module that resolves a route COLLISION with another one, in
+  the composition root, because neither module may decide it.
 - [`modules/demo`](../modules/demo/README.md) — the minimal skeleton: query,
   validated command, event publish/subscribe.

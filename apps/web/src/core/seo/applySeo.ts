@@ -59,8 +59,39 @@ function setMeta(selector: string, attribute: "name" | "property", key: string, 
  */
 export function applySeo(route: RouteLocationNormalizedGeneric): void {
   const pageTitle = typeof route.meta.title === "string" ? route.meta.title : undefined;
-  const title = pageTitle === undefined ? siteName : `${pageTitle} · ${siteName}`;
   const description = typeof route.meta.description === "string" ? route.meta.description : "";
+
+  writeSeo(pageTitle, description, route.path);
+}
+
+/**
+ * Sets the metadata of the CURRENT page from data, once that data has
+ * arrived.
+ *
+ * A route can only declare fixed strings, but the title of a service page —
+ * or of any detail page — lives in the database. Without this, every one of
+ * them would preview on Slack, WhatsApp and Google with the same generic
+ * title, which is the same as having none.
+ *
+ * Call it from the page, in a watcher on the loaded data. The router's
+ * `afterEach` runs BEFORE the data arrives, so this necessarily overwrites
+ * what the route declared, and navigating away restores it — the guard fires
+ * again on the next route.
+ *
+ * @param seo.title Page title, without the site name; it is appended here.
+ * @param seo.description Meta description and link-preview text.
+ */
+export function setSeo(seo: { title: string; description: string }): void {
+  // `location.pathname` rather than a route object: the caller is a page that
+  // knows its content, not its routing, and by the time data arrives the
+  // current URL is exactly the page being described.
+  writeSeo(seo.title, seo.description, window.location.pathname);
+}
+
+/** The one place that writes the tags, shared by both entry points. */
+function writeSeo(pageTitle: string | undefined, description: string, path: string): void {
+  const title =
+    pageTitle === undefined || pageTitle === "" ? siteName : `${pageTitle} · ${siteName}`;
 
   document.title = title;
   setMeta('meta[property="og:title"]', "property", "og:title", title);
@@ -80,7 +111,7 @@ export function applySeo(route: RouteLocationNormalizedGeneric): void {
     return;
   }
 
-  const url = `${baseUrl}${route.path}`;
+  const url = `${baseUrl}${path}`;
   setMeta('meta[property="og:url"]', "property", "og:url", url);
 
   let canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');

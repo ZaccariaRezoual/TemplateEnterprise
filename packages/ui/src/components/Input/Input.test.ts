@@ -60,6 +60,20 @@ describe("Input", () => {
     expect(wrapper.get("input").attributes("aria-required")).toBe("true");
   });
 
+  it("keeps the model a STRING even on a number field", async () => {
+    // Vue's own v-model coerces the value to a NUMBER when the element is
+    // type="number". The component would then break its declared contract,
+    // and the mismatch surfaces only at runtime — in whichever page first
+    // calls .trim() on what it was promised is a string.
+    const wrapper = mount(Input, { props: { label: "Duration", type: "number" } });
+
+    await wrapper.get("input").setValue("60");
+
+    const emitted = wrapper.emitted("update:modelValue")?.at(-1)?.[0];
+    expect(emitted).toBe("60");
+    expect(typeof emitted).toBe("string");
+  });
+
   it("generates unique ids so two fields on one page never collide", () => {
     // Both fields must live in the SAME app: Vue's useId counter is per-app,
     // so mounting twice in isolation would trivially produce the same id and

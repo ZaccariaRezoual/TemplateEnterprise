@@ -21,6 +21,11 @@
      when they sit side by side in a form row. */
   --input-radius: var(--radius-control);
 
+  /* Checkbox — its own token because a 16px box wearing the control radius
+     reads as a rounded square, and a brand that wants sharp checkboxes in a
+     product with rounded buttons is a real preference, not a hypothetical. */
+  --checkbox-radius: var(--radius-control);
+
   /* Card — the main content surface. */
   --card-radius: var(--radius-surface);
   --card-shadow: none;

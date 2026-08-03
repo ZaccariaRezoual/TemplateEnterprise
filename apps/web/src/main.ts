@@ -1,3 +1,4 @@
+import { installAppointmentsModule } from "@enterprise/module-appointments";
 import { installAuthModule, useSessionStore } from "@enterprise/module-auth";
 import { installAuthorizationModule, syncPermissions } from "@enterprise/module-authorization";
 import { installDashboardModule } from "@enterprise/module-dashboard";
@@ -11,6 +12,7 @@ import {
   disconnectRealtime,
   installRealtimeModule,
 } from "@enterprise/module-realtime";
+import { installServicesModule } from "@enterprise/module-services";
 import { installSiteModule } from "@enterprise/module-site";
 import { installUsersModule } from "@enterprise/module-users";
 import { VueQueryPlugin } from "@tanstack/vue-query";
@@ -24,7 +26,7 @@ import { api, setAuthTokenProvider, setUnauthorizedHandler } from "@/core/api/ap
 import { env } from "@/core/config/env";
 import { installFeatureFlags, useFeatureFlagsStore } from "@/core/features/featureFlags";
 import { logger } from "@/core/logger/logger";
-import { configureSeo } from "@/core/seo/applySeo";
+import { configureSeo, setSeo } from "@/core/seo/applySeo";
 import { createAppRouter, privateRoutes } from "@/router";
 import { ADMIN_BASE, registerAdminArea } from "@/router/adminArea";
 import "@/assets/styles/main.css";
@@ -83,6 +85,26 @@ installUsersModule({ api });
 installNotificationsModule({ api });
 installDashboardModule({ api, linkBase: ADMIN_BASE });
 installLocalizationModule({ app, api });
+
+// The Services module owns both the administration of the catalogue and its
+// public pages. It receives `setSeo` because its detail page knows its title
+// only once the data has arrived — a route can declare a fixed string, and a
+// service page needs the name of the service.
+installServicesModule({ api, apiOrigin: env.VITE_API_BASE_URL, setSeo });
+
+// The booking flow asks the host whether somebody is signed in, instead of
+// importing the Auth module to find out — the same seam the public site uses,
+// and what keeps both removable.
+installAppointmentsModule({
+  api,
+  apiOrigin: env.VITE_API_BASE_URL,
+  session: {
+    isAuthenticated: () => session.isAuthenticated,
+    // Back to where they were: losing the chosen slot at the sign-in screen
+    // is the point at which people give up.
+    signInPath: () => `/login?redirect=${encodeURIComponent(router.currentRoute.value.fullPath)}`,
+  },
+});
 
 // The public site asks the host where its "way in" leads, instead of
 // importing the Auth module to find out: it keeps working in an application

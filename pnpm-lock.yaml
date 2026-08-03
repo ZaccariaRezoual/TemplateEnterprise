@@ -86,6 +86,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@enterprise/module-appointments':
+        specifier: workspace:*
+        version: link:../../modules/appointments/frontend
       '@enterprise/module-auth':
         specifier: workspace:*
         version: link:../../modules/auth/frontend
@@ -104,6 +107,9 @@ importers:
       '@enterprise/module-realtime':
         specifier: workspace:*
         version: link:../../modules/realtime/frontend
+      '@enterprise/module-services':
+        specifier: workspace:*
+        version: link:../../modules/services/frontend
       '@enterprise/module-site':
         specifier: workspace:*
         version: link:../../modules/site/frontend
@@ -180,6 +186,70 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@26.1.2)(@vitest/coverage-v8@4.1.10)(jsdom@30.0.1)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+      vue-tsc:
+        specifier: 'catalog:'
+        version: 3.3.9(typescript@5.9.3)
+
+  modules/appointments/frontend:
+    dependencies:
+      '@enterprise/module-authorization':
+        specifier: workspace:*
+        version: link:../../authorization/frontend
+      '@enterprise/sdk':
+        specifier: workspace:*
+        version: link:../../../packages/sdk
+      '@enterprise/shared':
+        specifier: workspace:*
+        version: link:../../../packages/shared
+      '@enterprise/ui':
+        specifier: workspace:*
+        version: link:../../../packages/ui
+      '@fullcalendar/core':
+        specifier: ^6.1.19
+        version: 6.1.21
+      '@fullcalendar/daygrid':
+        specifier: ^6.1.19
+        version: 6.1.21(@fullcalendar/core@6.1.21)
+      '@fullcalendar/interaction':
+        specifier: ^6.1.19
+        version: 6.1.21(@fullcalendar/core@6.1.21)
+      '@fullcalendar/timegrid':
+        specifier: ^6.1.19
+        version: 6.1.21(@fullcalendar/core@6.1.21)
+      '@fullcalendar/vue3':
+        specifier: ^6.1.19
+        version: 6.1.21(@fullcalendar/core@6.1.21)(vue@3.5.40(typescript@5.9.3))
+    devDependencies:
+      '@tanstack/vue-query':
+        specifier: ^5.101.4
+        version: 5.101.4(vue@3.5.40(typescript@5.9.3))
+      '@vitejs/plugin-vue':
+        specifier: 'catalog:'
+        version: 6.0.8(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))(vue@3.5.40(typescript@5.9.3))
+      '@vue/test-utils':
+        specifier: 'catalog:'
+        version: 2.4.11(@vue/compiler-dom@3.5.40)(@vue/server-renderer@3.5.40)(vue@3.5.40(typescript@5.9.3))
+      jsdom:
+        specifier: 'catalog:'
+        version: 30.0.1
+      pinia:
+        specifier: ^4.0.2
+        version: 4.0.2(@vue/devtools-api@8.2.1)(typescript@5.9.3)(vue@3.5.40(typescript@5.9.3))
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@26.1.2)(@vitest/coverage-v8@4.1.10)(jsdom@30.0.1)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.40(typescript@5.9.3)
+      vue-router:
+        specifier: ^5.2.0
+        version: 5.2.0(@vue/compiler-sfc@3.5.40)(esbuild@0.28.1)(pinia@4.0.2(@vue/devtools-api@8.2.1)(typescript@5.9.3)(vue@3.5.40(typescript@5.9.3)))(rolldown@1.2.1)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))(vue@3.5.40(typescript@5.9.3))
       vue-tsc:
         specifier: 'catalog:'
         version: 3.3.9(typescript@5.9.3)
@@ -432,6 +502,58 @@ importers:
       vue-tsc:
         specifier: 'catalog:'
         version: 3.3.9(typescript@5.9.3)
+
+  modules/services/frontend:
+    dependencies:
+      '@enterprise/module-authorization':
+        specifier: workspace:*
+        version: link:../../authorization/frontend
+      '@enterprise/sdk':
+        specifier: workspace:*
+        version: link:../../../packages/sdk
+      '@enterprise/shared':
+        specifier: workspace:*
+        version: link:../../../packages/shared
+      '@enterprise/ui':
+        specifier: workspace:*
+        version: link:../../../packages/ui
+    devDependencies:
+      '@tanstack/vue-query':
+        specifier: ^5.101.4
+        version: 5.101.4(vue@3.5.40(typescript@5.9.3))
+      '@vitejs/plugin-vue':
+        specifier: 'catalog:'
+        version: 6.0.8(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))(vue@3.5.40(typescript@5.9.3))
+      '@vue/test-utils':
+        specifier: 'catalog:'
+        version: 2.4.11(@vue/compiler-dom@3.5.40)(@vue/server-renderer@3.5.40)(vue@3.5.40(typescript@5.9.3))
+      jsdom:
+        specifier: 'catalog:'
+        version: 30.0.1
+      pinia:
+        specifier: ^4.0.2
+        version: 4.0.2(@vue/devtools-api@8.2.1)(typescript@5.9.3)(vue@3.5.40(typescript@5.9.3))
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@26.1.2)(@vitest/coverage-v8@4.1.10)(jsdom@30.0.1)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.40(typescript@5.9.3)
+      vue-router:
+        specifier: ^5.2.0
+        version: 5.2.0(@vue/compiler-sfc@3.5.40)(esbuild@0.28.1)(pinia@4.0.2(@vue/devtools-api@8.2.1)(typescript@5.9.3)(vue@3.5.40(typescript@5.9.3)))(rolldown@1.2.1)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))(vue@3.5.40(typescript@5.9.3))
+      vue-tsc:
+        specifier: 'catalog:'
+        version: 3.3.9(typescript@5.9.3)
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
 
   modules/site/frontend:
     dependencies:
@@ -1019,6 +1141,30 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
+
+  '@fullcalendar/core@6.1.21':
+    resolution: {integrity: sha512-t3u/+sqh3Iq7TWtUnVLcGDUE6OWZh0UD3c04bI/l7lSLAgAKr3kngBmhHiQD1QXpwC8ZN5iNqG7a7gOVixhSKQ==}
+
+  '@fullcalendar/daygrid@6.1.21':
+    resolution: {integrity: sha512-QYb1y40RGYLlOxKpYWg8O+7njEnKnFG8Tt7qjnubJGR35s1phQg67E+81y2TyAbbm59p2JFOCXGDk9t6KDujIA==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.21
+
+  '@fullcalendar/interaction@6.1.21':
+    resolution: {integrity: sha512-WPYpqtljDWmU0Xm2cOtFrLlocgxv7cgkOppj34Q6OUUat8a6Cnd6kYo2JR+irP223PE5lBYHFNp1qh7SIpJc0w==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.21
+
+  '@fullcalendar/timegrid@6.1.21':
+    resolution: {integrity: sha512-2DnShx/jallGmb8QCkr6pAOu/zuPhJrP7+uTrAtSnbqsX7GF3lTxqSeNGkTQwsgF5g/ia8udhQ+JNYaE+TN1cQ==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.21
+
+  '@fullcalendar/vue3@6.1.21':
+    resolution: {integrity: sha512-OGt6WSC+/zz/ej6a0KfIBNl7BYuGchpZU49SsedYyv3WZWbghAE+D8YD6nhH1ia/I4p5Gcsv/nEXgEkT/I8aYQ==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.21
+      vue: ^3.0.11
 
   '@heroicons/vue@2.2.0':
     resolution: {integrity: sha512-G3dbSxoeEKqbi/DFalhRxJU4mTXJn7GwZ7ae8NuEQzd1bqdd0jAbdaBZlHPcvPD2xI1iGzNVB4k20Un2AguYPw==}
@@ -3212,6 +3358,9 @@ packages:
     resolution: {integrity: sha512-DTPx3RWSSnWyzLxQnlH0rJP+EW5ekl16ZU4/psbIhA0e53kJfdgaN5vKM+xP7yJtXVu+nfdVFmlgFDEKAe4Pyw==}
     engines: {node: ^10 || ^12 || >=14}
 
+  preact@10.12.1:
+    resolution: {integrity: sha512-l8386ixSsBdbreOAkqtrwqHwdvR35ID8c3rKPa8lCWuO86dBi32QWHV4vfsZK1utLLFMvw+Z5Ad4XLkZzchscg==}
+
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -4327,6 +4476,28 @@ snapshots:
       levn: 0.4.1
 
   '@exodus/bytes@1.15.1': {}
+
+  '@fullcalendar/core@6.1.21':
+    dependencies:
+      preact: 10.12.1
+
+  '@fullcalendar/daygrid@6.1.21(@fullcalendar/core@6.1.21)':
+    dependencies:
+      '@fullcalendar/core': 6.1.21
+
+  '@fullcalendar/interaction@6.1.21(@fullcalendar/core@6.1.21)':
+    dependencies:
+      '@fullcalendar/core': 6.1.21
+
+  '@fullcalendar/timegrid@6.1.21(@fullcalendar/core@6.1.21)':
+    dependencies:
+      '@fullcalendar/core': 6.1.21
+      '@fullcalendar/daygrid': 6.1.21(@fullcalendar/core@6.1.21)
+
+  '@fullcalendar/vue3@6.1.21(@fullcalendar/core@6.1.21)(vue@3.5.40(typescript@5.9.3))':
+    dependencies:
+      '@fullcalendar/core': 6.1.21
+      vue: 3.5.40(typescript@5.9.3)
 
   '@heroicons/vue@2.2.0(vue@3.5.40(typescript@5.9.3))':
     dependencies:
@@ -6452,6 +6623,8 @@ snapshots:
       nanoid: 3.3.16
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  preact@10.12.1: {}
 
   prelude-ls@1.2.1: {}
 

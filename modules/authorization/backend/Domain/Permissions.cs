@@ -50,6 +50,43 @@ public static class Permissions
         public const string Write = "settings.write";
     }
 
+    /// <summary>Permissions over the catalogue of services.</summary>
+    public static class Services
+    {
+        /// <summary>List and view services, drafts included.</summary>
+        public const string Read = "services.read";
+
+        /// <summary>Create, edit and publish services.</summary>
+        public const string Write = "services.write";
+
+        /// <summary>
+        /// Withdraw a service from the catalogue.
+        ///
+        /// Named "delete" like its siblings even though nothing is deleted:
+        /// the permission answers "may this person remove a service from the
+        /// catalogue?", and how the module implements removal — archiving,
+        /// because appointments reference services by id — is not the
+        /// permission's business.
+        /// </summary>
+        public const string Delete = "services.delete";
+    }
+
+    /// <summary>Permissions over the appointment calendar.</summary>
+    public static class Appointments
+    {
+        /// <summary>See the calendar and everyone's bookings.</summary>
+        public const string Read = "appointments.read";
+
+        /// <summary>
+        /// Confirm, move and cancel bookings, and set the opening hours.
+        ///
+        /// No separate "delete": an appointment is never removed, it is
+        /// cancelled — the customer was told it existed, and the history has
+        /// to keep saying so.
+        /// </summary>
+        public const string Write = "appointments.write";
+    }
+
     /// <summary>Permissions over stored files.</summary>
     public static class Files
     {
@@ -70,6 +107,11 @@ public static class Permissions
             Roles.Write,
             Audit.Read,
             Settings.Write,
+            Services.Read,
+            Services.Write,
+            Services.Delete,
+            Appointments.Read,
+            Appointments.Write,
             Files.Write,
             Files.Delete,
         ];

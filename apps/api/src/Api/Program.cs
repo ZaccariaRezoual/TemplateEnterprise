@@ -8,6 +8,7 @@ using EnterpriseFramework.Api.Tenancy;
 using EnterpriseFramework.Application;
 using EnterpriseFramework.Infrastructure;
 using EnterpriseFramework.Modules.Abstractions;
+using EnterpriseFramework.Modules.Appointments;
 using EnterpriseFramework.Modules.Audit;
 using EnterpriseFramework.Modules.Auth;
 using EnterpriseFramework.Modules.Authorization;
@@ -17,6 +18,7 @@ using EnterpriseFramework.Modules.Email;
 using EnterpriseFramework.Modules.Localization;
 using EnterpriseFramework.Modules.Notifications;
 using EnterpriseFramework.Modules.Realtime;
+using EnterpriseFramework.Modules.Services;
 using EnterpriseFramework.Modules.Settings;
 using EnterpriseFramework.Modules.Site;
 using EnterpriseFramework.Modules.Storage;
@@ -78,6 +80,8 @@ try
             typeof(RealtimeModule).Assembly,
             typeof(DashboardModule).Assembly,
             typeof(SiteModule).Assembly,
+            typeof(ServicesModule).Assembly,
+            typeof(AppointmentsModule).Assembly,
         ],
         builder.Configuration
     );

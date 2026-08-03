@@ -1,0 +1,43 @@
+<!--
+  Appointments module: public booking on real slots, an administrative
+  calendar, and the reminders around both.
+
+  Owns its data (schema "appointments") including a PROJECTION of the
+  services it lets people book: it subscribes to the Services module's public
+  events rather than querying its tables, which is what keeps the two
+  separately removable.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Modules.Appointments</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Application\EnterpriseFramework.Application.csproj" />
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
+    <!-- Its own public contracts, published on the event bus. -->
+    <ProjectReference
+      Include="..\shared\EnterpriseFramework.Modules.Appointments.Contracts.csproj" />
+    <!-- Public contracts only: the service events feeding the projection,
+         and the account events feeding the customer projection. -->
+    <ProjectReference
+      Include="..\..\services\shared\EnterpriseFramework.Modules.Services.Contracts.csproj" />
+    <ProjectReference Include="..\..\auth\shared\EnterpriseFramework.Modules.Auth.Contracts.csproj" />
+    <!-- Permission names, and the notification contract this module publishes. -->
+    <ProjectReference
+      Include="..\..\authorization\backend\EnterpriseFramework.Modules.Authorization.csproj" />
+    <ProjectReference
+      Include="..\..\notifications\shared\EnterpriseFramework.Modules.Notifications.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\module.json" LogicalName="module.json" />
+  </ItemGroup>
+</Project>

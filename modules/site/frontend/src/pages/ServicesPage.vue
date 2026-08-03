@@ -11,7 +11,7 @@
  */
 import { useSiteContent } from "../content";
 import HighlightGrid from "../components/HighlightGrid.vue";
-import PageSection from "../components/PageSection.vue";
+import { PageSection } from "@enterprise/ui";
 
 const content = useSiteContent();
 </script>

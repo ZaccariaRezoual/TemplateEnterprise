@@ -53,12 +53,23 @@ Then make it yours:
    a tokenisation gap — fix the component (see `docs/design-system.md`).
 2. **Modules** — add your business modules under `modules/`. The framework
    modules (auth, authorization, users, audit, settings, email, storage,
-   notifications, localization, realtime, dashboard) stay.
+   notifications, localization, realtime, dashboard) stay. Two are decisions
+   rather than defaults:
+   - `services` serves `/services` from the database and replaces the static
+     page in `site.config.ts`. A product with nothing to publish disables it
+     (`Modules:Services:Enabled`) and drops its two imports from `apps/web` —
+     the static page comes back on its own.
+   - `appointments` adds public booking and the calendar, and depends on
+     `services`. A product that does not take bookings disables it
+     (`Modules:Appointments:Enabled`) and drops its imports. If you keep it,
+     **set `Modules:Appointments:TimeZone`**: it decides what "we open at 9"
+     means, and the default is Europe/Rome.
 3. **Dashboard** — implement `IDashboardWidgetProvider` in each new module so
    the landing page reflects your product (see `modules/dashboard/README.md`).
 4. **Public site** — rewrite `apps/web/src/site.config.ts`: it holds every word
-   of the home, about, services, contact and privacy pages. Three of them are
-   not optional before going live:
+   of the home, about, contact and privacy pages (its `services` section is
+   only the fallback used when the Services module is disabled). Three of them
+   are not optional before going live:
    - `contact.email` and `Modules:Site:ContactRecipient`, or messages go to an
      address that belongs to nobody;
    - `privacy`, because a site collecting a name and an email needs a real
@@ -74,6 +85,10 @@ Then make it yours:
    `pnpm --filter @acme-crm/web build:static`. Link unfurlers do not run
    JavaScript, so without this step every shared link shows the same empty
    preview.
+
+   Pages whose address is data — a service is `/services/<slug>` — need
+   `PRERENDER_API_ORIGIN` pointing at a reachable API, or only the static
+   routes are rendered (the script says so rather than failing).
 
 ## Removing the Demo module
 

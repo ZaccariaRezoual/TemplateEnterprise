@@ -42,6 +42,12 @@ export const siteContent: SiteContent = {
     ],
   },
 
+  // FALLBACK, non la pagina servita. Con il modulo Services installato — e in
+  // questo template lo è — la rotta /services mostra il catalogo dai dati,
+  // amministrabile da /admin/services. Questa sezione resta perché un
+  // progetto che disinstalla quel modulo torna ad avere una pagina statica, e
+  // averla già scritta è ciò che rende la disinstallazione una riga sola.
+  // Vedi modules/services/README.md § "The /services collision".
   services: {
     title: "Servizi",
     intro: "Contenuto segnaposto: elenca qui i servizi che offri.",

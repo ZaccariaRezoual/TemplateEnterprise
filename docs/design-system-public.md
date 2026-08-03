@@ -123,18 +123,24 @@ prosa dentro la card diventa illeggibile.
 
 ## 8. Componenti
 
-Vivono in `modules/site/frontend/src/components/`, **non** in `packages/ui`:
-oggi li usa un modulo solo, e un design system che accoglie tutto diventa un
-contenitore di casi particolari. Salgono a `packages/ui` il giorno in cui una
-seconda superficie ne ha bisogno.
+Quelli specifici della vetrina vivono in
+`modules/site/frontend/src/components/`, **non** in `packages/ui`: li usa un
+modulo solo, e un design system che accoglie tutto diventa un contenitore di
+casi particolari. Salgono a `packages/ui` il giorno in cui una seconda
+superficie ne ha bisogno.
 
-| Componente      | Cosa fa                                            |
-| --------------- | -------------------------------------------------- |
-| `PageSection`   | Una banda: ritmo, titolo del ruolo giusto, intro   |
-| `HighlightGrid` | La griglia di punti, come card                     |
-| `SiteHeader`    | Navigazione pubblica + ingresso all'area riservata |
-| `SiteFooter`    | Contatti, privacy, copyright                       |
-| `ContactForm`   | Il form contatti, con i suoi tre esiti             |
+| Componente      | Dove                         | Cosa fa                                            |
+| --------------- | ---------------------------- | -------------------------------------------------- |
+| `PageSection`   | `packages/ui` — **promosso** | Una banda: ritmo, titolo del ruolo giusto, intro   |
+| `HighlightGrid` | `modules/site/frontend`      | La griglia di punti, come card                     |
+| `SiteHeader`    | `modules/site/frontend`      | Navigazione pubblica + ingresso all'area riservata |
+| `SiteFooter`    | `modules/site/frontend`      | Contatti, privacy, copyright                       |
+| `ContactForm`   | `modules/site/frontend`      | Il form contatti, con i suoi tre esiti             |
+
+`PageSection` è salito applicando esattamente quella regola: la vetrina dei
+servizi (`modules/services`) è la seconda superficie che ha bisogno dello
+stesso ritmo verticale, e l'alternativa — un modulo che importa i componenti
+di un altro modulo — è la dipendenza che rende i moduli non più rimovibili.
 
 ## 9. Verifica
 

@@ -18,7 +18,7 @@ import { computed } from "vue";
 import { isContactAvailable } from "../api/site.api";
 import { useSiteContent } from "../content";
 import ContactForm from "../components/ContactForm.vue";
-import PageSection from "../components/PageSection.vue";
+import { PageSection } from "@enterprise/ui";
 
 const content = useSiteContent();
 const canSubmit = computed(() => isContactAvailable());

@@ -10,6 +10,7 @@ using EnterpriseFramework.Modules.Storage.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -77,6 +78,17 @@ public sealed class StorageModule : IModule
             .WithSummary("Downloads a stored file.");
 
         group
+            .MapGet("/public/{id:guid}", DownloadPublicAsync)
+            .WithName("filesDownloadPublic")
+            .WithSummary("Downloads a file that was uploaded as public. No token required.")
+            // Anonymous by necessity: a showcase page has images, and the
+            // visitor looking at it has no account. It is a SEPARATE endpoint
+            // rather than a check inside the authenticated one because the
+            // rule "this route can only ever serve public files" is then a
+            // property of the route, not of a branch someone can edit.
+            .AllowAnonymous();
+
+        group
             .MapDelete("/{id:guid}", DeleteAsync)
             .WithName("filesDelete")
             .WithSummary("Deletes a stored file and its bytes.")
@@ -91,7 +103,12 @@ public sealed class StorageModule : IModule
         IFileStorageProvider provider,
         ICurrentUser currentUser,
         IOptions<StorageOptions> options,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        // Private unless the caller says otherwise, and the parameter is read
+        // from the form so making a file public is always something someone
+        // wrote down. A default of "public" would turn a forgotten field into
+        // a disclosure.
+        [FromForm] FileVisibility visibility = FileVisibility.Private
     )
     {
         if (file.Length == 0)
@@ -109,36 +126,41 @@ public sealed class StorageModule : IModule
         var userId =
             currentUser.UserId ?? throw new UnauthorizedException("Authentication is required.");
 
+        // The bytes decide what this file is. The client-declared content
+        // type is kept as metadata and never served: an "image/png" claim on
+        // an HTML payload is how stored XSS gets served from your own origin.
+        byte[] header;
+        await using (var probe = file.OpenReadStream())
+        {
+            header = await ContentSniffer.ReadHeaderAsync(probe, cancellationToken);
+        }
+
+        // A second stream rather than a rewind: nothing in IFormFile promises
+        // the first one is seekable, and a provider handed a half-read stream
+        // stores a truncated file without failing.
         await using var stream = file.OpenReadStream();
         var storageKey = await provider.SaveAsync(stream, cancellationToken);
+        var safeContentType = ContentSniffer.Detect(header);
 
-        // The client-declared content type is stored but NEVER trusted on
-        // download (see DownloadAsync): a "image/png" claim on an HTML payload
-        // is how stored-XSS gets served from your own origin.
         var stored = StoredFile.Record(
             Path.GetFileName(file.FileName),
             file.ContentType,
+            safeContentType,
             file.Length,
             storageKey,
-            userId
+            userId,
+            visibility
         );
 
         dbContext.Files.Add(stored);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return TypedResults.Ok(
-            new StoredFileDto(
-                stored.Id,
-                stored.FileName,
-                stored.ContentType,
-                stored.SizeInBytes,
-                stored.UploadedAtUtc
-            )
-        );
+        return TypedResults.Ok(StoredFileDto.FromFile(stored));
     }
 
     private static async Task<FileStreamHttpResult> DownloadAsync(
         Guid id,
+        HttpContext httpContext,
         StorageDbContext dbContext,
         IFileStorageProvider provider,
         CancellationToken cancellationToken
@@ -148,15 +170,63 @@ public sealed class StorageModule : IModule
             await dbContext.Files.AsNoTracking().SingleOrDefaultAsync(f => f.Id == id, cancellationToken)
             ?? throw new NotFoundException("File", id);
 
+        return await ServeAsync(stored, httpContext, provider, cancellationToken);
+    }
+
+    private static async Task<FileStreamHttpResult> DownloadPublicAsync(
+        Guid id,
+        HttpContext httpContext,
+        StorageDbContext dbContext,
+        IFileStorageProvider provider,
+        CancellationToken cancellationToken
+    )
+    {
+        // The visibility is part of the LOOKUP, not a check after it: a query
+        // that cannot return a private file is a guarantee, while an `if`
+        // after the load is a line someone can move.
+        var stored =
+            await dbContext
+                .Files.AsNoTracking()
+                .SingleOrDefaultAsync(
+                    f => f.Id == id && f.Visibility == FileVisibility.Public,
+                    cancellationToken
+                )
+            // 404 rather than 403: a private file must not be distinguishable
+            // from one that does not exist, or the endpoint becomes a way to
+            // test whether an identifier is in use.
+            ?? throw new NotFoundException("File", id);
+
+        return await ServeAsync(stored, httpContext, provider, cancellationToken);
+    }
+
+    /// <summary>
+    /// Streams a file with the content type derived from its own bytes.
+    ///
+    /// A recognized image is served inline so a page can display it;
+    /// everything else is served as an opaque attachment, which no browser
+    /// executes. <c>nosniff</c> closes the remaining gap: without it a browser
+    /// may decide for itself that our octet-stream is really HTML.
+    /// </summary>
+    private static async Task<FileStreamHttpResult> ServeAsync(
+        StoredFile stored,
+        HttpContext httpContext,
+        IFileStorageProvider provider,
+        CancellationToken cancellationToken
+    )
+    {
         var content = await provider.OpenAsync(stored.StorageKey, cancellationToken);
 
-        // Served as a download with a generic content type: never echo the
-        // uploader's content type, or an uploaded .html executes on this
-        // origin with the user's session.
+        httpContext.Response.Headers.XContentTypeOptions = "nosniff";
+
+        var isRenderable = stored.SafeContentType != ContentSniffer.OpaqueContentType;
+
         return TypedResults.File(
             content,
-            "application/octet-stream",
-            stored.FileName,
+            stored.SafeContentType,
+            // A download name is what turns the response into an attachment.
+            // An image must not get one, or the browser saves it instead of
+            // painting it into the page.
+            isRenderable ? null : stored.FileName,
             enableRangeProcessing: true
         );
     }
@@ -191,16 +261,38 @@ public sealed class StorageModule : IModule
 /// </summary>
 /// <param name="Id">Public identifier used to download or delete.</param>
 /// <param name="FileName">Name as uploaded.</param>
-/// <param name="ContentType">Content type declared at upload.</param>
+/// <param name="ContentType">Content type declared at upload; metadata only.</param>
 /// <param name="SizeInBytes">Size in bytes.</param>
+/// <param name="Visibility">
+/// Who may download it. A <c>Public</c> file is reachable without a token at
+/// <c>/api/files/public/{id}</c> — that is the URL to put in an
+/// <c>&lt;img src&gt;</c>.
+/// </param>
 /// <param name="UploadedAtUtc">When it was uploaded.</param>
 public sealed record StoredFileDto(
     Guid Id,
     string FileName,
     string ContentType,
     long SizeInBytes,
+    FileVisibility Visibility,
     DateTime UploadedAtUtc
-);
+)
+{
+    /// <summary>
+    /// Maps a stored file to its client representation.
+    /// </summary>
+    /// <param name="file">The metadata row.</param>
+    /// <returns>The DTO.</returns>
+    public static StoredFileDto FromFile(StoredFile file) =>
+        new(
+            file.Id,
+            file.FileName,
+            file.ContentType,
+            file.SizeInBytes,
+            file.Visibility,
+            file.UploadedAtUtc
+        );
+}
 
 /// <summary>
 /// Applies this module's pending migrations at startup (development only;

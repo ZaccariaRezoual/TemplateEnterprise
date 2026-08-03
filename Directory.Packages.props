@@ -24,6 +24,11 @@
     <PackageVersion Include="FluentValidation" Version="11.11.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+    <!-- Email transport. MailKit rather than System.Net.Mail.SmtpClient:
+         Microsoft's own documentation marks that type obsolete for new work,
+         and it does not do STARTTLS negotiation or modern auth properly. This
+         is the one dependency the Email module needs to actually deliver. -->
+    <PackageVersion Include="MailKit" Version="4.17.0" />
     <!-- Persistence -->
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" />

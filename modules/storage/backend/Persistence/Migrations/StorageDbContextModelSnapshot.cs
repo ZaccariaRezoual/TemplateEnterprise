@@ -39,6 +39,11 @@ namespace EnterpriseFramework.Modules.Storage.Persistence.Migrations
                         .HasMaxLength(400)
                         .HasColumnType("character varying(400)");
 
+                    b.Property<string>("SafeContentType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<long>("SizeInBytes")
                         .HasColumnType("bigint");
 
@@ -52,6 +57,11 @@ namespace EnterpriseFramework.Modules.Storage.Persistence.Migrations
 
                     b.Property<Guid>("UploadedByUserId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Visibility")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 

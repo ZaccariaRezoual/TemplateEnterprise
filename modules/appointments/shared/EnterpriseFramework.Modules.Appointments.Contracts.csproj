@@ -1,0 +1,15 @@
+<!--
+  Public contracts of the Appointments module: the integration events other
+  modules subscribe to.
+
+  Kept in its own tiny assembly so a subscriber — the Email module, today —
+  references ONLY the event shapes, never the Appointments implementation.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Modules.Appointments.Contracts</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\apps\api\src\Domain\EnterpriseFramework.Domain.csproj" />
+  </ItemGroup>
+</Project>

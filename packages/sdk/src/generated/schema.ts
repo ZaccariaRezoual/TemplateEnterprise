@@ -413,6 +413,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/files/public/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Downloads a file that was uploaded as public. No token required. */
+        get: operations["filesDownloadPublic"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/notifications": {
         parameters: {
             query?: never;
@@ -481,10 +498,497 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the published services, in showcase order. */
+        get: operations["servicesList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/services/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reads one published service by its public address. */
+        get: operations["servicesGetBySlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the whole catalogue: drafts, published and archived. */
+        get: operations["adminServicesList"];
+        put?: never;
+        /** Adds a service to the catalogue. */
+        post: operations["adminServicesCreate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reads one service in any state, for the edit form. */
+        get: operations["adminServicesGet"];
+        /** Edits a service of the catalogue. */
+        put: operations["adminServicesUpdate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/{id}/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Attaches an uploaded file to a service as one of its images. */
+        post: operations["adminServicesAddImage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/{id}/images/{imageId}/cover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Chooses the image shown on cards and in link previews. */
+        put: operations["adminServicesSetCover"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/{id}/images/{imageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Detaches an image from a service; the file itself is left to Storage. */
+        delete: operations["adminServicesRemoveImage"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraws a service from the catalogue. There is no delete. */
+        post: operations["adminServicesArchive"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/appointments/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the bookable slots of a service, day by day. */
+        get: operations["appointmentsAvailability"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/appointments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Asks for an appointment. It is a REQUEST: nothing is reserved yet. */
+        post: operations["appointmentsRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/appointments/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the caller's own appointments. */
+        get: operations["appointmentsMine"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/appointments/{id}/calendar.ics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Downloads one appointment as an iCalendar (.ics) file. */
+        get: operations["appointmentsCalendarFile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/appointments/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancels one of the caller's own appointments. */
+        post: operations["appointmentsCancelMine"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/appointments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the appointments overlapping a window of time. */
+        get: operations["adminAppointmentsList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/appointments/{id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirms a request, cancelling the ones it displaces. */
+        post: operations["adminAppointmentsConfirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/appointments/{id}/reschedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Moves an appointment to another time, revalidated server-side. */
+        post: operations["adminAppointmentsReschedule"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/appointments/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancels an appointment on behalf of the business. */
+        post: operations["adminAppointmentsCancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/appointments/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reads the weekly opening hours and their exceptions. */
+        get: operations["adminAvailabilityGet"];
+        /** Replaces the weekly opening hours and their exceptions. */
+        put: operations["adminAvailabilitySave"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * @description An appointment as the ADMINISTRATION sees it: everything, including who
+         *     booked it and the internal note.
+         */
+        AdminAppointmentDto: {
+            /**
+             * Format: uuid
+             * @description Identifier of the appointment.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Service that was booked.
+             */
+            serviceId: string;
+            /** @description Its title, from this module's projection. */
+            serviceTitle: string;
+            /**
+             * Format: uuid
+             * @description Account that booked it.
+             */
+            customerUserId: string;
+            /** @description Name of the customer. */
+            customerName: string;
+            /** @description Email of the customer. */
+            customerEmail: string;
+            /**
+             * Format: date-time
+             * @description Start instant, UTC.
+             */
+            startUtc: string;
+            /**
+             * Format: date-time
+             * @description End instant, UTC.
+             */
+            endUtc: string;
+            /** @description Where it is in its life. */
+            status: components["schemas"]["AppointmentStatus"];
+            /** @description Number left for this booking. */
+            contactPhone: string;
+            /** @description Note the customer wrote, if any. */
+            customerNote: null | string;
+            /** @description Internal note; never shown to the customer. */
+            adminNote: null | string;
+            /** @description Why it was called off, if it was. */
+            cancellationReason: null | string;
+            /**
+             * @description Whether this REQUEST overlaps an already-confirmed appointment.
+             *
+             *     Computed for the calendar so a doomed request is shown as such: confirming
+             *     it would be refused by the database, and finding that out by clicking is a
+             *     poor way to learn it.
+             */
+            hasConflict: boolean;
+            /**
+             * Format: date-time
+             * @description When it was booked.
+             */
+            createdAtUtc: string;
+            /** @description What happened to it, oldest first. */
+            history: components["schemas"]["AppointmentHistoryDto"][];
+        };
+        /**
+         * @description A service as the ADMINISTRATION sees it: every field, including the ones
+         *     that decide whether the public sees anything at all.
+         *
+         *     It is a separate shape from PublicServiceDto on purpose.
+         *     Sharing one DTO between the two audiences means a new administrative field
+         *     is published to anonymous visitors by default, and nothing fails when that
+         *     happens.
+         */
+        AdminServiceDto: {
+            /**
+             * Format: uuid
+             * @description Identifier of the service.
+             */
+            id: string;
+            /** @description Name of the service. */
+            title: string;
+            /** @description URL segment of the public page. */
+            slug: string;
+            /** @description One line, used on the showcase cards. */
+            shortDescription: string;
+            /** @description Long text of the detail page. */
+            description: string;
+            /**
+             * Format: int32
+             * @description Length of one appointment, or null.
+             */
+            durationMinutes: null | number | string;
+            /**
+             * Format: double
+             * @description Price, or null when it is not published.
+             */
+            price: null | number | string;
+            /** @description ISO 4217 code of the price, or null. */
+            currency: null | string;
+            /** @description Whether visitors can see it. */
+            isPublished: boolean;
+            /** @description Whether it accepts bookings. */
+            isBookable: boolean;
+            /**
+             * Format: int32
+             * @description Position in the showcase; lower comes first.
+             */
+            sortOrder: number | string;
+            /** @description Whether it has been withdrawn from the catalogue. */
+            isArchived: boolean;
+            /** @description Gallery, ordered as it is shown. */
+            images: components["schemas"]["ServiceImageDto"][];
+            /**
+             * Format: date-time
+             * @description When it was created.
+             */
+            createdAtUtc: string;
+            /**
+             * Format: date-time
+             * @description When it last changed.
+             */
+            updatedAtUtc: string;
+        };
+        /** @description One line of an appointment's history. */
+        AppointmentHistoryDto: {
+            /**
+             * Format: date-time
+             * @description When it happened.
+             */
+            atUtc: string;
+            /**
+             * Format: uuid
+             * @description Who did it.
+             */
+            changedByUserId: string;
+            fromStatus: null | components["schemas"]["AppointmentStatus"];
+            /** @description Status after. */
+            toStatus: components["schemas"]["AppointmentStatus"];
+            /**
+             * Format: date-time
+             * @description Start before, or null for the booking itself.
+             */
+            fromStartUtc: null | string;
+            /**
+             * Format: date-time
+             * @description Start after.
+             */
+            toStartUtc: string;
+        };
+        /**
+         * @description Where an appointment is in its life.
+         *
+         *                  Stored and serialized as its NAME, never as an ordinal: inserting a value
+         *                  in the middle would otherwise silently change the meaning of every row
+         *                  already written and every integer in flight.
+         *
+         *                  The legal moves are:
+         *                  ```Requested → Confirmed → Completed
+         *         ↓           ↓
+         *     Cancelled   Cancelled / NoShow```
+         *                  Anything else is refused by Appointment, not by a comment.
+         * @enum {unknown}
+         */
+        AppointmentStatus: "Requested" | "Confirmed" | "Completed" | "Cancelled" | "NoShow";
+        /** @description Body of the "attach image" endpoint. */
+        AttachImageRequest: {
+            /**
+             * Format: uuid
+             * @description Identifier returned by `POST /api/files`. Upload it as a PUBLIC file:
+             *     a private one cannot be shown to an anonymous visitor.
+             */
+            storageFileId: string;
+            /** @description What the image shows, for anyone who cannot see it. Required. */
+            altText: string;
+            /**
+             * Format: int32
+             * @description Position in the gallery; lower comes first.
+             */
+            sortOrder: number | string;
+        };
         /** @description Audit entry as exposed to clients. */
         AuditEntryDto: {
             /**
@@ -529,6 +1033,94 @@ export interface components {
             /** @description The authenticated account. */
             user: components["schemas"]["UserDto"];
         };
+        /** @description The answer to "when can I book this service?". */
+        AvailabilityDto: {
+            /**
+             * Format: uuid
+             * @description Service the slots are for.
+             */
+            serviceId: string;
+            /** @description Its title, so the page can name it in one call. */
+            serviceTitle: string;
+            /**
+             * Format: int32
+             * @description How long each slot lasts.
+             */
+            durationMinutes: number | string;
+            /**
+             * @description The business time zone. The client needs it to say "09:00 our time" rather
+             *     than converting into the visitor's own zone and quietly booking them for
+             *     the wrong hour in their head.
+             */
+            timeZoneId: string;
+            /** @description One entry per day of the requested range. */
+            days: components["schemas"]["AvailableDayDto"][];
+        };
+        /** @description One closure or extraordinary opening, as exposed to the administration. */
+        AvailabilityOverrideDto: {
+            /** @description Local date, "yyyy-MM-dd". */
+            dateLocal: string;
+            /** @description Whether the business is shut that day. */
+            isClosed: boolean;
+            /** @description Local opening time of the extraordinary window, "HH:mm". */
+            startLocal: null | string;
+            /** @description Local closing time of the extraordinary window, "HH:mm". */
+            endLocal: null | string;
+            /** @description Why. Administration only; a visitor never sees it. */
+            reason: string;
+        };
+        /** @description One weekly opening, as exposed to the administration. */
+        AvailabilityRuleDto: {
+            /** @description Day it applies to. */
+            dayOfWeek: components["schemas"]["DayOfWeek"];
+            /** @description Local opening time, "HH:mm". */
+            startLocal: string;
+            /** @description Local closing time, "HH:mm". */
+            endLocal: string;
+        };
+        /**
+         * @description The whole availability configuration, read and written as one document.
+         *
+         *     One shape rather than per-row endpoints because that is how it is edited:
+         *     a weekly schedule is thought about, and saved, as a whole. Saving one rule
+         *     at a time turns "move Tuesday to the afternoon" into three requests that
+         *     can half-fail.
+         */
+        AvailabilitySettingsDto: {
+            /** @description The business time zone these times are local to. */
+            timeZoneId: string;
+            /** @description Recurring weekly openings. */
+            rules: components["schemas"]["AvailabilityRuleDto"][];
+            /** @description Closures and extraordinary openings. */
+            exceptions: components["schemas"]["AvailabilityOverrideDto"][];
+        };
+        /** @description The slots of one day. */
+        AvailableDayDto: {
+            /** @description The date, LOCAL to the business time zone, as "yyyy-MM-dd". */
+            date: string;
+            /**
+             * @description Bookable slots, in order. An EMPTY list is meaningful and is why closed
+             *     days are returned at all: a calendar has to grey out a Sunday, and a
+             *     missing day is indistinguishable from a day nobody asked about.
+             */
+            slots: components["schemas"]["SlotDto"][];
+        };
+        /**
+         * @description Body of the customer's cancel endpoint. Optional: a customer explaining
+         *     themselves is a courtesy, not a requirement.
+         */
+        CancelMyAppointmentRequest: {
+            /** @description Why they are calling it off. */
+            reason: null | string;
+        };
+        /** @description Body of the administration's cancel endpoint. */
+        CancelRequest: {
+            /**
+             * @description Why. Required here, because the customer reads it: "cancelled" with no
+             *     explanation is the message that makes someone stop booking.
+             */
+            reason: string;
+        };
         /** @description A tile contributed to the dashboard by a module. */
         DashboardWidget: {
             /** @description Stable identifier, prefixed by the owning module ("users.total"). */
@@ -565,6 +1157,8 @@ export interface components {
          * @enum {unknown}
          */
         DashboardWidgetKind: "Stat" | "List";
+        /** @enum {unknown} */
+        DayOfWeek: "Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday";
         /**
          * @description Sample command proving validation and event publishing end-to-end.
          *     Echoes the given text back and publishes DemoEchoedEvent.
@@ -583,6 +1177,20 @@ export interface components {
              */
             length: number | string;
         };
+        /**
+         * @description Who may download a stored file.
+         *
+         *     Decided at UPLOAD and explicitly: there is no endpoint that changes it
+         *     afterwards, because "make this public" is the kind of one-click action
+         *     that turns a mistake into a disclosure with no review step in between.
+         *     Re-upload instead — the bytes are cheap, the mistake is not.
+         *
+         *     The enum travels as a NAME in JSON (the host registers
+         *     `JsonStringEnumConverter`), so inserting a value here never changes
+         *     the meaning of a value already stored or in flight.
+         * @enum {unknown}
+         */
+        FileVisibility: "Private" | "Public";
         HttpValidationProblemDetails: {
             type?: null | string;
             title?: null | string;
@@ -617,6 +1225,55 @@ export interface components {
              * @description The notification to mark, or null for all.
              */
             notificationId: null | string;
+        };
+        /**
+         * @description An appointment as its OWNER sees it.
+         *
+         *     It deliberately has no `AdminNote` field. Not "we remember to strip
+         *     it" — the shape simply cannot carry it, so it cannot leak by omission.
+         */
+        MyAppointmentDto: {
+            /**
+             * Format: uuid
+             * @description Identifier of the appointment.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Service that was booked.
+             */
+            serviceId: string;
+            /** @description Its title, from this module's projection. */
+            serviceTitle: string;
+            /**
+             * Format: date-time
+             * @description Start instant, UTC.
+             */
+            startUtc: string;
+            /**
+             * Format: date-time
+             * @description End instant, UTC.
+             */
+            endUtc: string;
+            /** @description Where it is in its life. */
+            status: components["schemas"]["AppointmentStatus"];
+            /** @description Number left for this booking. */
+            contactPhone: string;
+            /** @description Note the customer wrote, if any. */
+            customerNote: null | string;
+            /** @description Why it was called off, if it was. */
+            cancellationReason: null | string;
+            /**
+             * @description Whether the customer may still call it off themselves. Computed by the
+             *     server: the cutoff is configuration, and the client must not have to know
+             *     it — the API stays the boundary that enforces it either way.
+             */
+            canCancel: boolean;
+            /**
+             * Format: date-time
+             * @description When it was booked.
+             */
+            createdAtUtc: string;
         };
         /** @description A notification as exposed to clients. */
         NotificationDto: {
@@ -688,6 +1345,44 @@ export interface components {
              */
             timestampUtc: string;
         };
+        /**
+         * @description A service as an anonymous visitor sees it.
+         *
+         *     It carries no publication state at all: everything reachable through the
+         *     public endpoints is, by construction, published and not archived, so
+         *     there is no flag a caller could try to flip.
+         */
+        PublicServiceDto: {
+            /**
+             * Format: uuid
+             * @description Identifier of the service, used by the booking flow.
+             */
+            id: string;
+            /** @description Name of the service. */
+            title: string;
+            /** @description URL segment of its page. */
+            slug: string;
+            /** @description One line, used on the showcase cards. */
+            shortDescription: string;
+            /** @description Long text of the detail page. */
+            description: string;
+            /**
+             * Format: int32
+             * @description Length of one appointment, or null.
+             */
+            durationMinutes: null | number | string;
+            /**
+             * Format: double
+             * @description Price, or null when it is not published.
+             */
+            price: null | number | string;
+            /** @description ISO 4217 code of the price, or null. */
+            currency: null | string;
+            /** @description Whether the service accepts bookings. */
+            isBookable: boolean;
+            /** @description Gallery, ordered as it is shown; the cover comes first. */
+            images: components["schemas"]["ServiceImageDto"][];
+        };
         /** @description Creates a new account and signs it in. */
         RegisterCommand: {
             /** @description Email address; must be unique. */
@@ -696,6 +1391,32 @@ export interface components {
             displayName: string;
             /** @description Raw password; hashed before persistence, never stored. */
             password: string;
+        };
+        /** @description A customer asks for an appointment. */
+        RequestAppointmentCommand: {
+            /**
+             * Format: uuid
+             * @description Service being booked.
+             */
+            serviceId: string;
+            /**
+             * Format: date-time
+             * @description Start instant chosen from the offered slots, UTC.
+             */
+            startUtc: string;
+            /** @description Number to reach the customer on for this booking. */
+            contactPhone: string;
+            /** @description Optional note. */
+            customerNote: null | string;
+        };
+        /** @description Body of the reschedule endpoint. */
+        RescheduleRequest: {
+            /**
+             * Format: date-time
+             * @description New start instant, UTC. The duration is not settable: moving a booking
+             *     chooses WHEN, it does not redefine what was sold.
+             */
+            startUtc: string;
         };
         /** @description Role as exposed to clients. */
         RoleDto: {
@@ -712,6 +1433,20 @@ export interface components {
             isBuiltIn: boolean;
             /** @description Permissions granted by the role. */
             permissions: string[];
+        };
+        /**
+         * @description Replaces the whole availability configuration.
+         *
+         *     A wholesale replace rather than per-row endpoints, because that is how a
+         *     weekly schedule is thought about and edited: "Tuesdays move to the
+         *     afternoon" is one decision, and splitting it into three requests invites
+         *     the state where the first two applied and the third did not.
+         */
+        SaveAvailabilitySettingsCommand: {
+            /** @description The complete weekly schedule. */
+            rules: components["schemas"]["AvailabilityRuleDto"][];
+            /** @description The complete list of closures and extra openings. */
+            exceptions: components["schemas"]["AvailabilityOverrideDto"][];
         };
         /** @description A message written by an anonymous visitor on the public contact form. */
         SendContactMessageCommand: {
@@ -732,6 +1467,74 @@ export interface components {
              *     is a reasonable next step if the logs ever show it is needed — not before.
              */
             website?: null | string;
+        };
+        /** @description One picture of a service, as exposed to any client. */
+        ServiceImageDto: {
+            /**
+             * Format: uuid
+             * @description Identifier of the association, used to detach it.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Identifier of the file in the Storage module. The client builds the image
+             *     URL from it against Storage's public endpoint; this module never serves
+             *     bytes.
+             */
+            storageFileId: string;
+            /** @description Text alternative; never empty. */
+            altText: string;
+            /**
+             * Format: int32
+             * @description Position in the gallery.
+             */
+            sortOrder: number | string;
+            /** @description Whether it is the image used on cards and previews. */
+            isCover: boolean;
+        };
+        /**
+         * @description The editable fields of a service, as they travel in a create or edit
+         *     request.
+         *
+         *     One shape for both operations because the two forms are the same form:
+         *     splitting them would mean maintaining two validators that must agree, and
+         *     the day they stop agreeing is the day a rule holds on creation only.
+         */
+        ServiceWriteModel: {
+            /** @description Name of the service. Required. */
+            title: string;
+            /**
+             * @description URL segment of the public page. Leave it empty and it is derived from the
+             *     title, disambiguated if needed; provide one and it is used verbatim, or
+             *     rejected when already taken.
+             */
+            slug: null | string;
+            /** @description One line, shown on the showcase cards. */
+            shortDescription: string;
+            /** @description Long text of the detail page. */
+            description: string;
+            /**
+             * Format: int32
+             * @description Length of one appointment. Required when IsBookable is
+             *     set, because it is what generates the bookable slots.
+             */
+            durationMinutes: null | number | string;
+            /**
+             * Format: double
+             * @description Price, or null to publish no price at all.
+             */
+            price: null | number | string;
+            /** @description ISO 4217 code; required when a price is given. */
+            currency: null | string;
+            /** @description Whether visitors can see it. */
+            isPublished: boolean;
+            /** @description Whether it accepts bookings. */
+            isBookable: boolean;
+            /**
+             * Format: int32
+             * @description Position in the showcase; lower comes first.
+             */
+            sortOrder: number | string;
         };
         /** @description Body of the "set setting" endpoints. */
         SetSettingRequest: {
@@ -758,6 +1561,19 @@ export interface components {
             /** @description The complete new set of role names. */
             roleNames: string[];
         };
+        /** @description One bookable slot, as offered to a client. */
+        SlotDto: {
+            /**
+             * Format: date-time
+             * @description Start instant, UTC. The browser renders it locally.
+             */
+            startUtc: string;
+            /**
+             * Format: date-time
+             * @description End instant, UTC.
+             */
+            endUtc: string;
+        };
         /**
          * @description File metadata as exposed to clients. The storage key is never included:
          *     it is an internal detail of the provider.
@@ -770,13 +1586,19 @@ export interface components {
             id: string;
             /** @description Name as uploaded. */
             fileName: string;
-            /** @description Content type declared at upload. */
+            /** @description Content type declared at upload; metadata only. */
             contentType: string;
             /**
              * Format: int64
              * @description Size in bytes.
              */
             sizeInBytes: number | string;
+            /**
+             * @description Who may download it. A `Public` file is reachable without a token at
+             *     `/api/files/public/{id}` — that is the URL to put in an
+             *     `&lt;img src&gt;`.
+             */
+            visibility: components["schemas"]["FileVisibility"];
             /**
              * Format: date-time
              * @description When it was uploaded.
@@ -1416,6 +2238,9 @@ export interface operations {
             content: {
                 "multipart/form-data": {
                     file: components["schemas"]["IFormFile"];
+                } & {
+                    /** @default Private */
+                    visibility?: components["schemas"]["FileVisibility"];
                 };
             };
         };
@@ -1464,6 +2289,26 @@ export interface operations {
         responses: {
             /** @description No Content */
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    filesDownloadPublic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1556,6 +2401,571 @@ export interface operations {
                     "application/json": {
                         [key: string]: string;
                     };
+                };
+            };
+        };
+    };
+    servicesList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicServiceDto"][];
+                };
+            };
+        };
+    };
+    servicesGetBySlug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicServiceDto"];
+                };
+            };
+        };
+    };
+    adminServicesList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceDto"][];
+                };
+            };
+        };
+    };
+    adminServicesCreate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceWriteModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    adminServicesGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceDto"];
+                };
+            };
+        };
+    };
+    adminServicesUpdate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceWriteModel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    adminServicesAddImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttachImageRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceImageDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    adminServicesSetCover: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                imageId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    adminServicesRemoveImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                imageId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    adminServicesArchive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    appointmentsAvailability: {
+        parameters: {
+            query: {
+                serviceId: string;
+                from: string;
+                to: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailabilityDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    appointmentsRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestAppointmentCommand"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyAppointmentDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    appointmentsMine: {
+        parameters: {
+            query?: {
+                includePast?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyAppointmentDto"][];
+                };
+            };
+        };
+    };
+    appointmentsCalendarFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    appointmentsCancelMine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": null | components["schemas"]["CancelMyAppointmentRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    adminAppointmentsList: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAppointmentDto"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    adminAppointmentsConfirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAppointmentDto"];
+                };
+            };
+        };
+    };
+    adminAppointmentsReschedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RescheduleRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAppointmentDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    adminAppointmentsCancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    adminAvailabilityGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailabilitySettingsDto"];
+                };
+            };
+        };
+    };
+    adminAvailabilitySave: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveAvailabilitySettingsCommand"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailabilitySettingsDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
                 };
             };
         };

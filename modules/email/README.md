@@ -23,14 +23,73 @@ not change.
 
 ## Transport
 
-`IEmailSender` is the seam. The default is `LoggingEmailSender`, which writes
-the message to the log instead of delivering it — deliberately, so a developer
-running against a seeded database cannot email real users. Register your own
-implementation after the module to override it:
+`IEmailSender` is the seam, and **the transport is chosen by configuration,
+not by code**: a host in `Email:Smtp` means deliver, its absence means log.
+
+```json
+{
+  "Email": {
+    "FromAddress": "no-reply@acme.example",
+    "FromName": "Acme",
+    "Smtp": {
+      "Host": "smtp.acme.example",
+      "Port": 587,
+      "UseImplicitTls": false,
+      "UserName": "no-reply@acme.example",
+      "TimeoutSeconds": 30
+    }
+  }
+}
+```
+
+The password is **not** in that file. Supply it out of band:
+
+```bash
+export Email__Smtp__Password='…'      # or the platform's secret store
+```
+
+Turning real email on is therefore a deployment concern, and forgetting to
+configure it **fails safe**: `LoggingEmailSender` writes the message to the
+log instead of sending it, so a developer running against a seeded database
+cannot email real people by accident.
+
+### Why these are configuration, not admin settings
+
+The Settings module exists and has an admin UI, and SMTP credentials
+deliberately do not live there. A secret editable from a web form lives in a
+table, and from there it reaches backups, replicas and audit logs. Host, port
+and password belong in the environment — which is where the deployment
+already keeps the database connection string.
+
+What _is_ worth making admin-editable is the wording around a message, not the
+plumbing: `app.name` is already a setting.
+
+### TLS
+
+`SecureSocketOptions.StartTls` is **required**, not "if available": the
+permissive variant lets a server that does not offer TLS downgrade the session
+to plaintext, and the password goes with it. Set `UseImplicitTls` for port 465.
+
+There is deliberately **no option to skip certificate validation**. For an
+internal CA, trust the CA in the operating system's store — where every other
+client on that machine already looks. A local test server (MailHog, smtp4dev,
+Papercut) needs no workaround: development uses the logging transport anyway.
+
+### Something else entirely
+
+A transactional provider (SendGrid, Postmark, SES) is a different
+implementation of the same seam. Register it after the module and it wins:
 
 ```csharp
-services.AddScoped<IEmailSender, SmtpEmailSender>();
+services.AddScoped<IEmailSender, PostmarkEmailSender>();
 ```
+
+### Attachments
+
+`EmailMessage.Attachments` carries text files — the case it exists for is the
+`.ics` on an appointment confirmation, which turns "remember to note this
+down" into one click. A transport needing binary attachments should extend the
+record rather than base64 into it.
 
 ## Templates
 

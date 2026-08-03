@@ -1,0 +1,37 @@
+<!--
+  Services module: the catalogue of what the organization offers, from the
+  administration form to the public showcase.
+
+  Owns its data (schema "services") and its public pages: whoever owns the
+  data owns its representation. It references files by identifier only — the
+  Storage module owns the bytes — so the two schemas never join.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Modules.Services</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Application\EnterpriseFramework.Application.csproj" />
+    <ProjectReference
+      Include="..\..\..\apps\api\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
+    <!-- Its own public contracts, published on the event bus. -->
+    <ProjectReference Include="..\shared\EnterpriseFramework.Modules.Services.Contracts.csproj" />
+    <!-- Permission names only. -->
+    <ProjectReference
+      Include="..\..\authorization\backend\EnterpriseFramework.Modules.Authorization.csproj" />
+    <!-- Note: no reference to the Storage module. An image is a file id and an
+         alt text; resolving that id to bytes is the browser's job, against
+         Storage's own public endpoint. -->
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\module.json" LogicalName="module.json" />
+  </ItemGroup>
+</Project>

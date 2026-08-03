@@ -53,6 +53,35 @@ describe("Button", () => {
     expect(wrapper.attributes("class")).not.toMatch(/#[0-9a-f]{3,6}/i);
   });
 
+  it("renders an anchor when the action is a navigation", () => {
+    const wrapper = mount(Button, { props: { href: "/services/new" }, slots: { default: "New" } });
+
+    // An <a>, not a <button>: middle-click, "open in new tab" and copy-link
+    // all have to keep working.
+    expect(wrapper.element.tagName).toBe("A");
+    expect(wrapper.attributes("href")).toBe("/services/new");
+    expect(wrapper.attributes("type")).toBeUndefined();
+  });
+
+  it("keeps the same styling whether it is a button or a link", () => {
+    const asButton = mount(Button, { slots: { default: "Go" } });
+    const asLink = mount(Button, { props: { href: "/x" }, slots: { default: "Go" } });
+
+    expect(asLink.classes()).toEqual(asButton.classes());
+  });
+
+  it("stops a disabled link from navigating, since anchors ignore `disabled`", async () => {
+    const wrapper = mount(Button, {
+      props: { href: "/x", disabled: true },
+      slots: { default: "Go" },
+    });
+
+    await wrapper.trigger("click");
+
+    expect(wrapper.emitted("click")).toBeUndefined();
+    expect(wrapper.attributes("aria-disabled")).toBe("true");
+  });
+
   it("lets a consumer override a conflicting utility instead of stacking both", () => {
     const wrapper = mount(Button, {
       attrs: { class: "bg-surface" },

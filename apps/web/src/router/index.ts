@@ -1,6 +1,11 @@
+import {
+  appointmentsPrivateRoutes,
+  appointmentsPublicRoutes,
+} from "@enterprise/module-appointments";
 import { authRoutes } from "@enterprise/module-auth";
 import { authorizationRoutes } from "@enterprise/module-authorization";
 import { dashboardRoutes } from "@enterprise/module-dashboard";
+import { servicesAdminRoutes, servicesPublicRoutes } from "@enterprise/module-services";
 import { siteRoutes } from "@enterprise/module-site";
 import { usersRoutes } from "@enterprise/module-users";
 import { createRouter, createWebHistory, type Router, type RouteRecordRaw } from "vue-router";
@@ -21,13 +26,32 @@ import { ADMIN_BASE, splitByArea } from "@/router/adminArea";
  * `registerAdminArea`, which the bootstrap can only call after the Auth
  * module has installed its guard (see `adminArea.ts`).
  */
+/**
+ * Name of the Site module's static "services" page.
+ *
+ * Two routes cannot share a path, and both modules want `/services`: the Site
+ * module has a page written in `site.config.ts`, the Services module serves
+ * the catalogue from data. Whoever owns the DATA owns its representation, so
+ * when the Services module is installed its pages win — and a project that
+ * does not install it keeps the static page, which is exactly right for a
+ * site with nothing to book.
+ *
+ * The choice belongs here, in the composition root: neither module may decide
+ * it, because neither knows whether the other exists.
+ */
+const STATIC_SERVICES_ROUTE = "site-services";
+
 const contributedRoutes: RouteRecordRaw[] = [
-  ...siteRoutes,
+  ...siteRoutes.filter((route) => route.name !== STATIC_SERVICES_ROUTE),
+  ...servicesPublicRoutes,
   ...dashboardRoutes,
   ...demoRoutes,
   ...authRoutes,
   ...authorizationRoutes,
   ...usersRoutes,
+  ...servicesAdminRoutes,
+  ...appointmentsPublicRoutes,
+  ...appointmentsPrivateRoutes,
 ];
 
 const { publicRoutes, adminRoutes } = splitByArea(contributedRoutes);
