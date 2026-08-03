@@ -1,0 +1,15 @@
+<!--
+  Public contracts of the Services module: the integration events other
+  modules subscribe to.
+
+  Kept in its own tiny assembly so a subscriber (Appointments, tomorrow)
+  references ONLY the event shapes, never the Services implementation.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>EnterpriseFramework.Modules.Services.Contracts</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\apps\api\src\Domain\EnterpriseFramework.Domain.csproj" />
+  </ItemGroup>
+</Project>

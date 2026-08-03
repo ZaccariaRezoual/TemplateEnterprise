@@ -54,9 +54,12 @@ export default tseslint.config(
     },
   },
 
-  // Browser code: applications and packages.
+  // Browser code: applications, packages and module frontends. The module
+  // frontends belong here for the same reason the others do — they ship
+  // components that run in a page, and without this `File`, `Event` or
+  // `HTMLInputElement` read as undefined globals.
   {
-    files: ["apps/**/src/**", "packages/**/src/**"],
+    files: ["apps/**/src/**", "packages/**/src/**", "modules/**/frontend/src/**"],
     languageOptions: { globals: globals.browser },
   },
 

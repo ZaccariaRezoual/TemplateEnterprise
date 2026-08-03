@@ -1,0 +1,6 @@
+{
+  "name": "Appointments",
+  "version": "1.0.0",
+  "dependencies": ["Auth", "Authorization", "Services"],
+  "enabled": true
+}

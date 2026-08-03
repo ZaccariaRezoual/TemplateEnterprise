@@ -1,0 +1,42 @@
+{
+  "name": "@enterprise/module-services",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Frontend of the Services module: the administration of the catalogue and the public showcase pages it feeds.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@enterprise/module-authorization": "workspace:*",
+    "@enterprise/sdk": "workspace:*",
+    "@enterprise/shared": "workspace:*",
+    "@enterprise/ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "@tanstack/vue-query": "^5.0.0",
+    "pinia": "^4.0.0",
+    "vue": "^3.5.0",
+    "vue-router": "^5.0.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@tanstack/vue-query": "^5.101.4",
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "jsdom": "catalog:",
+    "pinia": "^4.0.2",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "^5.2.0",
+    "vue-tsc": "catalog:",
+    "zod": "catalog:"
+  }
+}

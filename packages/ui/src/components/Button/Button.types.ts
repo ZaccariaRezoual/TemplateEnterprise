@@ -40,6 +40,29 @@ export interface ButtonProps {
   loading?: boolean | undefined;
   /** Whether the button fills the width of its container. */
   block?: boolean | undefined;
+  /**
+   * Destination. Setting it renders an `<a>` instead of a `<button>`, with
+   * identical styling.
+   *
+   * It exists because "the main action of this screen is a navigation" is
+   * common — "New service" opens a form — and both ways around it are worse:
+   * a `<button>` that navigates breaks middle-click, "open in new tab" and
+   * copy-link, while a hand-styled link means literal values in a page, which
+   * the design system forbids.
+   *
+   * For an in-app route, drive it from the router rather than writing the
+   * path twice:
+   *
+   * ```vue
+   * <RouterLink v-slot="{ href, navigate }" :to="{ name: 'services-admin-new' }" custom>
+   *   <Button :href="href" @click="navigate">Nuovo servizio</Button>
+   * </RouterLink>
+   * ```
+   *
+   * The design system takes no dependency on the router: it renders the
+   * anchor, the application decides what the anchor means.
+   */
+  href?: string | undefined;
 }
 
 /** Events emitted by {@link Button}. */

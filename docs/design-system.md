@@ -119,11 +119,15 @@ fastest way to a UI where nothing stands out; secondary actions use the
 
 ## 3. Shape
 
-| Semantic token     | Role                          | Used by       |
-| ------------------ | ----------------------------- | ------------- |
-| `--radius-control` | things you click or type into | Button, Input |
-| `--radius-surface` | things that contain content   | Card, Dialog  |
-| `--radius-pill`    | things that are fully round   | Badge, Avatar |
+| Semantic token     | Role                          | Used by                 |
+| ------------------ | ----------------------------- | ----------------------- |
+| `--radius-control` | things you click or type into | Button, Input, Checkbox |
+| `--radius-surface` | things that contain content   | Card, Dialog            |
+| `--radius-pill`    | things that are fully round   | Badge, Avatar           |
+
+The checkbox reads it through its own component token, `--checkbox-radius`: a
+16px box wearing the control radius looks like a rounded square, and wanting
+sharp checkboxes in a product with rounded buttons is a real preference.
 
 Named by **role, not size**. `rounded-md` scattered across components means a
 rebrand is a search-and-replace; `--radius-control` means it is one line.
@@ -209,16 +213,32 @@ All components live in `packages/ui/src/components/<Name>/`.
 
 ### Button
 
-| Prop      | Values                                       | Default   |
-| --------- | -------------------------------------------- | --------- |
-| `variant` | `primary` · `secondary` · `ghost` · `danger` | `primary` |
-| `size`    | `sm` · `md` · `lg`                           | `md`      |
-| `type`    | `button` · `submit` · `reset`                | `button`  |
-| `loading` | boolean — shows a spinner, keeps the width   | `false`   |
-| `block`   | boolean — full width                         | `false`   |
+| Prop      | Values                                          | Default   |
+| --------- | ----------------------------------------------- | --------- |
+| `variant` | `primary` · `secondary` · `ghost` · `danger`    | `primary` |
+| `size`    | `sm` · `md` · `lg`                              | `md`      |
+| `type`    | `button` · `submit` · `reset`                   | `button`  |
+| `loading` | boolean — shows a spinner, keeps the width      | `false`   |
+| `block`   | boolean — full width                            | `false`   |
+| `href`    | string — renders an `<a>` with the same styling | —         |
 
 One `primary` per screen region. `danger` is for destructive actions only —
 using it for emphasis trains users to ignore it where it matters.
+
+`href` exists because the main action of a screen is often a **navigation**
+("New service" opens a form), and both ways around that are worse: a
+`<button>` that navigates breaks middle-click, "open in new tab" and
+copy-link, while a hand-styled link puts literal values in a page. For an
+in-app route, drive it from the router so the path is not written twice:
+
+```vue
+<RouterLink v-slot="{ href, navigate }" :to="{ name: 'services-admin-new' }" custom>
+  <Button :href="href" @click="navigate">Nuovo servizio</Button>
+</RouterLink>
+```
+
+The design system takes **no dependency on the router**: it renders the
+anchor, the application decides what the anchor means.
 
 ### Input
 
@@ -240,6 +260,42 @@ person "one line is enough", and they answer accordingly.
 
 Setting `maxlength` shows a live counter, announced politely — a limit
 discovered on submit means rewriting a message already finished.
+
+### Checkbox
+
+| Prop    | Notes                                                                                                |
+| ------- | ---------------------------------------------------------------------------------------------------- |
+| `label` | **required** — a checkbox with no label is a square whose meaning lives only in the developer's head |
+| `hint`  | the CONSEQUENCE of ticking it, which the label rarely has room for ("visitors will see it")          |
+| `error` | sets `aria-invalid` and wires `aria-describedby`                                                     |
+
+One independent yes/no answer, applied when the form is saved. It renders a
+native `<input type="checkbox">`, so keyboard, form participation and
+assistive technology work without re-implementation, and the **whole label row
+is the hit area** — the 16px box alone is far below the 44px the tokens
+require on touch.
+
+For a setting that takes effect the moment it is flipped, a switch is the
+honest control. The system does not ship one yet; adding it before it is
+needed would let the two be used interchangeably, which is the confusion a
+switch exists to remove.
+
+### PageSection
+
+| Prop           | Notes                                                                                                     |
+| -------------- | --------------------------------------------------------------------------------------------------------- |
+| `title`        | section heading; omit for a band of pure content                                                          |
+| `intro`        | one sentence under it, capped at `max-w-prose`                                                            |
+| `headingLevel` | `h1` · `h2` · `h3` — what the page OUTLINE needs; the size comes from the type role, never from the level |
+
+A titled band of a page, and the **only component allowed to decide the
+vertical spacing of one**. Every page repeating its own padding is how a
+product ends up with six slightly different spacings and a rebrand that has to
+touch every page.
+
+It reads `py-band` / `py-band-lg`, which the public surface redefines — so the
+same markup is a generous marketing band outside `/admin` and a compact one
+inside it.
 
 ### Card
 

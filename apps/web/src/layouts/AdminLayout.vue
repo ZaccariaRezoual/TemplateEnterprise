@@ -35,7 +35,13 @@ import { useSessionStore } from "@enterprise/module-auth";
 import { usePermissions } from "@enterprise/module-authorization";
 import { NotificationBell } from "@enterprise/module-notifications";
 import { ConnectionIndicator } from "@enterprise/module-realtime";
-import { BeakerIcon, Squares2X2Icon, UsersIcon } from "@heroicons/vue/24/outline";
+import {
+  BeakerIcon,
+  CalendarDaysIcon,
+  RectangleStackIcon,
+  Squares2X2Icon,
+  UsersIcon,
+} from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 import { ADMIN_BASE } from "@/router/adminArea";
 import ThemeToggle from "@/shared/components/ThemeToggle.vue";
@@ -55,8 +61,24 @@ const navigation = computed(() =>
       icon: Squares2X2Icon,
       permission: undefined,
     },
-    { label: "Demo", to: `${ADMIN_BASE}/demo`, icon: BeakerIcon, permission: undefined },
+    {
+      label: "Agenda",
+      to: `${ADMIN_BASE}/appointments`,
+      icon: CalendarDaysIcon,
+      permission: "appointments.read",
+    },
+    {
+      label: "Servizi",
+      to: `${ADMIN_BASE}/services`,
+      icon: RectangleStackIcon,
+      permission: "services.read",
+    },
     { label: "Users", to: `${ADMIN_BASE}/users`, icon: UsersIcon, permission: "users.read" },
+    // Demo is last on purpose: it is the first entry a real project deletes,
+    // and the bottom bar allows at most five (design-system-admin.md §3).
+    // This list is now AT five — the next one to arrive has to displace
+    // something rather than be appended.
+    { label: "Demo", to: `${ADMIN_BASE}/demo`, icon: BeakerIcon, permission: undefined },
   ].filter((item) => item.permission === undefined || can(item.permission)),
 );
 </script>

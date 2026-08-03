@@ -13,9 +13,17 @@
       Include="..\..\..\apps\api\src\Modules.Abstractions\EnterpriseFramework.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\..\auth\shared\EnterpriseFramework.Modules.Auth.Contracts.csproj" />
     <ProjectReference Include="..\..\site\shared\EnterpriseFramework.Modules.Site.Contracts.csproj" />
+    <!-- Public contracts only: the appointment events this module writes
+         messages about, and the iCalendar writer that lives beside them so a
+         subscriber can attach a calendar entry without referencing the
+         Appointments implementation. -->
+    <ProjectReference
+      Include="..\..\appointments\shared\EnterpriseFramework.Modules.Appointments.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" />
+    <!-- SMTP delivery. Registered only when a host is configured. -->
+    <PackageReference Include="MailKit" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>

@@ -20,22 +20,24 @@ Ogni pagina segue lo stesso schema (fonte normativa → quando serve → procedu
 | segnalare un errore al client                  | [Errori](errors.md)                                     |
 | far arrivare un evento ai client senza refresh | [Rendere un evento realtime](make-it-realtime.md)       |
 | mostrare qualcosa in dashboard                 | [Contribuire un widget](contribute-dashboard-widget.md) |
+| calcolare disponibilità, fusi e contesa        | [Calcolare disponibilità](compute-availability.md)      |
 | scrivere i test giusti                         | [Testare il backend](test-backend.md)                   |
 
 ## Frontend
 
-| Devo…                                        | Pagina                                                            |
-| -------------------------------------------- | ----------------------------------------------------------------- |
-| aggiungere una feature che consuma l'API     | [Aggiungere una feature frontend](add-feature.md)                 |
-| aggiungere una pagina del sito pubblico      | [Aggiungere una pagina pubblica](add-public-page.md)              |
-| decidere dove tenere uno stato               | [Dove tenere lo stato](state.md)                                  |
-| aggiornare l'SDK dopo un cambio di contratto | [Rigenerare l'SDK](regenerate-sdk.md)                             |
-| aggiungere un componente al design system    | [Aggiungere un componente al design system](add-ui-component.md)  |
-| scegliere il token giusto                    | [Scegliere il token giusto](use-design-tokens.md)                 |
-| verificare che una pagina sia responsive     | [Checklist responsive](responsive-checklist.md)                   |
-| nascondere qualcosa a chi non può vederlo    | [Nascondere ciò che l'utente non può fare](client-permissions.md) |
-| aggiungere una stringa tradotta              | [Aggiungere una stringa tradotta](i18n.md)                        |
-| scrivere i test giusti                       | [Testare il frontend](test-frontend.md)                           |
+| Devo…                                            | Pagina                                                                                         |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| aggiungere una feature che consuma l'API         | [Aggiungere una feature frontend](add-feature.md)                                              |
+| aggiungere una pagina del sito pubblico          | [Aggiungere una pagina pubblica](add-public-page.md)                                           |
+| pubblicare una pagina il cui indirizzo è un dato | [Aggiungere una pagina pubblica § dinamiche](add-public-page.md#pagine-con-indirizzo-dinamico) |
+| decidere dove tenere uno stato                   | [Dove tenere lo stato](state.md)                                                               |
+| aggiornare l'SDK dopo un cambio di contratto     | [Rigenerare l'SDK](regenerate-sdk.md)                                                          |
+| aggiungere un componente al design system        | [Aggiungere un componente al design system](add-ui-component.md)                               |
+| scegliere il token giusto                        | [Scegliere il token giusto](use-design-tokens.md)                                              |
+| verificare che una pagina sia responsive         | [Checklist responsive](responsive-checklist.md)                                                |
+| nascondere qualcosa a chi non può vederlo        | [Nascondere ciò che l'utente non può fare](client-permissions.md)                              |
+| aggiungere una stringa tradotta                  | [Aggiungere una stringa tradotta](i18n.md)                                                     |
+| scrivere i test giusti                           | [Testare il frontend](test-frontend.md)                                                        |
 
 ## Trasversali
 

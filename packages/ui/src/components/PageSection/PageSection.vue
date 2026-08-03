@@ -4,30 +4,32 @@
  * PageSection
  * -----------------------------------------------------------------------------
  *
- * A titled band of the public site: heading, intro, and whatever the caller
- * puts inside.
+ * A titled band of a page: heading, intro, and whatever the caller puts
+ * inside.
  *
  * It exists so vertical rhythm is decided once. Every page repeating its own
- * padding is how a site ends up with six slightly different spacings, and
- * with a rebrand that has to touch every page.
+ * padding is how a product ends up with six slightly different spacings, and
+ * with a rebrand that has to touch every page. It is the only component
+ * allowed to decide the vertical spacing of a band.
  *
- * The heading level is a prop because the outline of a page is not a visual
- * choice: a section under an `h1` needs an `h2`, and a component that always
- * emits `h2` quietly breaks the document outline.
+ * It reads `py-band` / `py-band-lg`, which the PUBLIC surface redefines: the
+ * same markup is a generous marketing band outside `/admin` and a compact one
+ * inside it. A page does not know its own surface, and does not need to.
+ *
+ * Started life in the Site module and moved here the day a second surface —
+ * the Services showcase — needed it, which is the rule the design system
+ * states for promoting a component.
  */
-withDefaults(
-  defineProps<{
-    /** Section heading. Omit for a band of pure content. */
-    title?: string | undefined;
-    /** Sentence under the heading. */
-    intro?: string | undefined;
-    /** Heading level, so the page outline stays correct. Defaults to `h2`. */
-    headingLevel?: "h1" | "h2" | "h3" | undefined;
-  }>(),
+import { cn } from "../../utils/cn";
+import type { PageSectionProps } from "./PageSection.types";
+
+withDefaults(defineProps<PageSectionProps>(), {
   // `title` and `intro` default to undefined on purpose: a band of pure
   // content has neither, and an empty string would still render the element.
-  { title: undefined, intro: undefined, headingLevel: "h2" },
-);
+  title: undefined,
+  intro: undefined,
+  headingLevel: "h2",
+});
 </script>
 
 <template>
@@ -35,8 +37,9 @@ withDefaults(
     <component
       :is="headingLevel"
       v-if="title"
-      :class="headingLevel === 'h1' ? 'text-display' : 'text-heading'"
-      class="font-semibold tracking-tight"
+      :class="
+        cn('font-semibold tracking-tight', headingLevel === 'h1' ? 'text-display' : 'text-heading')
+      "
     >
       {{ title }}
     </component>

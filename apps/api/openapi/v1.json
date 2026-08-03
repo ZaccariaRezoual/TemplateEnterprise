@@ -724,11 +724,25 @@
                   "file"
                 ],
                 "type": "object",
-                "properties": {
-                  "file": {
-                    "$ref": "#/components/schemas/IFormFile"
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "file": {
+                        "$ref": "#/components/schemas/IFormFile"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "visibility": {
+                        "default": "Private",
+                        "$ref": "#/components/schemas/FileVisibility"
+                      }
+                    }
                   }
-                }
+                ]
               }
             }
           },
@@ -792,6 +806,31 @@
         "responses": {
           "204": {
             "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/files/public/{id}": {
+      "get": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "Downloads a file that was uploaded as public. No token required.",
+        "operationId": "filesDownloadPublic",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -924,10 +963,1115 @@
           }
         }
       }
+    },
+    "/api/services": {
+      "get": {
+        "tags": [
+          "Services"
+        ],
+        "summary": "Lists the published services, in showcase order.",
+        "operationId": "servicesList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PublicServiceDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/services/{slug}": {
+      "get": {
+        "tags": [
+          "Services"
+        ],
+        "summary": "Reads one published service by its public address.",
+        "operationId": "servicesGetBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicServiceDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services": {
+      "get": {
+        "tags": [
+          "Services administration"
+        ],
+        "summary": "Lists the whole catalogue: drafts, published and archived.",
+        "operationId": "adminServicesList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminServiceDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Services administration"
+        ],
+        "summary": "Adds a service to the catalogue.",
+        "operationId": "adminServicesCreate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceWriteModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminServiceDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/{id}": {
+      "get": {
+        "tags": [
+          "Services administration"
+        ],
+        "summary": "Reads one service in any state, for the edit form.",
+        "operationId": "adminServicesGet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminServiceDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Services administration"
+        ],
+        "summary": "Edits a service of the catalogue.",
+        "operationId": "adminServicesUpdate",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceWriteModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminServiceDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/{id}/images": {
+      "post": {
+        "tags": [
+          "Services administration"
+        ],
+        "summary": "Attaches an uploaded file to a service as one of its images.",
+        "operationId": "adminServicesAddImage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttachImageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceImageDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/{id}/images/{imageId}/cover": {
+      "put": {
+        "tags": [
+          "Services administration"
+        ],
+        "summary": "Chooses the image shown on cards and in link previews.",
+        "operationId": "adminServicesSetCover",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "imageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/services/{id}/images/{imageId}": {
+      "delete": {
+        "tags": [
+          "Services administration"
+        ],
+        "summary": "Detaches an image from a service; the file itself is left to Storage.",
+        "operationId": "adminServicesRemoveImage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "imageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/services/{id}/archive": {
+      "post": {
+        "tags": [
+          "Services administration"
+        ],
+        "summary": "Withdraws a service from the catalogue. There is no delete.",
+        "operationId": "adminServicesArchive",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/appointments/availability": {
+      "get": {
+        "tags": [
+          "Appointments"
+        ],
+        "summary": "Lists the bookable slots of a service, day by day.",
+        "operationId": "appointmentsAvailability",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appointments": {
+      "post": {
+        "tags": [
+          "Appointments"
+        ],
+        "summary": "Asks for an appointment. It is a REQUEST: nothing is reserved yet.",
+        "operationId": "appointmentsRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestAppointmentCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyAppointmentDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appointments/mine": {
+      "get": {
+        "tags": [
+          "Appointments"
+        ],
+        "summary": "Lists the caller's own appointments.",
+        "operationId": "appointmentsMine",
+        "parameters": [
+          {
+            "name": "includePast",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyAppointmentDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appointments/{id}/calendar.ics": {
+      "get": {
+        "tags": [
+          "Appointments"
+        ],
+        "summary": "Downloads one appointment as an iCalendar (.ics) file.",
+        "operationId": "appointmentsCalendarFile",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/appointments/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Appointments"
+        ],
+        "summary": "Cancels one of the caller's own appointments.",
+        "operationId": "appointmentsCancelMine",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CancelMyAppointmentRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/appointments": {
+      "get": {
+        "tags": [
+          "Appointments administration"
+        ],
+        "summary": "Lists the appointments overlapping a window of time.",
+        "operationId": "adminAppointmentsList",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminAppointmentDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/appointments/{id}/confirm": {
+      "post": {
+        "tags": [
+          "Appointments administration"
+        ],
+        "summary": "Confirms a request, cancelling the ones it displaces.",
+        "operationId": "adminAppointmentsConfirm",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminAppointmentDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/appointments/{id}/reschedule": {
+      "post": {
+        "tags": [
+          "Appointments administration"
+        ],
+        "summary": "Moves an appointment to another time, revalidated server-side.",
+        "operationId": "adminAppointmentsReschedule",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminAppointmentDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/appointments/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Appointments administration"
+        ],
+        "summary": "Cancels an appointment on behalf of the business.",
+        "operationId": "adminAppointmentsCancel",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/appointments/availability": {
+      "get": {
+        "tags": [
+          "Appointments administration"
+        ],
+        "summary": "Reads the weekly opening hours and their exceptions.",
+        "operationId": "adminAvailabilityGet",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilitySettingsDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Appointments administration"
+        ],
+        "summary": "Replaces the weekly opening hours and their exceptions.",
+        "operationId": "adminAvailabilitySave",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveAvailabilitySettingsCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilitySettingsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AdminAppointmentDto": {
+        "required": [
+          "id",
+          "serviceId",
+          "serviceTitle",
+          "customerUserId",
+          "customerName",
+          "customerEmail",
+          "startUtc",
+          "endUtc",
+          "status",
+          "contactPhone",
+          "customerNote",
+          "adminNote",
+          "cancellationReason",
+          "hasConflict",
+          "createdAtUtc",
+          "history"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the appointment.",
+            "format": "uuid"
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "Service that was booked.",
+            "format": "uuid"
+          },
+          "serviceTitle": {
+            "type": "string",
+            "description": "Its title, from this module's projection."
+          },
+          "customerUserId": {
+            "type": "string",
+            "description": "Account that booked it.",
+            "format": "uuid"
+          },
+          "customerName": {
+            "type": "string",
+            "description": "Name of the customer."
+          },
+          "customerEmail": {
+            "type": "string",
+            "description": "Email of the customer."
+          },
+          "startUtc": {
+            "type": "string",
+            "description": "Start instant, UTC.",
+            "format": "date-time"
+          },
+          "endUtc": {
+            "type": "string",
+            "description": "End instant, UTC.",
+            "format": "date-time"
+          },
+          "status": {
+            "description": "Where it is in its life.",
+            "$ref": "#/components/schemas/AppointmentStatus"
+          },
+          "contactPhone": {
+            "type": "string",
+            "description": "Number left for this booking."
+          },
+          "customerNote": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Note the customer wrote, if any."
+          },
+          "adminNote": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Internal note; never shown to the customer."
+          },
+          "cancellationReason": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Why it was called off, if it was."
+          },
+          "hasConflict": {
+            "type": "boolean",
+            "description": "Whether this REQUEST overlaps an already-confirmed appointment.\r\n\r\nComputed for the calendar so a doomed request is shown as such: confirming\r\nit would be refused by the database, and finding that out by clicking is a\r\npoor way to learn it."
+          },
+          "createdAtUtc": {
+            "type": "string",
+            "description": "When it was booked.",
+            "format": "date-time"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppointmentHistoryDto"
+            },
+            "description": "What happened to it, oldest first."
+          }
+        },
+        "description": "An appointment as the ADMINISTRATION sees it: everything, including who\r\nbooked it and the internal note."
+      },
+      "AdminServiceDto": {
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "shortDescription",
+          "description",
+          "durationMinutes",
+          "price",
+          "currency",
+          "isPublished",
+          "isBookable",
+          "sortOrder",
+          "isArchived",
+          "images",
+          "createdAtUtc",
+          "updatedAtUtc"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the service.",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "description": "Name of the service."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL segment of the public page."
+          },
+          "shortDescription": {
+            "type": "string",
+            "description": "One line, used on the showcase cards."
+          },
+          "description": {
+            "type": "string",
+            "description": "Long text of the detail page."
+          },
+          "durationMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Length of one appointment, or null.",
+            "format": "int32"
+          },
+          "price": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "Price, or null when it is not published.",
+            "format": "double"
+          },
+          "currency": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "ISO 4217 code of the price, or null."
+          },
+          "isPublished": {
+            "type": "boolean",
+            "description": "Whether visitors can see it."
+          },
+          "isBookable": {
+            "type": "boolean",
+            "description": "Whether it accepts bookings."
+          },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Position in the showcase; lower comes first.",
+            "format": "int32"
+          },
+          "isArchived": {
+            "type": "boolean",
+            "description": "Whether it has been withdrawn from the catalogue."
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceImageDto"
+            },
+            "description": "Gallery, ordered as it is shown."
+          },
+          "createdAtUtc": {
+            "type": "string",
+            "description": "When it was created.",
+            "format": "date-time"
+          },
+          "updatedAtUtc": {
+            "type": "string",
+            "description": "When it last changed.",
+            "format": "date-time"
+          }
+        },
+        "description": "A service as the ADMINISTRATION sees it: every field, including the ones\r\nthat decide whether the public sees anything at all.\r\n\r\nIt is a separate shape from PublicServiceDto on purpose.\r\nSharing one DTO between the two audiences means a new administrative field\r\nis published to anonymous visitors by default, and nothing fails when that\r\nhappens."
+      },
+      "AppointmentHistoryDto": {
+        "required": [
+          "atUtc",
+          "changedByUserId",
+          "fromStatus",
+          "toStatus",
+          "fromStartUtc",
+          "toStartUtc"
+        ],
+        "type": "object",
+        "properties": {
+          "atUtc": {
+            "type": "string",
+            "description": "When it happened.",
+            "format": "date-time"
+          },
+          "changedByUserId": {
+            "type": "string",
+            "description": "Who did it.",
+            "format": "uuid"
+          },
+          "fromStatus": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Status before, or null for the booking itself.",
+                "$ref": "#/components/schemas/AppointmentStatus"
+              }
+            ]
+          },
+          "toStatus": {
+            "description": "Status after.",
+            "$ref": "#/components/schemas/AppointmentStatus"
+          },
+          "fromStartUtc": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Start before, or null for the booking itself.",
+            "format": "date-time"
+          },
+          "toStartUtc": {
+            "type": "string",
+            "description": "Start after.",
+            "format": "date-time"
+          }
+        },
+        "description": "One line of an appointment's history."
+      },
+      "AppointmentStatus": {
+        "enum": [
+          "Requested",
+          "Confirmed",
+          "Completed",
+          "Cancelled",
+          "NoShow"
+        ],
+        "description": "             Where an appointment is in its life.\r\n\r\n             Stored and serialized as its NAME, never as an ordinal: inserting a value\r\n             in the middle would otherwise silently change the meaning of every row\r\n             already written and every integer in flight.\r\n\r\n             The legal moves are:\r\n             ```Requested → Confirmed → Completed\r\n    ↓           ↓\r\nCancelled   Cancelled / NoShow```\r\n             Anything else is refused by Appointment, not by a comment."
+      },
+      "AttachImageRequest": {
+        "required": [
+          "storageFileId",
+          "altText",
+          "sortOrder"
+        ],
+        "type": "object",
+        "properties": {
+          "storageFileId": {
+            "type": "string",
+            "description": "Identifier returned by `POST /api/files`. Upload it as a PUBLIC file:\r\na private one cannot be shown to an anonymous visitor.",
+            "format": "uuid"
+          },
+          "altText": {
+            "type": "string",
+            "description": "What the image shows, for anyone who cannot see it. Required."
+          },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Position in the gallery; lower comes first.",
+            "format": "int32"
+          }
+        },
+        "description": "Body of the \"attach image\" endpoint."
+      },
       "AuditEntryDto": {
         "required": [
           "id",
@@ -1003,6 +2147,189 @@
           }
         },
         "description": "Body returned by register, login and refresh.\r\n\r\nDeliberately does NOT contain the refresh token: that travels only in an\r\nhttpOnly cookie, out of reach of any script (XSS containment). The access\r\ntoken is meant to be held in memory by the client, never persisted."
+      },
+      "AvailabilityDto": {
+        "required": [
+          "serviceId",
+          "serviceTitle",
+          "durationMinutes",
+          "timeZoneId",
+          "days"
+        ],
+        "type": "object",
+        "properties": {
+          "serviceId": {
+            "type": "string",
+            "description": "Service the slots are for.",
+            "format": "uuid"
+          },
+          "serviceTitle": {
+            "type": "string",
+            "description": "Its title, so the page can name it in one call."
+          },
+          "durationMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "How long each slot lasts.",
+            "format": "int32"
+          },
+          "timeZoneId": {
+            "type": "string",
+            "description": "The business time zone. The client needs it to say \"09:00 our time\" rather\r\nthan converting into the visitor's own zone and quietly booking them for\r\nthe wrong hour in their head."
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailableDayDto"
+            },
+            "description": "One entry per day of the requested range."
+          }
+        },
+        "description": "The answer to \"when can I book this service?\"."
+      },
+      "AvailabilityOverrideDto": {
+        "required": [
+          "dateLocal",
+          "isClosed",
+          "startLocal",
+          "endLocal",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "dateLocal": {
+            "type": "string",
+            "description": "Local date, \"yyyy-MM-dd\"."
+          },
+          "isClosed": {
+            "type": "boolean",
+            "description": "Whether the business is shut that day."
+          },
+          "startLocal": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Local opening time of the extraordinary window, \"HH:mm\"."
+          },
+          "endLocal": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Local closing time of the extraordinary window, \"HH:mm\"."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why. Administration only; a visitor never sees it."
+          }
+        },
+        "description": "One closure or extraordinary opening, as exposed to the administration."
+      },
+      "AvailabilityRuleDto": {
+        "required": [
+          "dayOfWeek",
+          "startLocal",
+          "endLocal"
+        ],
+        "type": "object",
+        "properties": {
+          "dayOfWeek": {
+            "description": "Day it applies to.",
+            "$ref": "#/components/schemas/DayOfWeek"
+          },
+          "startLocal": {
+            "type": "string",
+            "description": "Local opening time, \"HH:mm\"."
+          },
+          "endLocal": {
+            "type": "string",
+            "description": "Local closing time, \"HH:mm\"."
+          }
+        },
+        "description": "One weekly opening, as exposed to the administration."
+      },
+      "AvailabilitySettingsDto": {
+        "required": [
+          "timeZoneId",
+          "rules",
+          "exceptions"
+        ],
+        "type": "object",
+        "properties": {
+          "timeZoneId": {
+            "type": "string",
+            "description": "The business time zone these times are local to."
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityRuleDto"
+            },
+            "description": "Recurring weekly openings."
+          },
+          "exceptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityOverrideDto"
+            },
+            "description": "Closures and extraordinary openings."
+          }
+        },
+        "description": "The whole availability configuration, read and written as one document.\r\n\r\nOne shape rather than per-row endpoints because that is how it is edited:\r\na weekly schedule is thought about, and saved, as a whole. Saving one rule\r\nat a time turns \"move Tuesday to the afternoon\" into three requests that\r\ncan half-fail."
+      },
+      "AvailableDayDto": {
+        "required": [
+          "date",
+          "slots"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "The date, LOCAL to the business time zone, as \"yyyy-MM-dd\"."
+          },
+          "slots": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SlotDto"
+            },
+            "description": "Bookable slots, in order. An EMPTY list is meaningful and is why closed\r\ndays are returned at all: a calendar has to grey out a Sunday, and a\r\nmissing day is indistinguishable from a day nobody asked about."
+          }
+        },
+        "description": "The slots of one day."
+      },
+      "CancelMyAppointmentRequest": {
+        "required": [
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Why they are calling it off."
+          }
+        },
+        "description": "Body of the customer's cancel endpoint. Optional: a customer explaining\r\nthemselves is a courtesy, not a requirement."
+      },
+      "CancelRequest": {
+        "required": [
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why. Required here, because the customer reads it: \"cancelled\" with no\r\nexplanation is the message that makes someone stop booking."
+          }
+        },
+        "description": "Body of the administration's cancel endpoint."
       },
       "DashboardWidget": {
         "required": [
@@ -1095,6 +2422,17 @@
         "description": "Shape a widget takes on screen.",
         "default": "Stat"
       },
+      "DayOfWeek": {
+        "enum": [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ]
+      },
       "EchoCommand": {
         "required": [
           "text"
@@ -1130,6 +2468,13 @@
           }
         },
         "description": "Response contract of EchoCommand."
+      },
+      "FileVisibility": {
+        "enum": [
+          "Private",
+          "Public"
+        ],
+        "description": "Who may download a stored file.\r\n\r\nDecided at UPLOAD and explicitly: there is no endpoint that changes it\r\nafterwards, because \"make this public\" is the kind of one-click action\r\nthat turns a mistake into a disclosure with no review step in between.\r\nRe-upload instead — the bytes are cheap, the mistake is not.\r\n\r\nThe enum travels as a NAME in JSON (the host registers\r\n`JsonStringEnumConverter`), so inserting a value here never changes\r\nthe meaning of a value already stored or in flight."
       },
       "HttpValidationProblemDetails": {
         "type": "object",
@@ -1234,6 +2579,80 @@
           }
         },
         "description": "Body of the \"mark read\" endpoint."
+      },
+      "MyAppointmentDto": {
+        "required": [
+          "id",
+          "serviceId",
+          "serviceTitle",
+          "startUtc",
+          "endUtc",
+          "status",
+          "contactPhone",
+          "customerNote",
+          "cancellationReason",
+          "canCancel",
+          "createdAtUtc"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the appointment.",
+            "format": "uuid"
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "Service that was booked.",
+            "format": "uuid"
+          },
+          "serviceTitle": {
+            "type": "string",
+            "description": "Its title, from this module's projection."
+          },
+          "startUtc": {
+            "type": "string",
+            "description": "Start instant, UTC.",
+            "format": "date-time"
+          },
+          "endUtc": {
+            "type": "string",
+            "description": "End instant, UTC.",
+            "format": "date-time"
+          },
+          "status": {
+            "description": "Where it is in its life.",
+            "$ref": "#/components/schemas/AppointmentStatus"
+          },
+          "contactPhone": {
+            "type": "string",
+            "description": "Number left for this booking."
+          },
+          "customerNote": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Note the customer wrote, if any."
+          },
+          "cancellationReason": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Why it was called off, if it was."
+          },
+          "canCancel": {
+            "type": "boolean",
+            "description": "Whether the customer may still call it off themselves. Computed by the\r\nserver: the cutoff is configuration, and the client must not have to know\r\nit — the API stays the boundary that enforces it either way."
+          },
+          "createdAtUtc": {
+            "type": "string",
+            "description": "When it was booked.",
+            "format": "date-time"
+          }
+        },
+        "description": "An appointment as its OWNER sees it.\r\n\r\nIt deliberately has no `AdminNote` field. Not \"we remember to strip\r\nit\" — the shape simply cannot carry it, so it cannot leak by omission."
       },
       "NotificationDto": {
         "required": [
@@ -1366,6 +2785,83 @@
         },
         "description": "Response contract of PingQuery (exposed by the API and,\r\nthrough OpenAPI, by the generated SDK)."
       },
+      "PublicServiceDto": {
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "shortDescription",
+          "description",
+          "durationMinutes",
+          "price",
+          "currency",
+          "isBookable",
+          "images"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the service, used by the booking flow.",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "description": "Name of the service."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL segment of its page."
+          },
+          "shortDescription": {
+            "type": "string",
+            "description": "One line, used on the showcase cards."
+          },
+          "description": {
+            "type": "string",
+            "description": "Long text of the detail page."
+          },
+          "durationMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Length of one appointment, or null.",
+            "format": "int32"
+          },
+          "price": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "Price, or null when it is not published.",
+            "format": "double"
+          },
+          "currency": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "ISO 4217 code of the price, or null."
+          },
+          "isBookable": {
+            "type": "boolean",
+            "description": "Whether the service accepts bookings."
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceImageDto"
+            },
+            "description": "Gallery, ordered as it is shown; the cover comes first."
+          }
+        },
+        "description": "A service as an anonymous visitor sees it.\r\n\r\nIt carries no publication state at all: everything reachable through the\r\npublic endpoints is, by construction, published and not archived, so\r\nthere is no flag a caller could try to flip."
+      },
       "RegisterCommand": {
         "required": [
           "email",
@@ -1388,6 +2884,53 @@
           }
         },
         "description": "Creates a new account and signs it in."
+      },
+      "RequestAppointmentCommand": {
+        "required": [
+          "serviceId",
+          "startUtc",
+          "contactPhone",
+          "customerNote"
+        ],
+        "type": "object",
+        "properties": {
+          "serviceId": {
+            "type": "string",
+            "description": "Service being booked.",
+            "format": "uuid"
+          },
+          "startUtc": {
+            "type": "string",
+            "description": "Start instant chosen from the offered slots, UTC.",
+            "format": "date-time"
+          },
+          "contactPhone": {
+            "type": "string",
+            "description": "Number to reach the customer on for this booking."
+          },
+          "customerNote": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional note."
+          }
+        },
+        "description": "A customer asks for an appointment."
+      },
+      "RescheduleRequest": {
+        "required": [
+          "startUtc"
+        ],
+        "type": "object",
+        "properties": {
+          "startUtc": {
+            "type": "string",
+            "description": "New start instant, UTC. The duration is not settable: moving a booking\r\nchooses WHEN, it does not redefine what was sold.",
+            "format": "date-time"
+          }
+        },
+        "description": "Body of the reschedule endpoint."
       },
       "RoleDto": {
         "required": [
@@ -1426,6 +2969,30 @@
         },
         "description": "Role as exposed to clients."
       },
+      "SaveAvailabilitySettingsCommand": {
+        "required": [
+          "rules",
+          "exceptions"
+        ],
+        "type": "object",
+        "properties": {
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityRuleDto"
+            },
+            "description": "The complete weekly schedule."
+          },
+          "exceptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityOverrideDto"
+            },
+            "description": "The complete list of closures and extra openings."
+          }
+        },
+        "description": "Replaces the whole availability configuration.\r\n\r\nA wholesale replace rather than per-row endpoints, because that is how a\r\nweekly schedule is thought about and edited: \"Tuesdays move to the\r\nafternoon\" is one decision, and splitting it into three requests invites\r\nthe state where the first two applied and the third did not."
+      },
       "SendContactMessageCommand": {
         "required": [
           "name",
@@ -1455,6 +3022,127 @@
           }
         },
         "description": "A message written by an anonymous visitor on the public contact form."
+      },
+      "ServiceImageDto": {
+        "required": [
+          "id",
+          "storageFileId",
+          "altText",
+          "sortOrder",
+          "isCover"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the association, used to detach it.",
+            "format": "uuid"
+          },
+          "storageFileId": {
+            "type": "string",
+            "description": "Identifier of the file in the Storage module. The client builds the image\r\nURL from it against Storage's public endpoint; this module never serves\r\nbytes.",
+            "format": "uuid"
+          },
+          "altText": {
+            "type": "string",
+            "description": "Text alternative; never empty."
+          },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Position in the gallery.",
+            "format": "int32"
+          },
+          "isCover": {
+            "type": "boolean",
+            "description": "Whether it is the image used on cards and previews."
+          }
+        },
+        "description": "One picture of a service, as exposed to any client."
+      },
+      "ServiceWriteModel": {
+        "required": [
+          "title",
+          "slug",
+          "shortDescription",
+          "description",
+          "durationMinutes",
+          "price",
+          "currency",
+          "isPublished",
+          "isBookable",
+          "sortOrder"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Name of the service. Required."
+          },
+          "slug": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "URL segment of the public page. Leave it empty and it is derived from the\r\ntitle, disambiguated if needed; provide one and it is used verbatim, or\r\nrejected when already taken."
+          },
+          "shortDescription": {
+            "type": "string",
+            "description": "One line, shown on the showcase cards."
+          },
+          "description": {
+            "type": "string",
+            "description": "Long text of the detail page."
+          },
+          "durationMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Length of one appointment. Required when IsBookable is\r\nset, because it is what generates the bookable slots.",
+            "format": "int32"
+          },
+          "price": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "Price, or null to publish no price at all.",
+            "format": "double"
+          },
+          "currency": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "ISO 4217 code; required when a price is given."
+          },
+          "isPublished": {
+            "type": "boolean",
+            "description": "Whether visitors can see it."
+          },
+          "isBookable": {
+            "type": "boolean",
+            "description": "Whether it accepts bookings."
+          },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Position in the showcase; lower comes first.",
+            "format": "int32"
+          }
+        },
+        "description": "The editable fields of a service, as they travel in a create or edit\r\nrequest.\r\n\r\nOne shape for both operations because the two forms are the same form:\r\nsplitting them would mean maintaining two validators that must agree, and\r\nthe day they stop agreeing is the day a rule holds on creation only."
       },
       "SetSettingRequest": {
         "required": [
@@ -1523,12 +3211,33 @@
         },
         "description": "Body of the \"set user roles\" endpoint."
       },
+      "SlotDto": {
+        "required": [
+          "startUtc",
+          "endUtc"
+        ],
+        "type": "object",
+        "properties": {
+          "startUtc": {
+            "type": "string",
+            "description": "Start instant, UTC. The browser renders it locally.",
+            "format": "date-time"
+          },
+          "endUtc": {
+            "type": "string",
+            "description": "End instant, UTC.",
+            "format": "date-time"
+          }
+        },
+        "description": "One bookable slot, as offered to a client."
+      },
       "StoredFileDto": {
         "required": [
           "id",
           "fileName",
           "contentType",
           "sizeInBytes",
+          "visibility",
           "uploadedAtUtc"
         ],
         "type": "object",
@@ -1544,7 +3253,7 @@
           },
           "contentType": {
             "type": "string",
-            "description": "Content type declared at upload."
+            "description": "Content type declared at upload; metadata only."
           },
           "sizeInBytes": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -1554,6 +3263,10 @@
             ],
             "description": "Size in bytes.",
             "format": "int64"
+          },
+          "visibility": {
+            "description": "Who may download it. A `Public` file is reachable without a token at\r\n`/api/files/public/{id}` — that is the URL to put in an\r\n`&lt;img src&gt;`.",
+            "$ref": "#/components/schemas/FileVisibility"
           },
           "uploadedAtUtc": {
             "type": "string",
@@ -1721,6 +3434,18 @@
     },
     {
       "name": "Localization"
+    },
+    {
+      "name": "Services"
+    },
+    {
+      "name": "Services administration"
+    },
+    {
+      "name": "Appointments"
+    },
+    {
+      "name": "Appointments administration"
     }
   ]
 }

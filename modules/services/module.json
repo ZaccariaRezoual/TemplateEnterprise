@@ -1,0 +1,6 @@
+{
+  "name": "Services",
+  "version": "1.0.0",
+  "dependencies": ["Authorization", "Storage"],
+  "enabled": true
+}

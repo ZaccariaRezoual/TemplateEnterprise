@@ -1,6 +1,19 @@
 namespace EnterpriseFramework.Modules.Email.Abstractions;
 
 /// <summary>
+/// A file travelling with an email.
+/// </summary>
+/// <param name="FileName">Name the recipient sees, e.g. "appointment.ics".</param>
+/// <param name="ContentType">MIME type, e.g. "text/calendar".</param>
+/// <param name="Content">
+/// The file itself, as text. Deliberately not bytes: the attachments this
+/// framework produces are calendar entries and receipts — text formats — and
+/// a byte array in the outbox is an invitation to queue megabytes in memory.
+/// A transport that needs binary attachments should extend this, not abuse it.
+/// </param>
+public sealed record EmailAttachment(string FileName, string ContentType, string Content);
+
+/// <summary>
 /// An email ready to be delivered.
 /// </summary>
 /// <param name="To">Recipient address.</param>
@@ -10,7 +23,18 @@ namespace EnterpriseFramework.Modules.Email.Abstractions;
 /// Plain-text alternative. Always provided: some clients refuse HTML, and a
 /// missing text part is a strong spam signal.
 /// </param>
-public sealed record EmailMessage(string To, string Subject, string HtmlBody, string TextBody);
+/// <param name="Attachments">
+/// Files to send along, empty by default. The case this exists for is the
+/// calendar entry on an appointment confirmation: it turns "remember to note
+/// this down" into one click.
+/// </param>
+public sealed record EmailMessage(
+    string To,
+    string Subject,
+    string HtmlBody,
+    string TextBody,
+    IReadOnlyList<EmailAttachment>? Attachments = null
+);
 
 /// <summary>
 /// Transport that actually delivers an email.

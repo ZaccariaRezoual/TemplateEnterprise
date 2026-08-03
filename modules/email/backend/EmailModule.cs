@@ -28,14 +28,30 @@ public sealed class EmailModule : IModule
     public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
+        services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
 
         services.AddSingleton<EmailOutbox>();
         services.AddSingleton<IEmailOutbox>(provider => provider.GetRequiredService<EmailOutbox>());
         services.AddHostedService<EmailBackgroundSender>();
 
-        // Development default: log instead of delivering. Projects override
-        // this with SMTP or a transactional provider per environment.
-        services.AddScoped<IEmailSender, LoggingEmailSender>();
+        // The transport is chosen by CONFIGURATION, not by code: a host in
+        // "Email:Smtp" means deliver, its absence means log. That way turning
+        // real email on is a deployment concern, and forgetting to configure
+        // it fails SAFE — a developer running against a seeded database
+        // cannot email real people by accident.
+        //
+        // A project needing a transactional provider still registers its own
+        // IEmailSender after this module; the last registration wins.
+        var smtp = configuration.GetSection(SmtpOptions.SectionName).Get<SmtpOptions>();
+
+        if (smtp?.IsConfigured == true)
+        {
+            services.AddScoped<IEmailSender, SmtpEmailSender>();
+        }
+        else
+        {
+            services.AddScoped<IEmailSender, LoggingEmailSender>();
+        }
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(EmailModule).Assembly));
     }

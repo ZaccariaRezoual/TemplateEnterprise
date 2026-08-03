@@ -13,6 +13,21 @@ import { defineConfig } from "vite";
 /** Where the dev server forwards API and hub traffic. */
 const apiTarget = process.env["VITE_DEV_API_TARGET"] ?? "http://localhost:5080";
 
+const apiProxy = {
+  "/api": {
+    target: apiTarget,
+    changeOrigin: true,
+  },
+  // The SignalR hub. `ws: true` is required: without it the negotiate
+  // request is proxied but the WebSocket upgrade is not, and the client
+  // silently falls back to long polling — or fails outright.
+  "/hubs": {
+    target: apiTarget,
+    changeOrigin: true,
+    ws: true,
+  },
+};
+
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
   resolve: {
@@ -22,19 +37,13 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    proxy: {
-      "/api": {
-        target: apiTarget,
-        changeOrigin: true,
-      },
-      // The SignalR hub. `ws: true` is required: without it the negotiate
-      // request is proxied but the WebSocket upgrade is not, and the client
-      // silently falls back to long polling — or fails outright.
-      "/hubs": {
-        target: apiTarget,
-        changeOrigin: true,
-        ws: true,
-      },
-    },
+    proxy: apiProxy,
+  },
+  // The preview server proxies too, and that is not a convenience: the
+  // prerender (`scripts/prerender.mjs`) drives a headless browser against it,
+  // and a public page that reads data — the services showcase does — would
+  // otherwise be captured showing its error state.
+  preview: {
+    proxy: apiProxy,
   },
 });

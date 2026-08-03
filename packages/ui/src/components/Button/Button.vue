@@ -11,8 +11,10 @@
  * - Blocks interaction while disabled or loading, and reports both states to
  *   assistive technology (`disabled`, `aria-busy`).
  *
- * Use it for actions. For navigation use a link (`RouterLink`) — a button that
- * navigates breaks middle-click, "open in new tab" and copy-link.
+ * Use it for actions. When the action IS a navigation, pass `href`: the
+ * component then renders an `<a>` with the same styling, because a
+ * `<button>` that navigates breaks middle-click, "open in new tab" and
+ * copy-link — and hand-styling a link would put literal values in a page.
  *
  * All styling resolves through semantic tokens, so it inherits any theme
  * without modification.
@@ -72,8 +74,14 @@ const forwardedAttrs = computed(() => {
   return rest;
 });
 
+/** True when this instance is a navigation, and therefore an anchor. */
+const isLink = computed(() => props.href !== undefined);
+
 function onClick(event: MouseEvent): void {
   if (isInteractionBlocked.value) {
+    // An anchor has no `disabled` attribute, so the navigation has to be
+    // stopped here or a "disabled" link still navigates.
+    event.preventDefault();
     return;
   }
   emit("click", event);
@@ -81,11 +89,14 @@ function onClick(event: MouseEvent): void {
 </script>
 
 <template>
-  <button
+  <component
+    :is="isLink ? 'a' : 'button'"
     v-bind="forwardedAttrs"
-    :type="type"
+    :href="isLink ? href : undefined"
+    :type="isLink ? undefined : type"
     :class="classes"
-    :disabled="isInteractionBlocked"
+    :disabled="isLink ? undefined : isInteractionBlocked"
+    :aria-disabled="isLink && isInteractionBlocked ? 'true' : undefined"
     :aria-busy="loading ? 'true' : undefined"
     @click="onClick"
   >
@@ -101,5 +112,5 @@ function onClick(event: MouseEvent): void {
     </svg>
     <slot v-else name="icon" />
     <slot />
-  </button>
+  </component>
 </template>
