@@ -34,7 +34,7 @@
     "@vitejs/plugin-vue": "catalog:",
     "@vue/test-utils": "catalog:",
     "jsdom": "catalog:",
-    "pinia": "^4.0.2",
+    "pinia": "^4.0.3",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
