@@ -27,12 +27,12 @@
     "@vitejs/plugin-vue": "catalog:",
     "@vue/test-utils": "catalog:",
     "jsdom": "catalog:",
-    "pinia": "^4.0.2",
+    "pinia": "^4.0.3",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
     "vue": "catalog:",
-    "vue-router": "^5.2.0",
+    "vue-router": "^5.3.0",
     "vue-tsc": "catalog:"
   }
 }

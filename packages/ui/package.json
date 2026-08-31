@@ -24,14 +24,14 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^10.5.5",
-    "@storybook/addon-docs": "^10.5.5",
-    "@storybook/vue3-vite": "^10.5.5",
+    "@storybook/addon-a11y": "^10.5.10",
+    "@storybook/addon-docs": "^10.5.10",
+    "@storybook/vue3-vite": "^10.5.10",
     "@tailwindcss/vite": "catalog:",
     "@vitejs/plugin-vue": "catalog:",
     "@vue/test-utils": "catalog:",
     "jsdom": "catalog:",
-    "storybook": "^10.5.5",
+    "storybook": "^10.5.10",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
