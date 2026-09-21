@@ -12,6 +12,9 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Needed for IServiceCollection/IConfiguration/IEndpointRouteBuilder in the contract. -->
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="MediatR" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!-- Shared persistence helpers modules apply in OnModelCreating. -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
