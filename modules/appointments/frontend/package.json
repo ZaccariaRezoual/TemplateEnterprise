@@ -18,9 +18,9 @@
     "@enterprise/shared": "workspace:*",
     "@enterprise/ui": "workspace:*",
     "@fullcalendar/core": "^6.1.19",
-    "@fullcalendar/daygrid": "^6.1.19",
-    "@fullcalendar/interaction": "^6.1.19",
-    "@fullcalendar/timegrid": "^6.1.19",
+    "@fullcalendar/daygrid": "^6.1.22",
+    "@fullcalendar/interaction": "^6.1.22",
+    "@fullcalendar/timegrid": "^6.1.22",
     "@fullcalendar/vue3": "^6.1.19"
   },
   "peerDependencies": {
@@ -30,16 +30,16 @@
     "vue-router": "^5.0.0"
   },
   "devDependencies": {
-    "@tanstack/vue-query": "^5.101.4",
+    "@tanstack/vue-query": "^5.104.3",
     "@vitejs/plugin-vue": "catalog:",
     "@vue/test-utils": "catalog:",
     "jsdom": "catalog:",
-    "pinia": "^4.0.2",
+    "pinia": "^4.1.0",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
     "vue": "catalog:",
-    "vue-router": "^5.2.0",
+    "vue-router": "^5.4.0",
     "vue-tsc": "catalog:"
   }
 }
